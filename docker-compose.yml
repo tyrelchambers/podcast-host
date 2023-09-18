@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  db:
+    container_name: podcast_db
+    image: postgres
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+networks:
+  default:
+    name: podcast
+volumes:
+  postgres_data:
