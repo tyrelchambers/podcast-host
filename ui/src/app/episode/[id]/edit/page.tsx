@@ -1,4 +1,3 @@
-"use";
 import EpisodeEditBody from "@/components/EpisodeEditBody";
 import { Episode } from "@/lib/types";
 import axios from "axios";

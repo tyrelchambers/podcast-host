@@ -10,7 +10,6 @@ import (
 )
 
 func CreateEpisode(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	r.ParseMultipartForm(3 << 20)
 

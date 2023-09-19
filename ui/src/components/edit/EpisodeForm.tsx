@@ -42,7 +42,7 @@ interface Props {
   submitHandler: (props: SubmitHandlerProps) => void;
   fileUploadRef: React.RefObject<HTMLInputElement>;
   ctaText: string;
-  isEditing: boolean;
+  isEditing?: boolean;
   deleteHandler?: (id: string | undefined) => void;
 }
 

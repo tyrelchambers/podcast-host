@@ -10,7 +10,6 @@ import (
 )
 
 func GetCurrentUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
