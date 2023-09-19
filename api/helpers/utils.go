@@ -24,11 +24,13 @@ const (
 
 var BUNNY_URL_BASE = "https://podcast-files.b-cdn.net"
 
+var DbUrl = fmt.Sprintf("host=%s port=%d user=%s "+
+	"password=%s dbname=%s sslmode=disable",
+	host, port, user, password, dbname)
+
 func DbClient() *sql.DB {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
+
+	db, err := sql.Open("postgres", DbUrl)
 	if err != nil {
 		panic(err)
 	}
@@ -43,9 +45,9 @@ func DbClient() *sql.DB {
 }
 
 func BunnyClient() *bunnystorage.Client {
-	readOnlyKey := goDotEnvVariable("BUNNYNET_READ_API_KEY")
+	readOnlyKey := GoDotEnvVariable("BUNNYNET_READ_API_KEY")
 
-	readWriteKey := goDotEnvVariable("BUNNYNET_WRITE_API_KEY")
+	readWriteKey := GoDotEnvVariable("BUNNYNET_WRITE_API_KEY")
 
 	cfg := &bunnystorage.Config{
 		Application: &bunnystorage.Application{
@@ -70,7 +72,7 @@ func BunnyClient() *bunnystorage.Client {
 
 }
 
-func goDotEnvVariable(key string) string {
+func GoDotEnvVariable(key string) string {
 
 	// load .env file
 	err := godotenv.Load(".env")

@@ -8,11 +8,12 @@ import { z } from "zod";
 import { getUnixTime } from "date-fns";
 import axios from "axios";
 import { useToast } from "./ui/use-toast";
+import { useRouter } from "next/navigation";
 
 const EpisodeEditBody = ({ episode }: { episode: Episode }) => {
   const fileUploadRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     values: episode,
@@ -57,7 +58,6 @@ const EpisodeEditBody = ({ episode }: { episode: Episode }) => {
           author: data.author,
           keywords: data.keywords,
           episodeNumber: data.episodeNumber,
-          publishDate: getDate().toString(),
           url: episode.url,
           file,
         },
@@ -80,6 +80,25 @@ const EpisodeEditBody = ({ episode }: { episode: Episode }) => {
       });
   };
 
+  const deleteHandler = (id: string | undefined) => {
+    if (!id) return;
+
+    axios
+      .delete(`http://localhost:8080/api/episode/${id}/delete`)
+      .then(() => {
+        toast({
+          description: "Episode deleted",
+        });
+        router.push("/");
+      })
+      .catch((err) => {
+        toast({
+          title: "Awe, man! Something went wrong.",
+          description: err.message,
+        });
+      });
+  };
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <EpisodeForm
@@ -88,6 +107,8 @@ const EpisodeEditBody = ({ episode }: { episode: Episode }) => {
         submitHandler={submitHandler}
         fileUploadRef={fileUploadRef}
         ctaText="Edit episode"
+        isEditing
+        deleteHandler={deleteHandler}
       />
     </Suspense>
   );

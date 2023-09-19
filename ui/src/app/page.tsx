@@ -26,8 +26,8 @@ const getCurrentUser = async () => {
 };
 
 export default async function Home() {
-  const user = await getCurrentUser();
-  const episodes = await getAllEpisodes(user.id);
+  // const user = await getCurrentUser();
+  // const episodes = await getAllEpisodes(user.id);
 
   return (
     <main className="w-full">
@@ -35,7 +35,7 @@ export default async function Home() {
 
       <Suspense fallback={<div>Loading...</div>}>
         <h1 className="h1">Episodes</h1>
-        <EpisodesTable episodes={episodes} />
+        {/* <EpisodesTable episodes={episodes} /> */}
       </Suspense>
     </main>
   );

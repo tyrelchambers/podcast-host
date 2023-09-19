@@ -67,8 +67,6 @@ func UpdateEpisode(w http.ResponseWriter, r *http.Request) {
 	var episode models.Episode
 	var uploadPath = r.FormValue("url")
 
-	println(r.FormValue("url"))
-
 	_, _, noFile := r.FormFile("file")
 
 	if noFile == nil {
@@ -93,4 +91,21 @@ func UpdateEpisode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+}
+
+func DeleteEpisode(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	p := mux.Vars(r)
+
+	id := p["id"]
+
+	err := models.DeleteEpisode(id, helpers.DbClient())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

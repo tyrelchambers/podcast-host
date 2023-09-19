@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"strconv"
 
 	"github.com/lucsky/cuid"
 )
@@ -47,17 +46,9 @@ func UpdateEpisode(episode Episode, db *sql.DB) (e error) {
 		return errors.New("Failed to update episode. Missing ID.")
 	}
 
-	cmd := `UPDATE Episodes SET title = $1, description = $2, url = $3, user_id = $4, keywords = $5, publishDate = $6, author = $7, episodeNumber = $8 WHERE id = $9`
+	cmd := `UPDATE Episodes SET title = $1, description = $2, url = $3, user_id = $4, keywords = $5, author = $6, episodeNumber = $7 WHERE id = $8`
 
-	publishDate, conversionErr := strconv.Atoi(episode.PublishDate)
-
-	if conversionErr != nil {
-		println(conversionErr.Error())
-
-		return conversionErr
-	}
-
-	res, err := db.Exec(cmd, episode.Title, episode.Description, episode.URL, episode.UserID, episode.Keywords, publishDate, episode.Author, episode.EpisodeNumber, episode.ID)
+	res, err := db.Exec(cmd, episode.Title, episode.Description, episode.URL, episode.UserID, episode.Keywords, episode.Author, episode.EpisodeNumber, episode.ID)
 
 	if err != nil {
 		println(err.Error())
@@ -73,4 +64,24 @@ func UpdateEpisode(episode Episode, db *sql.DB) (e error) {
 	fmt.Printf("SUCCESS: updated %d episode\n", count)
 	return
 
+}
+
+func DeleteEpisode(id string, db *sql.DB) (e error) {
+	cmd := `DELETE FROM Episodes WHERE id = $1`
+
+	res, err := db.Exec(cmd, id)
+
+	if err != nil {
+		println(err.Error())
+		return errors.New("Failed to delete episode.")
+	}
+
+	count, err := res.RowsAffected()
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("Failure reading rows. Error: %s", err.Error()))
+	}
+
+	fmt.Printf("SUCCESS: deleted %d episode\n", count)
+	return
 }

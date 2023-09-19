@@ -15,9 +15,10 @@ const Page = async ({ params }: { params: { id: string } }) => {
   const episode = await getEpisodeById(params.id);
 
   return (
-    <div>
+    <main className="max-w-screen-lg mx-auto py-10">
+      <h1 className="h1">Edit episode</h1>
       <EpisodeEditBody episode={episode} />
-    </div>
+    </main>
   );
 };
 

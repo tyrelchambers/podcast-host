@@ -10,6 +10,7 @@ import {
 } from "./ui/table";
 import { Episode } from "@/lib/types";
 import Link from "next/link";
+import { format, fromUnixTime } from "date-fns";
 
 interface Props {
   episodes: Episode[];
@@ -38,9 +39,12 @@ const EpisodesTable = ({ episodes }: Props) => {
                   {episode.title}
                 </Link>
               </TableCell>
-              <TableCell>{"Published"}</TableCell>
+              <TableCell>Published</TableCell>
               <TableCell className="text-right">
-                {episode.publishDate}
+                {format(
+                  fromUnixTime(Number(episode.publishDate) ?? 0),
+                  "MMM dd, yyyy hh:mm a"
+                )}
               </TableCell>
             </TableRow>
           ))}

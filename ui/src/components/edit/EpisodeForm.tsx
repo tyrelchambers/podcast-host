@@ -1,6 +1,6 @@
 "use client";
 import { Episode, formSchema } from "@/lib/types";
-import React, { Suspense, useState } from "react";
+import React, { useState } from "react";
 import { Form, FormField, FormItem } from "../ui/form";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -42,6 +42,8 @@ interface Props {
   submitHandler: (props: SubmitHandlerProps) => void;
   fileUploadRef: React.RefObject<HTMLInputElement>;
   ctaText: string;
+  isEditing: boolean;
+  deleteHandler?: (id: string | undefined) => void;
 }
 
 const EpisodeForm = ({
@@ -50,7 +52,13 @@ const EpisodeForm = ({
   submitHandler,
   fileUploadRef,
   ctaText,
+  isEditing = false,
+  deleteHandler,
 }: Props) => {
+  if (isEditing && !deleteHandler) {
+    throw new Error("EpisodeForm must have a deleteHandler");
+  }
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const editor = useEditor({
     extensions: [
@@ -71,7 +79,7 @@ const EpisodeForm = ({
   );
   const [publishDate, setPublishDate] = useState<Date>(new Date(Date.now()));
 
-  const [changePublishDate, setChangePublishDate] = useState(false);
+  // const [changePublishDate, setChangePublishDate] = useState(false);
 
   const fileName = fileUploadRef.current?.files?.[0]?.name;
   const fileSize = fileUploadRef.current?.files?.[0]?.size
@@ -240,18 +248,18 @@ const EpisodeForm = ({
               )}
             </div>
 
-            <Button
+            {/* <Button
               variant="ghost"
               className="w-fit"
               type="button"
               onClick={() => setChangePublishDate(!changePublishDate)}
             >
               Change date
-            </Button>
+            </Button> */}
           </div>
         )}
 
-        {changePublishDate && (
+        {!isEditing && (
           <>
             <FormItem>
               <Label>Publish date</Label>
@@ -282,6 +290,18 @@ const EpisodeForm = ({
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? <FontAwesomeIcon icon={faSpinner} spin /> : ctaText}
         </Button>
+        {isEditing && (
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="outlineDestructive"
+              className="w-fit"
+              onClick={() => deleteHandler?.(episode?.id)}
+            >
+              Delete episode
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   );
