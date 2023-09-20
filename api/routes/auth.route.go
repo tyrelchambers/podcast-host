@@ -8,6 +8,7 @@ import (
 )
 
 func AuthHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
@@ -18,17 +19,17 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	var u models.User
 
-	userExists := models.CheckUserExists(r.FormValue("email"), db)
+	json.NewDecoder(r.Body).Decode(&u)
 
-	if userExists {
+	userExists := models.CheckUserExists(u.Email, db)
+
+	if userExists == true {
 		http.Error(w, "User already exist", http.StatusBadRequest)
 		return
 	}
 
-	json.NewDecoder(r.Body).Decode(&u)
-
 	newUser, e := models.CreateUser(&u, db)
-	session, e := models.CreateSession(&newUser, db)
+	// session, e := models.CreateSession(newUser, db)
 
 	if e != nil {
 		http.Error(w, e.Error(), http.StatusInternalServerError)
@@ -36,8 +37,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cookieValues := models.Cookie{
-		SessionToken: session.SessionToken,
-		ExpiresAt:    session.ExpiresAt,
+		UserID: newUser.ID,
 	}
 
 	helpers.SessionHandler(w, r, cookieValues)

@@ -20,7 +20,7 @@ func main() {
 	credentials := handlers.AllowCredentials()
 	exposedHeaders := handlers.ExposedHeaders([]string{"Set-Cookie"})
 	headers := handlers.AllowedHeaders([]string{"Content-Type", "Access-Control-Allow-Origin"})
-	origins := handlers.AllowedOrigins([]string{"http://localhost:3000"})
+	origins := handlers.AllowedOrigins([]string{"http://localhost:3000", "http://localhost:5500"})
 
 	r.HandleFunc("/api/episode/create", routes.CreateEpisode).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/api/episode/{id}", routes.GetEpisode).Methods(http.MethodGet, http.MethodOptions)

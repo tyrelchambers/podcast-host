@@ -10,13 +10,16 @@ import (
 )
 
 func CheckUserExists(email string, db *sql.DB) (userExists bool) {
-	cmd := `SELECT id, email, password FROM Users WHERE email = $1`
+	if email == "" {
+		panic(errors.New("Email cannot be empty."))
+	}
+	cmd := `SELECT id FROM Users WHERE email = $1`
 
 	row := db.QueryRow(cmd, email)
 
 	var user User
 
-	row.Scan(&user.ID, &user.Email, &user.Password)
+	_ = row.Scan(&user.ID)
 
 	if user.ID == "" {
 		return false
@@ -25,10 +28,12 @@ func CheckUserExists(email string, db *sql.DB) (userExists bool) {
 	return true
 }
 
-func CreateUser(user *User, db *sql.DB) (u User, e error) {
-	cmd := `INSERT INTO Users (id, email, password) VALUES ($1, $2, $3) RETURNING id, email`
+func CreateUser(user *User, db *sql.DB) (u *User, e error) {
+	stmt, _ := db.Prepare(`INSERT INTO Users (id, email, password) VALUES ($1, $2, $3) RETURNING id, email`)
 
 	id := cuid.New()
+
+	var newUser User
 
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 
@@ -37,33 +42,26 @@ func CreateUser(user *User, db *sql.DB) (u User, e error) {
 		return u, errors.New("Failed to hash password.")
 	}
 
-	var uR *sql.Rows
+	stmt.QueryRow(id, user.Email, hashPassword).Scan(&newUser.ID, &newUser.Email)
 
-	uR, err = db.Query(cmd, id, user.Email, hashPassword)
+	fmt.Println("SUCCESS: new user created")
+	return &newUser, nil
+}
+
+func GetUser(id *string, db *sql.DB) (user User, e error) {
+	var u User
+	cmd := `SELECT id, email FROM Users WHERE id = $1`
+
+	row := db.QueryRow(cmd, *id)
+
+	err := row.Scan(&u.ID, &u.Email)
 
 	if err != nil {
 		fmt.Println(err.Error())
-		return u, errors.New("Failed to create user. User already exists.")
+		return u, errors.New("Failed to get user.")
 	}
 
-	uR.Scan(&u.ID, &u.Email)
-
-	fmt.Println("SUCCESS: new user crated")
 	return u, nil
-}
-
-func GetUser(email string, db *sql.DB) (user User, e error) {
-	cmd := `SELECT id, email, password FROM Users WHERE email = $1`
-
-	row := db.QueryRow(cmd, email)
-
-	err := row.Scan(&user.ID, &user.Email, &user.Password)
-
-	if err != nil {
-		return user, errors.New("Failed to get user.")
-	}
-
-	return user, nil
 }
 
 func GetEpisodes(id string, db *sql.DB) (episodes []Episode, e error) {

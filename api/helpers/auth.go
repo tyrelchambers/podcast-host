@@ -12,11 +12,11 @@ import (
 )
 
 // Hash keys should be at least 32 bytes long
-var hashKey = []byte("very-secret")
+var hashKey = []byte("ikiQQVPZlgwH3J7c")
 
 // Block keys should be 16 bytes (AES-128) or 32 bytes (AES-256) long.
 // Shorter keys may weaken the encryption used.
-var blockKey = []byte("a-lot-secret")
+var blockKey = []byte("ikiQQVPZlgwH3J7c")
 var s = securecookie.New(hashKey, blockKey)
 
 func SessionHandler(w http.ResponseWriter, r *http.Request, values models.Cookie) {
@@ -34,7 +34,7 @@ func SessionHandler(w http.ResponseWriter, r *http.Request, values models.Cookie
 		log.Fatalf(err.Error())
 	}
 	// Set some session values.
-	session.Values["session_token"] = values.SessionToken
+	session.Values["user_id"] = values.UserID
 	// session.Options.Domain = "localhost"
 
 	// Save it before we write to the response/return from the handler.
@@ -43,14 +43,35 @@ func SessionHandler(w http.ResponseWriter, r *http.Request, values models.Cookie
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	SetCookieHandler(values.UserID, w)
 
 }
 
-func ReadCookieHandler(w http.ResponseWriter, r *http.Request) {
-	if cookie, err := r.Cookie("cookie-name"); err == nil {
-		value := make(map[string]string)
-		if err = s.Decode("cookie-name", cookie.Value, &value); err == nil {
-			fmt.Fprintf(w, "The value of foo is %q", value["foo"])
+func SetCookieHandler(value string, w http.ResponseWriter) {
+	if encoded, err := s.Encode("session-key", value); err == nil {
+		cookie := &http.Cookie{
+			Name:   "session-key",
+			Value:  encoded,
+			Path:   "/",
+			Secure: true,
+			// HttpOnly: true,
 		}
+		http.SetCookie(w, cookie)
 	}
+}
+
+func ReadCookieHandler(w http.ResponseWriter, r *http.Request) (userId string) {
+	var str string
+	if cookie, err := r.Cookie("session-key"); err == nil {
+		err = s.Decode("session-key", cookie.Value, &str)
+
+		if err != nil {
+			fmt.Println(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+	}
+
+	return str
 }

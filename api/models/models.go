@@ -23,7 +23,6 @@ type Episode struct {
 
 type Session struct {
 	ID           string    `json:"id"`
-	Email        string    `json:"email"`
 	UserID       string    `json:"user_id"`
 	SessionToken string    `json:"session_token"`
 	ExpiresAt    time.Time `json:"expires_at"`

@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { setCookie } from "cookies-next";
 
 const registerSchema = z.object({
   email: z.string(),
@@ -40,19 +39,19 @@ export default function Register() {
       return;
     }
 
-    await fetch("http://localhost:8080/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }).then((res) => {
-      if (res.status === 200) {
+    await axios
+      .post("http://localhost:8080/api/auth/register", data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      })
+      .then((res) => {
         console.log(res);
-
-        // setCookie("token", res.headers.get("Authorization"));
-      }
-    });
+        if (res.status === 200) {
+          // setCookie("token", res.headers.get("Authorization"));
+        }
+      });
   };
 
   return (

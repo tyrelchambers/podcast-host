@@ -1,4 +1,5 @@
 import EpisodesTable from "@/components/EpisodesTable";
+import { useUserQuery } from "@/hooks/useUserQuery";
 import Header from "@/layouts/Header";
 import axios from "axios";
 import { Suspense } from "react";
@@ -14,29 +15,18 @@ const getAllEpisodes = async (id: string) => {
   return data;
 };
 
-const getCurrentUser = async () => {
-  const data = await axios
-    .get("http://localhost:8080/api/user/me")
-    .then((res) => res.data)
-    .catch((err) => {
-      console.log(err);
-    });
-
-  return data;
-};
-
-export default async function Home() {
-  // const user = await getCurrentUser();
+export default function Home() {
+  const user = useUserQuery();
   // const episodes = await getAllEpisodes(user.id);
+
+  console.log(user);
 
   return (
     <main className="w-full">
       <Header />
 
-      <Suspense fallback={<div>Loading...</div>}>
-        <h1 className="h1">Episodes</h1>
-        {/* <EpisodesTable episodes={episodes} /> */}
-      </Suspense>
+      <h1 className="h1">Episodes</h1>
+      {/* <EpisodesTable episodes={episodes} /> */}
     </main>
   );
 }

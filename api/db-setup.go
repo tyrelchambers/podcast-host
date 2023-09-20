@@ -21,6 +21,5 @@ func SetupDb() {
 	migrationWrapper("Users", `CREATE TABLE IF NOT EXISTS Users (id VARCHAR PRIMARY KEY, password VARCHAR NOT NULL, email VARCHAR UNIQUE NOT NULL)`, db)
 	migrationWrapper("Podcasts", `CREATE TABLE IF NOT EXISTS Podcasts (id VARCHAR PRIMARY KEY, title VARCHAR NOT NULL, description VARCHAR NOT NULL, url VARCHAR NOT NULL, image VARCHAR, user_id VARCHAR NOT NULL, FOREIGN KEY (user_id) REFERENCES Users(id) )`, db)
 	migrationWrapper("Episodes", `CREATE TABLE IF NOT EXISTS Episodes (id VARCHAR PRIMARY KEY, title VARCHAR NOT NULL, description TEXT, url VARCHAR NOT NULL, image VARCHAR, keywords VARCHAR, publishDate BIGINT, author VARCHAR, episodeNumber SMALLINT, user_id VARCHAR NOT NULL, FOREIGN KEY (user_id) REFERENCES Users(id) )`, db)
-	migrationWrapper("Sessions", `CREATE TABLE IF NOT EXISTS Sessions (id VARCHAR PRIMARY KEY, email VARCHAR NOT NULL, user_id VARCHAR NOT NULL, session_token VARCHAR UNIQUE NOT NULL, expires_at DATE NOT NULL)`, db)
 
 }

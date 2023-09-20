@@ -16,9 +16,11 @@ func GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userId := helpers.ReadCookieHandler(w, r)
+
 	db := helpers.DbClient()
 
-	user, err := models.GetUser("rachel@remix.run", db)
+	user, err := models.GetUser(&userId, db)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
