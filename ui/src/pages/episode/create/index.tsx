@@ -81,6 +81,7 @@ const Page = () => {
       headers: {
         "Content-Type": "multipart/form-data",
       },
+      withCredentials: true,
     });
   };
 

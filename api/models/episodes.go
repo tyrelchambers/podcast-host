@@ -16,6 +16,7 @@ func CreateEpisode(episode *Episode, db *sql.DB) (e error) {
 	_, err := db.Exec(cmd, id, episode.Title, episode.Description, episode.URL, episode.UserID, episode.Keywords, episode.PublishDate, episode.Author, episode.EpisodeNumber)
 
 	if err != nil {
+		println(err.Error())
 		return errors.New("Failed to create episode.")
 	}
 
@@ -25,7 +26,7 @@ func CreateEpisode(episode *Episode, db *sql.DB) (e error) {
 
 }
 
-func GetEpisode(id string, db *sql.DB) (episode Episode, e error) {
+func GetEpisodeById(id string, db *sql.DB) (episode Episode, e error) {
 	cmd := `SELECT id, title, description, url, user_id, keywords, publishDate, author, episodeNumber FROM Episodes WHERE id = $1`
 
 	row := db.QueryRow(cmd, id)
@@ -84,4 +85,35 @@ func DeleteEpisode(id string, db *sql.DB) (e error) {
 
 	fmt.Printf("SUCCESS: deleted %d episode\n", count)
 	return
+}
+
+func GetEpisodes(id string, db *sql.DB) (episodes []Episode, e error) {
+	cmd := `SELECT id, title, url, publishDate, episodeNumber FROM Episodes WHERE user_id = $1`
+
+	rows, err := db.Query(cmd, id)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, errors.New("Failed to get episodes.")
+	}
+
+	defer rows.Close()
+
+	var episode Episode
+
+	for rows.Next() {
+		err := rows.Scan(&episode.ID, &episode.Title, &episode.URL, &episode.PublishDate, &episode.EpisodeNumber)
+
+		if err != nil {
+			fmt.Println(err.Error())
+			return nil, errors.New("Failed to get episode.")
+
+		}
+
+		episodes = append(episodes, episode)
+
+	}
+
+	return episodes, nil
+
 }

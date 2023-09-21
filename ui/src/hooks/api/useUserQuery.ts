@@ -1,8 +1,8 @@
 import { User } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios from "axios";
 
-const getCurrentUser = async () => {
+export const getCurrentUser = async () => {
   const data = await axios
     .get("http://localhost:8080/api/user/me", {
       withCredentials: true,

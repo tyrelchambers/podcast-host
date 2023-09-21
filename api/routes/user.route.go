@@ -32,7 +32,6 @@ func GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserEpisodes(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	vars := mux.Vars(r)
 

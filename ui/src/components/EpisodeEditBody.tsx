@@ -10,7 +10,7 @@ import axios from "axios";
 import { useToast } from "./ui/use-toast";
 import { useRouter } from "next/navigation";
 
-const EpisodeEditBody = ({ episode }: { episode: Episode }) => {
+const EpisodeEditBody = ({ episode }: { episode: Episode | undefined }) => {
   const fileUploadRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const router = useRouter();
@@ -49,22 +49,23 @@ const EpisodeEditBody = ({ episode }: { episode: Episode }) => {
     };
 
     await axios
-      .putForm(
-        `http://localhost:8080/api/episode/${data.id}/edit`,
+      .postForm(
+        `http://localhost:8080/api/episode/${episode?.id}/edit`,
         {
-          id: episode.id,
+          id: episode?.id,
           title: data.title,
           description,
           author: data.author,
           keywords: data.keywords,
           episodeNumber: data.episodeNumber,
-          url: episode.url,
+          url: episode?.url,
           file,
         },
         {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true,
         }
       )
       .then(() => {
@@ -100,17 +101,15 @@ const EpisodeEditBody = ({ episode }: { episode: Episode }) => {
   };
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <EpisodeForm
-        form={form}
-        episode={episode}
-        submitHandler={submitHandler}
-        fileUploadRef={fileUploadRef}
-        ctaText="Edit episode"
-        isEditing
-        deleteHandler={deleteHandler}
-      />
-    </Suspense>
+    <EpisodeForm
+      form={form}
+      episode={episode}
+      submitHandler={submitHandler}
+      fileUploadRef={fileUploadRef}
+      ctaText="Edit episode"
+      deleteHandler={deleteHandler}
+      isEditing
+    />
   );
 };
 

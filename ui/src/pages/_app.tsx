@@ -9,6 +9,9 @@ import { Poppins } from "next/font/google";
 import "../styles/globals.css";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { getCurrentUser } from "@/hooks/api/useUserQuery";
+import { useEffect } from "react";
+import { useUserStore } from "@/hooks/stores/userStore";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +21,20 @@ const font = Poppins({
 });
 
 const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
+  const userStore = useUserStore();
+
+  useEffect(() => {
+    const fn = async () => {
+      const currentUser = await getCurrentUser();
+
+      if (currentUser) {
+        userStore.setUser(currentUser);
+      }
+    };
+
+    fn();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <main className={font.className}>

@@ -63,34 +63,3 @@ func GetUser(id *string, db *sql.DB) (user User, e error) {
 
 	return u, nil
 }
-
-func GetEpisodes(id string, db *sql.DB) (episodes []Episode, e error) {
-	cmd := `SELECT id, title, url, publishDate, episodeNumber FROM Episodes WHERE user_id = $1`
-
-	rows, err := db.Query(cmd, id)
-
-	if err != nil {
-		fmt.Println(err.Error())
-		return nil, errors.New("Failed to get episodes.")
-	}
-
-	defer rows.Close()
-
-	var episode Episode
-
-	for rows.Next() {
-		err := rows.Scan(&episode.ID, &episode.Title, &episode.URL, &episode.PublishDate, &episode.EpisodeNumber)
-
-		if err != nil {
-			fmt.Println(err.Error())
-			return nil, errors.New("Failed to get episode.")
-
-		}
-
-		episodes = append(episodes, episode)
-
-	}
-
-	return episodes, nil
-
-}

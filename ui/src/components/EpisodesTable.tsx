@@ -13,10 +13,13 @@ import Link from "next/link";
 import { format, fromUnixTime } from "date-fns";
 
 interface Props {
-  episodes: Episode[];
+  episodes: Episode[] | undefined;
 }
 
 const EpisodesTable = ({ episodes }: Props) => {
+  if (!episodes?.length) {
+    return null;
+  }
   return (
     <Table>
       <TableHeader>

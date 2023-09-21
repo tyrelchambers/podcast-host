@@ -13,6 +13,8 @@ func CreateEpisode(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseMultipartForm(3 << 20)
 
+	userId := helpers.ReadCookieHandler(w, r)
+
 	var episode models.Episode
 
 	episode.Title = r.FormValue("title")
@@ -21,7 +23,7 @@ func CreateEpisode(w http.ResponseWriter, r *http.Request) {
 	episode.PublishDate = r.FormValue("publishDate")
 	episode.Author = r.FormValue("author")
 	episode.EpisodeNumber = r.FormValue("episodeNumber")
-	episode.UserID = "clmm7vbx30000bhtl852lbvqp"
+	episode.UserID = userId
 
 	uploadPath := helpers.WriteFileAndUpload(r)
 
@@ -37,13 +39,13 @@ func CreateEpisode(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetEpisode(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 
 	p := mux.Vars(r)
 
 	id := p["id"]
 
-	episode, err := models.GetEpisode(id, helpers.DbClient())
+	episode, err := models.GetEpisodeById(id, helpers.DbClient())
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -54,7 +56,8 @@ func GetEpisode(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateEpisode(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
@@ -62,6 +65,8 @@ func UpdateEpisode(w http.ResponseWriter, r *http.Request) {
 	}
 
 	r.ParseMultipartForm(3 << 20)
+
+	userId := helpers.ReadCookieHandler(w, r)
 
 	var episode models.Episode
 	var uploadPath = r.FormValue("url")
@@ -79,7 +84,7 @@ func UpdateEpisode(w http.ResponseWriter, r *http.Request) {
 	episode.PublishDate = r.FormValue("publishDate")
 	episode.Author = r.FormValue("author")
 	episode.EpisodeNumber = r.FormValue("episodeNumber")
-	episode.UserID = "clmm7vbx30000bhtl852lbvqp"
+	episode.UserID = userId
 	episode.ID = r.FormValue("id")
 	episode.URL = uploadPath
 
@@ -93,7 +98,6 @@ func UpdateEpisode(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteEpisode(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	p := mux.Vars(r)
 
