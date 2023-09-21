@@ -1,21 +1,23 @@
-import EpisodesTable from "@/components/EpisodesTable";
+import { Button } from "@/components/ui/button";
 import { useUserStore } from "@/hooks/stores/userStore";
-import { useUserQuery } from "@/hooks/api/useUserQuery";
 import Header from "@/layouts/Header";
-import axios from "axios";
-import { Suspense } from "react";
-import { useEpisodesQuery } from "@/hooks/api/useEpisodesQuery";
+import Link from "next/link";
 
 export default function Home() {
   const user = useUserStore((state) => state.user);
-  const episodes = useEpisodesQuery(user?.id);
 
   return (
     <main className="w-full">
       <Header />
 
-      <h1 className="h1">Episodes</h1>
-      <EpisodesTable episodes={episodes.data} />
+      <section className="max-w-screen-2xl mx-auto my-20 p-8 rounded-xl bg-card shadow-sm">
+        <header className="flex items-center justify-between gap-3">
+          <h1 className="h1">Shows</h1>
+          <Link href="/podcast/add">
+            <Button>Create show</Button>
+          </Link>
+        </header>
+      </section>
     </main>
   );
 }

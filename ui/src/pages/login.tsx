@@ -1,24 +1,24 @@
-"use client";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@mantine/core";
 import axios from "axios";
 import Link from "next/link";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const registerSchema = z.object({
+const loginSchema = z.object({
   email: z.string(),
   password: z.string(),
   confirmPassword: z.string(),
 });
 
-export default function Register() {
+const Login = () => {
   const form = useForm({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -26,7 +26,7 @@ export default function Register() {
     },
   });
 
-  const submitHandler = async (data: z.infer<typeof registerSchema>) => {
+  const submitHandler = async (data: z.infer<typeof loginSchema>) => {
     if (!form.getValues("confirmPassword")) {
       form.setError("confirmPassword", {
         message: "Please confirm your password",
@@ -55,7 +55,6 @@ export default function Register() {
         }
       });
   };
-
   return (
     <div>
       <Form {...form}>
@@ -122,15 +121,17 @@ export default function Register() {
 
           <div>
             <p className="text-muted font-light text-sm">
-              Already have an account?{" "}
-              <Link href="/login" className="text-blue-500 underline">
-                Login.
+              Haven&apos;t created an account yet?{" "}
+              <Link href="/register" className="text-blue-500 underline">
+                Sign up.
               </Link>
             </p>
           </div>
-          <Button type="submit">Sign up</Button>
+          <Button type="submit">Login</Button>
         </form>
       </Form>
     </div>
   );
-}
+};
+
+export default Login;

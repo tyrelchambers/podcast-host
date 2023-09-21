@@ -29,3 +29,9 @@ export const formSchema = z.object({
 });
 
 export type Episode = z.infer<typeof formSchema>;
+
+export type PodcastCategoryOption = {
+  value: string;
+  display: string;
+  subCategories?: PodcastCategoryOption[];
+};

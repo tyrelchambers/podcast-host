@@ -1,6 +1,5 @@
-import { Button } from "@/components/ui/button";
+import Avatar from "@/components/Avatar";
 import { useUserStore } from "@/hooks/stores/userStore";
-import Link from "next/link";
 import React from "react";
 
 const Header = () => {
@@ -8,12 +7,10 @@ const Header = () => {
 
   return (
     <header className="w-full flex justify-between p-4">
-      Header{" "}
-      <div className="flex items-center gap-4">
-        <p>{user?.email}</p>
-        <Link href="/episode/create">
-          <Button>Create episode</Button>
-        </Link>
+      <p>header</p>{" "}
+      <div className="flex items-center gap-2 bg-card p-2 rounded-full">
+        <Avatar src={user?.avatar} fallback="EM" />
+        <p className="card-foreground">{user?.email}</p>
       </div>
     </header>
   );

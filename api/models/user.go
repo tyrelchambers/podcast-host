@@ -57,8 +57,7 @@ func GetUser(id *string, db *sql.DB) (user User, e error) {
 	err := row.Scan(&u.ID, &u.Email)
 
 	if err != nil {
-		fmt.Println(err.Error())
-		return u, errors.New("Failed to get user.")
+		return u, errors.New("Failed to get user. Doesn't exist.")
 	}
 
 	return u, nil
