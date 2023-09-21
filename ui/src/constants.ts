@@ -1,6 +1,6 @@
-import { PodcastCategoryOption } from "./lib/types";
+import { SelectOptions } from "./lib/types";
 
-export const podcastCategoryOptions: PodcastCategoryOption[] = [
+export const podcastCategoryOptions: SelectOptions[] = [
   {
     value: "Arts",
     display: "Arts",

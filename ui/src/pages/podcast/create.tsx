@@ -1,5 +1,4 @@
 import Select from "@/components/Select";
-import SelectCategory from "@/components/SelectCategory";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormField, FormItem } from "@/components/ui/form";
@@ -12,7 +11,7 @@ import {
   timeZones,
 } from "@/constants";
 import Header from "@/layouts/Header";
-import { formatBytes } from "@/lib/utils";
+import { formatBytes, formatCategoryOptions } from "@/lib/utils";
 import { faCloudArrowUp, faImage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -110,55 +109,60 @@ const Create = () => {
                 )}
               />
 
-              <FormField
-                name="file"
-                render={({ field }) => (
-                  <FormItem>
-                    <Label htmlFor={field.name}>
-                      Thumbnail
-                      <div className="w-full border-2 border-dashed border-border p-4 rounded-md h-[100px] flex items-center px-10 mt-2">
-                        {!watchFileValue ? (
-                          <div className="flex items-center gap-4">
-                            <FontAwesomeIcon
-                              icon={faCloudArrowUp}
-                              className="text-2xl"
-                            />
-                            <div className="flex flex-col">
-                              <p className="font-semibold mb-1">
-                                Drop an image file or click to upload
-                              </p>
-                              <p className="text-muted-foreground text-sm font-light">
-                                Accepted filetypes - .jpeg, .png up to 15MB in
-                                size. 3000 x 3000 pixels recommended.
-                              </p>
+              <div className="flex gap-3">
+                <div className="w-40 h-40 rounded-lg bg-secondary flex items-center justify-center">
+                  <FontAwesomeIcon icon={faImage} className="text-3xl" />
+                </div>
+                <FormField
+                  name="file"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <Label htmlFor={field.name}>
+                        Thumbnail
+                        <div className="w-full border-2 border-dashed border-border p-4 rounded-md h-[100px] flex items-center px-10 mt-2">
+                          {!watchFileValue ? (
+                            <div className="flex items-center gap-4">
+                              <FontAwesomeIcon
+                                icon={faCloudArrowUp}
+                                className="text-2xl"
+                              />
+                              <div className="flex flex-col">
+                                <p className="font-semibold mb-1">
+                                  Drop an image file or click to upload
+                                </p>
+                                <p className="text-muted-foreground text-sm font-light">
+                                  Accepted filetypes - .jpeg, .png up to 15MB in
+                                  size. 3000 x 3000 pixels recommended.
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-4">
-                            <FontAwesomeIcon
-                              icon={faImage}
-                              className="text-3xl"
-                            />
-                            <div className="flex flex-col">
-                              <p className="font-semibold">{fileName}</p>
-                              <p className="text-muted-foreground text-sm">
-                                {fileSize} - {fileType}
-                              </p>
+                          ) : (
+                            <div className="flex items-center gap-4">
+                              <FontAwesomeIcon
+                                icon={faImage}
+                                className="text-3xl"
+                              />
+                              <div className="flex flex-col">
+                                <p className="font-semibold">{fileName}</p>
+                                <p className="text-muted-foreground text-sm">
+                                  {fileSize} - {fileType}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        )}
-                        <Input
-                          type="file"
-                          className="hidden"
-                          id={field.name}
-                          {...field}
-                          ref={fileUploadRef}
-                        />
-                      </div>
-                    </Label>
-                  </FormItem>
-                )}
-              />
+                          )}
+                          <Input
+                            type="file"
+                            className="hidden"
+                            id={field.name}
+                            {...field}
+                            ref={fileUploadRef}
+                          />
+                        </div>
+                      </Label>
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <div className="flex gap-3">
                 <FormField
@@ -166,9 +170,10 @@ const Create = () => {
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <Label htmlFor={field.name}>Primary category</Label>
-                      <SelectCategory
+                      <Select
                         placeholder="Primary category"
-                        options={podcastCategoryOptions}
+                        options={formatCategoryOptions(podcastCategoryOptions)}
+                        onValueChange={field.onChange}
                         {...field}
                       />
                     </FormItem>
@@ -180,9 +185,10 @@ const Create = () => {
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <Label htmlFor={field.name}>Secondary category</Label>
-                      <SelectCategory
+                      <Select
                         placeholder="Secondary category"
-                        options={podcastCategoryOptions}
+                        options={formatCategoryOptions(podcastCategoryOptions)}
+                        onValueChange={field.onChange}
                         {...field}
                       />
                     </FormItem>

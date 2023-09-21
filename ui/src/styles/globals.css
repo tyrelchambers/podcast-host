@@ -39,6 +39,7 @@
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
+    /* keep this as it is. It acts as a darkend background on a --card */
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
 
@@ -67,6 +68,6 @@
   }
 
   .wrapper {
-    @apply mx-auto max-w-screen-md;
+    @apply mx-auto max-w-screen-lg;
   }
 }
