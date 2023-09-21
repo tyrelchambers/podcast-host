@@ -29,10 +29,8 @@ func SessionHandler(w http.ResponseWriter, r *http.Request, values models.Cookie
 
 	defer store.StopCleanup(store.Cleanup(time.Minute * 5))
 
-	session, err := store.Get(r, "session-key")
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
+	session, _ := store.Get(r, "session-key")
+
 	// Set some session values.
 	session.Values["user_id"] = values.UserID
 	// session.Options.Domain = "localhost"
@@ -40,6 +38,7 @@ func SessionHandler(w http.ResponseWriter, r *http.Request, values models.Cookie
 	// Save it before we write to the response/return from the handler.
 	err = session.Save(r, w)
 	if err != nil {
+
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

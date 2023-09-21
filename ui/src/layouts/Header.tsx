@@ -8,10 +8,12 @@ const Header = () => {
   return (
     <header className="w-full flex justify-between p-4">
       <p>header</p>{" "}
-      <div className="flex items-center gap-2 bg-card p-2 rounded-full">
-        <Avatar src={user?.avatar} fallback="EM" />
-        <p className="card-foreground">{user?.email}</p>
-      </div>
+      {user && (
+        <div className="flex items-center gap-2 bg-card p-2 rounded-full">
+          <Avatar src={user?.avatar} fallback="EM" />
+          <p className="card-foreground">{user?.email}</p>
+        </div>
+      )}
     </header>
   );
 };

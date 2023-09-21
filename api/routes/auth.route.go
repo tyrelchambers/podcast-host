@@ -29,7 +29,6 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newUser, e := models.CreateUser(&u, db)
-	// session, e := models.CreateSession(newUser, db)
 
 	if e != nil {
 		http.Error(w, e.Error(), http.StatusInternalServerError)

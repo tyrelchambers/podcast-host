@@ -60,7 +60,7 @@ export default function Register() {
     <div>
       <Form {...form}>
         <form
-          className="flex flex-col gap-4 max-w-screen-sm mx-auto my-10"
+          className="flex flex-col gap-4 max-w-screen-sm mx-auto my-10 bg-card p-4 rounded-xl"
           onSubmit={form.handleSubmit(submitHandler)}
         >
           <FormField
@@ -121,7 +121,7 @@ export default function Register() {
           <Separator />
 
           <div>
-            <p className="text-muted font-light text-sm">
+            <p className="text-muted-foreground font-light text-sm">
               Already have an account?{" "}
               <Link href="/login" className="text-blue-500 underline">
                 Login.
