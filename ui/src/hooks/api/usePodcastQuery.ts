@@ -1,8 +1,8 @@
-import { Podcast } from "@/lib/types";
+import { PodcastSettings } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const getPodcastByName = async (name: string) => {
+const GetPodcastByNameWithEpisodes = async (name: string) => {
   const data = await axios.get(`http://localhost:8080/api/podcast/${name}`, {
     withCredentials: true,
   });
@@ -11,9 +11,9 @@ const getPodcastByName = async (name: string) => {
 };
 
 export const usePodcastQuery = (name: string) => {
-  const query = useQuery<Podcast>({
+  const query = useQuery<PodcastSettings>({
     queryKey: ["podcast", name],
-    queryFn: () => getPodcastByName(name),
+    queryFn: () => GetPodcastByNameWithEpisodes(name),
     enabled: !!name,
   });
 

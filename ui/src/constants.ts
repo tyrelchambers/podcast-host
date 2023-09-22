@@ -1,5 +1,8 @@
 import { SelectOptions } from "./lib/types";
 
+export const dashboardRoot = (route: string) =>
+  route.split("/")[1] + "/" + route.split("/")[2];
+
 export const podcastCategoryOptions: SelectOptions[] = [
   {
     value: "Arts",

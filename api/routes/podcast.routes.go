@@ -60,17 +60,62 @@ func GetUserPodcasts(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(podcasts)
 }
 
-func GetPodcast(w http.ResponseWriter, r *http.Request) {
+func GetPodcastSettings(w http.ResponseWriter, r *http.Request) {
+	type Body struct {
+		Podcast       model.Podcast `json:"podcast"`
+		LatestEpisode model.Episode `json:"latestEpisode"`
+	}
+
+	var rBody Body
+
 	userId := helpers.ReadCookieHandler(w, r)
 
 	name := mux.Vars(r)["name"]
 
-	podcast, err := models.GetPodcastByName(name, userId, helpers.DbClient())
+	podcast, err := models.GetPodcastByNameWithEpisodes(name, userId, helpers.DbClient())
+
+	latestEpisodeData, err := models.GetLatestEpisodeByPodcast(podcast.ID, helpers.DbClient())
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	json.NewEncoder(w).Encode(podcast)
+	rBody = Body{
+		Podcast:       podcast,
+		LatestEpisode: latestEpisodeData,
+	}
+
+	responseJSON, err := json.Marshal(&rBody)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(responseJSON)
+}
+
+func GetPodcastEpisodes(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	vars := mux.Vars(r)
+	pName := vars["name"]
+
+	podcast, err := models.GetPodcastIdFromName(pName, helpers.DbClient())
+
+	episodes, err := models.GetPodcastEpisodesById(podcast.ID, helpers.DbClient())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(episodes)
+
 }

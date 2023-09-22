@@ -94,7 +94,7 @@ func GetUsersPodcasts(userId string, db *sql.DB) ([]model.Podcast, error) {
 	return parsedPodcasts, nil
 }
 
-func GetPodcastByName(name string, userId string, db *sql.DB) (p model.Podcast, e error) {
+func GetPodcastByNameWithEpisodes(name string, userId string, db *sql.DB) (p model.Podcast, e error) {
 	var podcast model.Podcast
 	var episodeJSON []byte
 
@@ -153,5 +153,67 @@ func GetPodcastByName(name string, userId string, db *sql.DB) (p model.Podcast, 
 	}
 
 	return podcast, nil
+
+}
+
+func GetPodcastIdFromName(name string, db *sql.DB) (p model.Podcast, e error) {
+	var podcast model.Podcast
+
+	parsedName := strings.Replace(name, "-", " ", -1)
+
+	cmd := `SELECT id FROM Podcasts WHERE title = $1`
+
+	rows := db.QueryRow(cmd, parsedName)
+
+	err := rows.Scan(
+		&podcast.ID,
+	)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return podcast, err
+	}
+
+	return podcast, nil
+}
+
+func GetPodcastEpisodesById(id string, db *sql.DB) ([]model.Episode, error) {
+	var episodes []model.Episode
+
+	cmd := `SELECT id, title, description, url, keywords, publish_date, author, episode_number FROM Episodes WHERE podcast_id = $1`
+
+	rows, err := db.Query(cmd, id)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var episode model.Episode
+
+		err := rows.Scan(
+			&episode.ID,
+			&episode.Title,
+			&episode.Description,
+			&episode.URL,
+			&episode.Keywords,
+			&episode.PublishDate,
+			&episode.Author,
+			&episode.EpisodeNumber,
+		)
+
+		if err != nil {
+			fmt.Println(err.Error())
+			return nil, err
+		}
+
+		episodes = append(episodes, episode)
+
+	}
+
+	return episodes, nil
 
 }

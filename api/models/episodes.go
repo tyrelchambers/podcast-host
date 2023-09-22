@@ -28,7 +28,7 @@ func CreateEpisode(episode *model.Episode, db *sql.DB) (e error) {
 }
 
 func GetEpisodeById(id string, db *sql.DB) (episode model.Episode, e error) {
-	cmd := `SELECT id, title, description, url, user_id, keywords, publishDate, author, episodeNumber FROM Episodes WHERE id = $1`
+	cmd := `SELECT id, title, description, url, user_id, keywords, publishDate, author, episode_number FROM Episodes WHERE id = $1`
 
 	row := db.QueryRow(cmd, id)
 
@@ -48,7 +48,7 @@ func UpdateEpisode(episode model.Episode, db *sql.DB) (e error) {
 		return errors.New("Failed to update episode. Missing ID.")
 	}
 
-	cmd := `UPDATE Episodes SET title = $1, description = $2, url = $3, keywords = $5, author = $6, episodeNumber = $7 WHERE id = $8`
+	cmd := `UPDATE Episodes SET title = $1, description = $2, url = $3, keywords = $5, author = $6, episode_number = $7 WHERE id = $8`
 
 	res, err := db.Exec(cmd, episode.Title, episode.Description, episode.URL, episode.Keywords, episode.Author, episode.EpisodeNumber, episode.ID)
 
@@ -117,4 +117,19 @@ func GetEpisodes(id string, db *sql.DB) (episodes []model.Episode, e error) {
 
 	return episodes, nil
 
+}
+
+func GetLatestEpisodeByPodcast(podcastID string, db *sql.DB) (episode model.Episode, e error) {
+	cmd := `SELECT id, title, url, publish_date, episode_number FROM Episodes WHERE podcast_id = $1 ORDER BY publish_date DESC LIMIT 1`
+
+	row := db.QueryRow(cmd, podcastID)
+
+	err := row.Scan(&episode.ID, &episode.Title, &episode.URL, &episode.PublishDate, &episode.EpisodeNumber)
+
+	if err != nil {
+		println(err.Error())
+		return episode, errors.New("Failed to get latest episode.")
+	}
+
+	return episode, nil
 }

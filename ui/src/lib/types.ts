@@ -56,3 +56,8 @@ export interface Podcast {
   userID: string;
   episodes: Episode[];
 }
+
+export interface PodcastSettings {
+  podcast: Podcast;
+  latestEpisode: Episode;
+}
