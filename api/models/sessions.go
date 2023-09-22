@@ -1,6 +1,7 @@
 package models
 
 import (
+	"api/model"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -9,7 +10,7 @@ import (
 	"github.com/lucsky/cuid"
 )
 
-func CreateSession(user *User, db *sql.DB) (s Session, e error) {
+func CreateSession(user *model.User, db *sql.DB) (s model.Session, e error) {
 	cmd := `INSERT INTO Sessions (id, user_id, session_token, expires_at) VALUES ($1, $2, $3, $4) RETURNING *`
 	stmt, err := db.Prepare(cmd)
 
@@ -18,7 +19,7 @@ func CreateSession(user *User, db *sql.DB) (s Session, e error) {
 		return s, errors.New("Failed to create session.")
 	}
 
-	var session Session
+	var session model.Session
 
 	session_token := cuid.New()
 
@@ -35,8 +36,8 @@ func CreateSession(user *User, db *sql.DB) (s Session, e error) {
 	return session, nil
 }
 
-func GetSession(sessionToken string, db *sql.DB) (u User, e error) {
-	var session Session
+func GetSession(sessionToken string, db *sql.DB) (u model.User, e error) {
+	var session model.Session
 	cmd := `SELECT user_id FROM Sessions WHERE session_token = $1`
 
 	rows, err := db.Query(cmd, sessionToken)

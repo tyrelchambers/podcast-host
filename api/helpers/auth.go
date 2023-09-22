@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"api/models"
+	"api/model"
 	"fmt"
 	"log"
 	"net/http"
@@ -19,7 +19,7 @@ var hashKey = []byte("ikiQQVPZlgwH3J7c")
 var blockKey = []byte("ikiQQVPZlgwH3J7c")
 var s = securecookie.New(hashKey, blockKey)
 
-func SessionHandler(w http.ResponseWriter, r *http.Request, values models.Cookie) {
+func SessionHandler(w http.ResponseWriter, r *http.Request, values model.Cookie) {
 	store, err := pgstore.NewPGStore(DbUrl, []byte("secret-key"))
 
 	if err != nil {

@@ -2,6 +2,7 @@ package routes
 
 import (
 	"api/helpers"
+	"api/model"
 	"api/models"
 	"encoding/json"
 	"net/http"
@@ -15,7 +16,7 @@ func CreateEpisode(w http.ResponseWriter, r *http.Request) {
 
 	userId := helpers.ReadCookieHandler(w, r)
 
-	var episode models.Episode
+	var episode model.Episode
 
 	episode.Title = r.FormValue("title")
 	episode.Description = r.FormValue("description")
@@ -68,7 +69,7 @@ func UpdateEpisode(w http.ResponseWriter, r *http.Request) {
 
 	userId := helpers.ReadCookieHandler(w, r)
 
-	var episode models.Episode
+	var episode model.Episode
 	var uploadPath = r.FormValue("url")
 
 	_, _, noFile := r.FormFile("file")

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"api/model"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -8,7 +9,7 @@ import (
 	"github.com/lucsky/cuid"
 )
 
-func CreateEpisode(episode *Episode, db *sql.DB) (e error) {
+func CreateEpisode(episode *model.Episode, db *sql.DB) (e error) {
 	cmd := `INSERT INTO Episodes (id, title, description, url, keywords, publish_date, author, episode_number, podcast_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
 
 	id := cuid.New()
@@ -26,7 +27,7 @@ func CreateEpisode(episode *Episode, db *sql.DB) (e error) {
 
 }
 
-func GetEpisodeById(id string, db *sql.DB) (episode Episode, e error) {
+func GetEpisodeById(id string, db *sql.DB) (episode model.Episode, e error) {
 	cmd := `SELECT id, title, description, url, user_id, keywords, publishDate, author, episodeNumber FROM Episodes WHERE id = $1`
 
 	row := db.QueryRow(cmd, id)
@@ -41,7 +42,7 @@ func GetEpisodeById(id string, db *sql.DB) (episode Episode, e error) {
 	return episode, nil
 }
 
-func UpdateEpisode(episode Episode, db *sql.DB) (e error) {
+func UpdateEpisode(episode model.Episode, db *sql.DB) (e error) {
 
 	if episode.ID == "" {
 		return errors.New("Failed to update episode. Missing ID.")
@@ -87,7 +88,7 @@ func DeleteEpisode(id string, db *sql.DB) (e error) {
 	return
 }
 
-func GetEpisodes(id string, db *sql.DB) (episodes []Episode, e error) {
+func GetEpisodes(id string, db *sql.DB) (episodes []model.Episode, e error) {
 	cmd := `SELECT id, title, url, publishDate, episodeNumber FROM Episodes WHERE user_id = $1`
 
 	rows, err := db.Query(cmd, id)
@@ -99,7 +100,7 @@ func GetEpisodes(id string, db *sql.DB) (episodes []Episode, e error) {
 
 	defer rows.Close()
 
-	var episode Episode
+	var episode model.Episode
 
 	for rows.Next() {
 		err := rows.Scan(&episode.ID, &episode.Title, &episode.URL, &episode.PublishDate, &episode.EpisodeNumber)

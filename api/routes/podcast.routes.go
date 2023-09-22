@@ -2,6 +2,7 @@ package routes
 
 import (
 	"api/helpers"
+	"api/model"
 	"api/models"
 	"encoding/json"
 	"fmt"
@@ -13,7 +14,7 @@ import (
 func CreatePodcast(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(3 << 20)
 
-	var podcast models.Podcast
+	var podcast model.Podcast
 
 	userId := helpers.ReadCookieHandler(w, r)
 
@@ -64,7 +65,7 @@ func GetPodcast(w http.ResponseWriter, r *http.Request) {
 
 	name := mux.Vars(r)["name"]
 
-	podcast, err := models.GetPodcastaByName(name, userId, helpers.DbClient())
+	podcast, err := models.GetPodcastByName(name, userId, helpers.DbClient())
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

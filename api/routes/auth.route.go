@@ -2,6 +2,7 @@ package routes
 
 import (
 	"api/helpers"
+	"api/model"
 	"api/models"
 	"encoding/json"
 	"net/http"
@@ -17,7 +18,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	db := helpers.DbClient()
 
-	var u models.User
+	var u model.User
 
 	json.NewDecoder(r.Body).Decode(&u)
 
@@ -35,7 +36,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookieValues := models.Cookie{
+	cookieValues := model.Cookie{
 		UserID: newUser.ID,
 	}
 

@@ -1,3 +1,4 @@
+import { Podcast } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
@@ -10,9 +11,11 @@ const getPodcastByName = async (name: string) => {
 };
 
 export const usePodcastQuery = (name: string) => {
-  const query = useQuery({
+  const query = useQuery<Podcast>({
     queryKey: ["podcast", name],
     queryFn: () => getPodcastByName(name),
     enabled: !!name,
   });
+
+  return query;
 };

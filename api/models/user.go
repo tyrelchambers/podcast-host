@@ -1,6 +1,7 @@
 package models
 
 import (
+	"api/model"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -17,7 +18,7 @@ func CheckUserExists(email string, db *sql.DB) (userExists bool) {
 
 	row := db.QueryRow(cmd, email)
 
-	var user User
+	var user model.User
 
 	_ = row.Scan(&user.ID)
 
@@ -28,12 +29,12 @@ func CheckUserExists(email string, db *sql.DB) (userExists bool) {
 	return true
 }
 
-func CreateUser(user *User, db *sql.DB) (u *User, e error) {
+func CreateUser(user *model.User, db *sql.DB) (u *model.User, e error) {
 	stmt, _ := db.Prepare(`INSERT INTO Users (id, email, password) VALUES ($1, $2, $3) RETURNING id, email`)
 
 	id := cuid.New()
 
-	var newUser User
+	var newUser model.User
 
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 
@@ -48,8 +49,8 @@ func CreateUser(user *User, db *sql.DB) (u *User, e error) {
 	return &newUser, nil
 }
 
-func GetUser(id *string, db *sql.DB) (user User, e error) {
-	var u User
+func GetUser(id *string, db *sql.DB) (user model.User, e error) {
+	var u model.User
 	cmd := `SELECT id, email FROM Users WHERE id = $1`
 
 	row := db.QueryRow(cmd, *id)
