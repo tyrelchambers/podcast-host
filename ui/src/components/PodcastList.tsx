@@ -4,6 +4,8 @@ import ThumbnailPlaceholder from "./ThumbnailPlaceholder";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faListMusic } from "@fortawesome/pro-regular-svg-icons";
+import Link from "next/link";
+import { formatUrlFromTitle } from "@/lib/utils";
 interface Props {
   podcasts: Podcast[];
 }
@@ -16,7 +18,11 @@ const PodcastList = ({ podcasts }: Props) => {
   return (
     <div className="flex flex-col">
       {podcasts.map((podcast) => (
-        <div key={podcast.id} className="flex gap-6">
+        <Link
+          href={`/podcast/${formatUrlFromTitle(podcast.title)}`}
+          key={podcast.id}
+          className="flex gap-6"
+        >
           {podcast.thumbnail ? (
             <Image src={podcast.thumbnail} alt="" />
           ) : (
@@ -30,13 +36,13 @@ const PodcastList = ({ podcasts }: Props) => {
             </p>
 
             <footer className="flex gap-3">
-              <p>
+              <p className="flex gap-1 items-center text-muted-foreground text-sm font-light">
                 <FontAwesomeIcon icon={faListMusic} />
-                {podcast.episodes?.length}
+                {podcast.episodes?.length} episodes
               </p>
             </footer>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

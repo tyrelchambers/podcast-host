@@ -34,6 +34,7 @@ func main() {
 	r.HandleFunc("/api/user/{id}/podcasts", routes.GetUserPodcasts).Methods(http.MethodGet, http.MethodOptions)
 
 	r.HandleFunc("/api/podcast/create", routes.CreatePodcast).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/api/podcast/{name}", routes.GetPodcast).Methods(http.MethodGet, http.MethodOptions)
 
 	err := http.ListenAndServe(":8080", handlers.CORS(credentials, exposedHeaders, headers, origins)(r))
 

@@ -46,3 +46,7 @@ export const formatCategoryOptions = (options: SelectOptions[]) => {
 
   return arr;
 };
+
+export const formatUrlFromTitle = (title: string) => {
+  return title.toLowerCase().replace(/ /g, "-");
+};

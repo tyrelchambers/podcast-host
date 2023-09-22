@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/lucsky/cuid"
 )
@@ -130,4 +131,42 @@ func GetUsersPodcasts(userId string, db *sql.DB) ([]Podcast, error) {
 		return nil, err
 	}
 	return podcasts, nil
+}
+
+func GetPodcastaByName(name string, userId string, db *sql.DB) (Podcast, error) {
+	var podcast Podcast
+
+	parsedName := strings.Replace(name, "-", " ", -1)
+
+	cmd := `SELECT * FROM Podcasts WHERE title = $1 AND user_id = $2`
+
+	row := db.QueryRow(cmd, parsedName, userId)
+
+	err := row.Scan(
+		&podcast.ID,
+		&podcast.Title,
+		&podcast.Description,
+		&podcast.Thumbnail,
+		&podcast.ExplicitContent,
+		&podcast.PrimaryCategory,
+		&podcast.SecondaryCategory,
+		&podcast.Author,
+		&podcast.Copyright,
+		&podcast.Keywords,
+		&podcast.Website,
+		&podcast.Language,
+		&podcast.Timezone,
+		&podcast.ShowOwner,
+		&podcast.OwnerEmail,
+		&podcast.DisplayEmailInRSS,
+		&podcast.UserID,
+	)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return podcast, err
+	}
+
+	return podcast, nil
+
 }

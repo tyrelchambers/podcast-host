@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func CreatePodcast(w http.ResponseWriter, r *http.Request) {
@@ -55,4 +57,19 @@ func GetUserPodcasts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(podcasts)
+}
+
+func GetPodcast(w http.ResponseWriter, r *http.Request) {
+	userId := helpers.ReadCookieHandler(w, r)
+
+	name := mux.Vars(r)["name"]
+
+	podcast, err := models.GetPodcastaByName(name, userId, helpers.DbClient())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(podcast)
 }
