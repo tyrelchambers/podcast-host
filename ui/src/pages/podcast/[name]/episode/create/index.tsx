@@ -9,6 +9,10 @@ import { formSchema } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import axios from "axios";
+import DashLayout from "@/layouts/dashboard/DashLayout";
+import DashHeader from "@/layouts/dashboard/DashHeader";
+import { dashboardRoot } from "@/constants";
+import { useRouter } from "next/router";
 
 const MAX_FILE_SIZE = 500000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -19,6 +23,7 @@ const ACCEPTED_IMAGE_TYPES = [
 ];
 
 const Page = () => {
+  const router = useRouter();
   const fileUploadRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -86,15 +91,20 @@ const Page = () => {
   };
 
   return (
-    <main className="w-full p-4">
+    <DashLayout
+      leftCol={<DashHeader rootPath={dashboardRoot(router.asPath)} />}
+      rightCol={<p>hey over here</p>}
+    >
       <h1 className="h1">Create your episode</h1>
-      <EpisodeForm
-        form={form}
-        fileUploadRef={fileUploadRef}
-        submitHandler={submitHandler}
-        ctaText="Create episode"
-      />
-    </main>
+      <section className="section-card">
+        <EpisodeForm
+          form={form}
+          fileUploadRef={fileUploadRef}
+          submitHandler={submitHandler}
+          ctaText="Create episode"
+        />
+      </section>
+    </DashLayout>
   );
 };
 

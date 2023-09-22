@@ -34,7 +34,7 @@ const Podcast = () => {
     >
       <h1 className="h1">{podcast?.title}</h1>
 
-      <section className="border-border border-[1px] p-4 rounded-xl mt-6">
+      <section className="section-card">
         <Link href={`/podcast/${nameParam}/episode/create`}>
           <Button>Create episode</Button>
         </Link>
