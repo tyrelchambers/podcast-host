@@ -1,4 +1,5 @@
 import Select from "@/components/Select";
+import ThumbnailPlaceholder from "@/components/ThumbnailPlaceholder";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormField, FormItem } from "@/components/ui/form";
@@ -15,6 +16,7 @@ import { formatBytes, formatCategoryOptions } from "@/lib/utils";
 import { faCloudArrowUp, faImage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -27,14 +29,14 @@ const formSchema = z.object({
   primaryCategory: z.string().optional(),
   secondaryCategory: z.string().optional(),
   author: z.string(),
-  copyright: z.string(),
-  keywords: z.string(),
-  website: z.string(),
-  language: z.string(),
-  timezone: z.string(),
+  copyright: z.string().optional(),
+  keywords: z.string().optional(),
+  website: z.string().optional(),
+  language: z.string().optional(),
+  timezone: z.string().optional(),
   showOwner: z.string(),
-  ownerEmail: z.string(),
-  displayEmailInRssFeed: z.boolean(),
+  ownerEmail: z.string().optional(),
+  displayEmailInRssFeed: z.boolean().optional(),
 });
 
 const Create = () => {
@@ -69,8 +71,10 @@ const Create = () => {
 
   const watchFileValue = form.watch("thumbnail");
 
-  const submit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+  const submit = async (data: z.infer<typeof formSchema>) => {
+    await axios.postForm("http://localhost:8080/api/podcast/create", data, {
+      withCredentials: true,
+    });
   };
 
   return (
@@ -90,7 +94,9 @@ const Create = () => {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <Label htmlFor={field.name}>Podcast title</Label>
+                    <Label htmlFor={field.name} required>
+                      Podcast title
+                    </Label>
                     <Input placeholder="The title of your podcast" {...field} />
                   </FormItem>
                 )}
@@ -100,7 +106,9 @@ const Create = () => {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <Label htmlFor={field.name}>Description</Label>
+                    <Label htmlFor={field.name} required>
+                      Description
+                    </Label>
                     <Textarea
                       placeholder="What is your show about? Try to keep it short and sweet. Maybe a few sentences to be safe."
                       {...field}
@@ -110,9 +118,7 @@ const Create = () => {
               />
 
               <div className="flex gap-3">
-                <div className="w-40 h-40 rounded-lg bg-secondary flex items-center justify-center">
-                  <FontAwesomeIcon icon={faImage} className="text-3xl" />
-                </div>
+                <ThumbnailPlaceholder />
                 <FormField
                   name="file"
                   render={({ field }) => (
@@ -200,7 +206,9 @@ const Create = () => {
                 name="author"
                 render={({ field }) => (
                   <FormItem>
-                    <Label htmlFor={field.name}>Author</Label>
+                    <Label htmlFor={field.name} required>
+                      Author
+                    </Label>
                     <Input placeholder="Your name" {...field} />
                   </FormItem>
                 )}
@@ -284,7 +292,9 @@ const Create = () => {
                   name="ownerEmail"
                   render={({ field }) => (
                     <FormItem>
-                      <Label htmlFor={field.name}>Owner email</Label>
+                      <Label htmlFor={field.name} required>
+                        Owner email
+                      </Label>
                       <Input placeholder="email@example.com" {...field} />
                     </FormItem>
                   )}

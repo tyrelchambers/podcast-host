@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type User struct {
 	ID       string `json:"id"`
@@ -21,6 +23,27 @@ type Episode struct {
 	EpisodeNumber string `json:"episodeNumber"`
 }
 
+type Podcast struct {
+	ID                string    `json:"id"`
+	Title             string    `json:"title"`
+	Description       string    `json:"description"`
+	Thumbnail         string    `json:"thumbnail"`
+	ExplicitContent   bool      `json:"explicit_content"`
+	PrimaryCategory   string    `json:"primary_category"`
+	SecondaryCategory string    `json:"secondary_category"`
+	Author            string    `json:"author"`
+	Copyright         string    `json:"copyright"`
+	Keywords          string    `json:"keywords"`
+	Website           string    `json:"website"`
+	Language          string    `json:"language"`
+	Timezone          string    `json:"timezone"`
+	ShowOwner         string    `json:"show_owner"`
+	OwnerEmail        string    `json:"owner_email"`
+	DisplayEmailInRSS bool      `json:"display_email_in_rss"`
+	UserID            string    `json:"user_id"`
+	Episodes          []Episode `json:"episodes"`
+}
+
 type Session struct {
 	ID           string    `json:"id"`
 	UserID       string    `json:"user_id"`
@@ -33,4 +56,9 @@ type Cookie struct {
 	SessionToken string
 	ExpiresAt    time.Time
 	Email        string
+}
+
+type PodcastEpisode struct {
+	Podcast
+	Episodes []Episode
 }

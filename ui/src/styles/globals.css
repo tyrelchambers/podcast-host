@@ -70,4 +70,9 @@
   .wrapper {
     @apply mx-auto max-w-screen-lg;
   }
+
+  .required:after {
+    content: " *";
+    color: red;
+  }
 }

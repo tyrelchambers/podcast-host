@@ -9,11 +9,11 @@ import (
 )
 
 func CreateEpisode(episode *Episode, db *sql.DB) (e error) {
-	cmd := `INSERT INTO Episodes (id, title, description, url, user_id, keywords, publishDate, author, episodeNumber) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+	cmd := `INSERT INTO Episodes (id, title, description, url, keywords, publish_date, author, episode_number, podcast_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
 
 	id := cuid.New()
 
-	_, err := db.Exec(cmd, id, episode.Title, episode.Description, episode.URL, episode.UserID, episode.Keywords, episode.PublishDate, episode.Author, episode.EpisodeNumber)
+	_, err := db.Exec(cmd, id, episode.Title, episode.Description, episode.URL, episode.Keywords, episode.PublishDate, episode.Author, episode.EpisodeNumber, "clmtrjw3x000107tlo3xs68ed")
 
 	if err != nil {
 		println(err.Error())
@@ -47,9 +47,9 @@ func UpdateEpisode(episode Episode, db *sql.DB) (e error) {
 		return errors.New("Failed to update episode. Missing ID.")
 	}
 
-	cmd := `UPDATE Episodes SET title = $1, description = $2, url = $3, user_id = $4, keywords = $5, author = $6, episodeNumber = $7 WHERE id = $8`
+	cmd := `UPDATE Episodes SET title = $1, description = $2, url = $3, keywords = $5, author = $6, episodeNumber = $7 WHERE id = $8`
 
-	res, err := db.Exec(cmd, episode.Title, episode.Description, episode.URL, episode.UserID, episode.Keywords, episode.Author, episode.EpisodeNumber, episode.ID)
+	res, err := db.Exec(cmd, episode.Title, episode.Description, episode.URL, episode.Keywords, episode.Author, episode.EpisodeNumber, episode.ID)
 
 	if err != nil {
 		println(err.Error())

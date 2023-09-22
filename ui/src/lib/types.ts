@@ -35,3 +35,24 @@ export type SelectOptions = {
   display: string;
   subCategories?: SelectOptions[];
 };
+
+export interface Podcast {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail: string | undefined;
+  explicitContent: boolean | undefined;
+  primaryCategory: string | undefined;
+  secondaryCategory: string | undefined;
+  author: string;
+  copyright: string | undefined;
+  keywords: string | undefined;
+  website: string | undefined;
+  language: string | undefined;
+  timezone: string | undefined;
+  showOwner: string | undefined;
+  ownerEmail: string;
+  displayEmailInRSS: boolean | undefined;
+  userID: string;
+  episodes: Episode[];
+}

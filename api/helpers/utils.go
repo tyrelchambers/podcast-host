@@ -135,15 +135,15 @@ func WriteFileAndUpload(r *http.Request) (uploadPath string) {
 	}
 	defer newFile.Close()
 
+	fullPath := fmt.Sprintf("%s%s", BUNNY_URL_BASE, uploadPathUrl)
+
+	fmt.Printf("Successfully Uploaded File to Bunny: %d\n", resp.Status)
+
 	removeErr := os.Remove(tempFile.Name())
 
 	if removeErr != nil {
 		log.Fatal(removeErr)
 	}
-
-	fullPath := fmt.Sprintf("%s%s", BUNNY_URL_BASE, uploadPathUrl)
-
-	fmt.Printf("Successfully Uploaded File to Bunny: %d\n", resp.Status)
 
 	return fullPath
 }
