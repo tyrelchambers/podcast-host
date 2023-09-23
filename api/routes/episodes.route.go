@@ -5,12 +5,14 @@ import (
 	"api/model"
 	"api/models"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
 func CreateEpisode(w http.ResponseWriter, r *http.Request) {
+	e := make(chan error)
 
 	r.ParseMultipartForm(3 << 20)
 
@@ -26,9 +28,11 @@ func CreateEpisode(w http.ResponseWriter, r *http.Request) {
 	episode.EpisodeNumber = r.FormValue("episodeNumber")
 	episode.UserID = userId
 
-	uploadPath := helpers.WriteFileAndUpload(r)
+	go helpers.WriteFileAndUpload(r, e)
 
-	episode.URL = uploadPath
+	uploadPathUrl := fmt.Sprintf("/some-id/%s", "audio")
+
+	episode.URL = fmt.Sprintf("%s%s", helpers.BUNNY_URL_BASE, uploadPathUrl)
 
 	newEpError := models.CreateEpisode(&episode, helpers.DbClient())
 
@@ -37,6 +41,7 @@ func CreateEpisode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	close(e)
 }
 
 func GetEpisode(w http.ResponseWriter, r *http.Request) {
@@ -65,6 +70,8 @@ func UpdateEpisode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	e := make(chan error)
+
 	r.ParseMultipartForm(3 << 20)
 
 	userId := helpers.ReadCookieHandler(w, r)
@@ -75,7 +82,7 @@ func UpdateEpisode(w http.ResponseWriter, r *http.Request) {
 	_, _, noFile := r.FormFile("file")
 
 	if noFile == nil {
-		p := helpers.WriteFileAndUpload(r)
+		p := helpers.WriteFileAndUpload(r, e)
 		uploadPath = p
 	}
 
@@ -95,6 +102,8 @@ func UpdateEpisode(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	close(e)
 
 }
 

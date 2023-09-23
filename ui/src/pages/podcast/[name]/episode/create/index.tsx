@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 
 import EpisodeForm, { SubmitHandlerProps } from "@/components/edit/EpisodeForm";
 import { getUnixTime } from "date-fns";
@@ -24,6 +24,8 @@ const ACCEPTED_IMAGE_TYPES = [
 
 const Page = () => {
   const router = useRouter();
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
   const fileUploadRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -51,10 +53,6 @@ const Page = () => {
     const file = fileUploadRef.current?.files?.[0];
     const description = JSON.stringify(editor?.getJSON()) ?? "";
 
-    if (!file) {
-      return;
-    }
-
     const getDate = () => {
       if (whenToPublish === "schedule") {
         const date = getUnixTime(
@@ -74,7 +72,7 @@ const Page = () => {
       return getUnixTime(publishDate);
     };
 
-    formData.append("file", file);
+    formData.append("file", file ?? "");
     formData.append("title", data.title);
     formData.append("description", description);
     formData.append("author", data.author);
@@ -82,11 +80,24 @@ const Page = () => {
     formData.append("episodeNumber", data.episodeNumber.toString());
     formData.append("publishDate", getDate().toString());
 
+    setIsUploading(true);
+
     await axios.post("http://localhost:8080/api/episode/create", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
       withCredentials: true,
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total) {
+          setUploadProgress(
+            Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          );
+        }
+
+        if (progressEvent.progress === 1) {
+          setIsUploading(false);
+        }
+      },
     });
   };
 
@@ -102,6 +113,8 @@ const Page = () => {
           fileUploadRef={fileUploadRef}
           submitHandler={submitHandler}
           ctaText="Create episode"
+          isUploading={isUploading}
+          uploadProgress={uploadProgress}
         />
       </section>
     </DashLayout>

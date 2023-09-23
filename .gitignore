@@ -1,3 +1,5 @@
 .env
 .DS_Store
 api/tmp
+api/routes/episodes.route.go
+api/temp-files/

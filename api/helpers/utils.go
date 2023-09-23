@@ -8,7 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
+	"time"
 
 	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/joho/godotenv"
@@ -59,6 +59,7 @@ func BunnyClient() *bunnystorage.Client {
 		Key:         readWriteKey,
 		ReadOnlyKey: readOnlyKey,
 		Endpoint:    bunnystorage.EndpointNewYork,
+		Timeout:     5 * time.Minute,
 	}
 
 	client, err := bunnystorage.NewClient(cfg)
@@ -90,13 +91,14 @@ func GoDotEnvVariable(key string) string {
 	return env
 }
 
-func WriteFileAndUpload(r *http.Request) (uploadPath string) {
+func WriteFileAndUpload(r *http.Request, uErr chan error) (uploadPath string) {
 	client := BunnyClient()
 
 	file, _, err := r.FormFile("file")
 	if err != nil {
 		fmt.Println("Error Retrieving the File")
 		fmt.Println(err)
+		uErr <- err
 		return
 	}
 
@@ -105,6 +107,8 @@ func WriteFileAndUpload(r *http.Request) (uploadPath string) {
 	tempFile, err := os.CreateTemp("temp-files", "upload-*.mp3")
 	if err != nil {
 		fmt.Println(err)
+		uErr <- err
+		return
 	}
 	defer tempFile.Close()
 
@@ -123,15 +127,19 @@ func WriteFileAndUpload(r *http.Request) (uploadPath string) {
 
 	if err != nil {
 		log.Fatal(err)
+		uErr <- err
+		return
 	}
 
 	// some-ID will be ID of podcast
-	uploadPathUrl := fmt.Sprintf("/some-id/%s", strings.Split(tempFile.Name(), "/")[1])
+	uploadPathUrl := fmt.Sprintf("some-id/%s", "audio")
 
 	resp, err := client.Upload(context.Background(), "/", uploadPathUrl, "", newFile)
 
 	if err != nil {
 		log.Fatal(err)
+		uErr <- err
+		return
 	}
 	defer newFile.Close()
 
@@ -143,6 +151,8 @@ func WriteFileAndUpload(r *http.Request) (uploadPath string) {
 
 	if removeErr != nil {
 		log.Fatal(removeErr)
+		uErr <- err
+		return
 	}
 
 	return fullPath
