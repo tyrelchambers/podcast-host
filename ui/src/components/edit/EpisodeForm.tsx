@@ -154,8 +154,8 @@ const EpisodeForm = ({
                             {fileSize} - {fileType}
                           </p>
                         </div>
-                        {isUploading && (
-                          <Badge variant="secondary">{uploadProgress}%</Badge>
+                        {uploadProgress > 0 && (
+                          <Badge variant="default">{uploadProgress}%</Badge>
                         )}
                       </div>
                     )}
