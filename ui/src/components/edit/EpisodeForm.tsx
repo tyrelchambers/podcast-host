@@ -317,7 +317,9 @@ const NoFileSelected = () => (
   <div className="flex items-center gap-4">
     <FontAwesomeIcon icon={faCloudArrowUp} className="text-2xl" />
     <div className="flex flex-col">
-      <p className="font-semibold">Drop an audio file or click to upload</p>
+      <p className="font-semibold mb-2">
+        Drop an audio file or click to upload
+      </p>
       <p className="text-muted-foreground text-sm">
         Accepted filetypes - .mp3, .m4a, .aiff, .wav, .mp4, or .mov up to 1000MB
         in size.

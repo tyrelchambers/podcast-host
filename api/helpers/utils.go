@@ -9,10 +9,12 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"regexp"
 	"time"
 
 	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/joho/godotenv"
+	ffmpeg_go "github.com/u2takey/ffmpeg-go"
 )
 
 const (
@@ -97,7 +99,7 @@ func WriteFileAndUpload(r *http.Request, uErr chan error, file multipart.File, p
 
 	defer file.Close()
 
-	tempFile, err := os.CreateTemp("temp-files", "*.mp3")
+	tempFile, err := os.CreateTemp("temp-files", fmt.Sprintf("*.%s", file_name))
 
 	if err != nil {
 		fmt.Println(err)
@@ -115,6 +117,21 @@ func WriteFileAndUpload(r *http.Request, uErr chan error, file multipart.File, p
 	// write this byte array to our temporary file
 	tempFile.Write(fileBytes)
 
+	iTemp := tempFile.Name()
+	oFile := ConvertToMp3(file_name)
+
+	fmt.Println(iTemp, oFile)
+
+	err = ffmpeg_go.Input(iTemp).
+		Output("./temp-files/formatted/" + oFile).
+		OverWriteOutput().ErrorToStdOut().Run()
+
+	if err != nil {
+		fmt.Println(err)
+		uErr <- err
+		return
+	}
+
 	godotenv.Load(".env")
 
 	newFile, err := os.Open(tempFile.Name())
@@ -124,8 +141,10 @@ func WriteFileAndUpload(r *http.Request, uErr chan error, file multipart.File, p
 		uErr <- err
 		return
 	}
+	//  TODO: GET FFMPEG AND UPLOAD TO WORK WITH TRANSCODE
+	fmt.Println(tempFile.Name())
 
-	resp, err := client.Upload(context.Background(), "/"+podcast_id, file_name, "", newFile)
+	resp, err := client.Upload(context.Background(), "/"+podcast_id, ConvertToMp3(file_name), "", newFile)
 
 	if err != nil {
 		log.Fatal(err)
@@ -137,6 +156,7 @@ func WriteFileAndUpload(r *http.Request, uErr chan error, file multipart.File, p
 	fmt.Printf("Successfully Uploaded File to Bunny: %d\n", resp.Status)
 
 	removeErr := os.Remove(tempFile.Name())
+	removeErr = os.Remove("./temp-files/formatted/" + oFile)
 
 	if removeErr != nil {
 		log.Fatal(removeErr)
@@ -144,4 +164,10 @@ func WriteFileAndUpload(r *http.Request, uErr chan error, file multipart.File, p
 		return
 	}
 
+}
+
+func ConvertToMp3(filename string) string {
+	re := regexp.MustCompile(`\.[^./]+$`)
+	mp3Filename := re.ReplaceAllString(filename, ".mp3")
+	return mp3Filename
 }

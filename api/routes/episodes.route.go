@@ -36,6 +36,8 @@ func CreateEpisode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println(header.Filename)
+
 	defer file.Close()
 
 	uploadPathUrl := fmt.Sprintf("/%s/%s.mp3", pId, header.Filename)
