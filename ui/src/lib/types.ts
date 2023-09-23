@@ -62,3 +62,7 @@ export interface PodcastSettings {
   podcast: Podcast;
   latestEpisode: Episode;
 }
+
+export interface MiscInfo {
+  nextEpisodeNumber: number;
+}

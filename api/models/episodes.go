@@ -133,3 +133,22 @@ func GetLatestEpisodeByPodcast(podcastID string, db *sql.DB) (episode model.Epis
 
 	return episode, nil
 }
+
+func GetEpisodesCountAndIncrement(podcastId string, db *sql.DB) (c int, e error) {
+
+	fmt.Println(podcastId)
+	cmd := `SELECT COUNT(*) FROM Episodes WHERE podcast_id = $1`
+
+	row := db.QueryRow(cmd, podcastId)
+
+	var count int
+
+	err := row.Scan(&count)
+
+	if err != nil {
+		println(err.Error())
+		return count, errors.New("Failed to get episode count.")
+	}
+
+	return count, nil
+}

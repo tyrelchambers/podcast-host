@@ -14,6 +14,7 @@ import DashHeader from "@/layouts/dashboard/DashHeader";
 import { dashboardRoot } from "@/constants";
 import { useRouter } from "next/router";
 import { usePodcastStore } from "@/hooks/stores/podcastStore";
+import { useMiscInfoQuery } from "@/hooks/api/useMiscInfoQuery";
 
 const MAX_FILE_SIZE = 500000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -30,6 +31,7 @@ const Page = () => {
   const fileUploadRef = useRef<HTMLInputElement>(null);
   const podcastStore = usePodcastStore();
   const podcast = podcastStore.findPodcast(router.query.name as string);
+  const miscInfo = useMiscInfoQuery(podcast?.id ?? "");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -38,7 +40,7 @@ const Page = () => {
       title: "",
       author: "",
       keywords: "",
-      episodeNumber: "0",
+      episodeNumber: String(miscInfo.data?.nextEpisodeNumber) ?? "1",
       description: "",
       scheduleHour: "12",
       scheduleMinute: "00",
@@ -117,7 +119,6 @@ const Page = () => {
           fileUploadRef={fileUploadRef}
           submitHandler={submitHandler}
           ctaText="Create episode"
-          isUploading={isUploading}
           uploadProgress={uploadProgress}
         />
       </section>

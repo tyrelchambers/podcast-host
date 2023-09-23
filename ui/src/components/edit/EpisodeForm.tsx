@@ -48,7 +48,6 @@ interface Props {
   isEditing?: boolean;
   deleteHandler?: (id: string | undefined) => void;
   uploadProgress: number;
-  isUploading: boolean;
 }
 
 const EpisodeForm = ({
@@ -60,7 +59,6 @@ const EpisodeForm = ({
   isEditing = false,
   deleteHandler,
   uploadProgress,
-  isUploading,
 }: Props) => {
   if (isEditing && !deleteHandler) {
     throw new Error("EpisodeForm must have a deleteHandler");
