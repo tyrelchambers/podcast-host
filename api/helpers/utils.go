@@ -120,8 +120,6 @@ func WriteFileAndUpload(r *http.Request, uErr chan error, file multipart.File, p
 	iTemp := tempFile.Name()
 	oFile := ConvertToMp3(file_name)
 
-	fmt.Println(iTemp, oFile)
-
 	err = ffmpeg_go.Input(iTemp).
 		Output("./temp-files/formatted/" + oFile).
 		OverWriteOutput().ErrorToStdOut().Run()
@@ -141,8 +139,6 @@ func WriteFileAndUpload(r *http.Request, uErr chan error, file multipart.File, p
 		uErr <- err
 		return
 	}
-	//  TODO: GET FFMPEG AND UPLOAD TO WORK WITH TRANSCODE
-	fmt.Println(tempFile.Name())
 
 	resp, err := client.Upload(context.Background(), "/"+podcast_id, ConvertToMp3(file_name), "", newFile)
 
