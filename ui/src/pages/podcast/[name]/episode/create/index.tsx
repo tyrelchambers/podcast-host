@@ -13,6 +13,7 @@ import DashLayout from "@/layouts/dashboard/DashLayout";
 import DashHeader from "@/layouts/dashboard/DashHeader";
 import { dashboardRoot } from "@/constants";
 import { useRouter } from "next/router";
+import { usePodcastStore } from "@/hooks/stores/podcastStore";
 
 const MAX_FILE_SIZE = 500000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -27,6 +28,8 @@ const Page = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const fileUploadRef = useRef<HTMLInputElement>(null);
+  const podcastStore = usePodcastStore();
+  const podcast = podcastStore.findPodcast(router.query.name as string);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,7 +52,6 @@ const Page = () => {
     publishDate,
     whenToPublish,
   }: SubmitHandlerProps) => {
-    const formData = new FormData();
     const file = fileUploadRef.current?.files?.[0];
     const description = JSON.stringify(editor?.getJSON()) ?? "";
 
@@ -72,33 +74,35 @@ const Page = () => {
       return getUnixTime(publishDate);
     };
 
-    formData.append("file", file ?? "");
-    formData.append("title", data.title);
-    formData.append("description", description);
-    formData.append("author", data.author);
-    formData.append("keywords", data.keywords);
-    formData.append("episodeNumber", data.episodeNumber.toString());
-    formData.append("publishDate", getDate().toString());
-
     setIsUploading(true);
 
-    await axios.post("http://localhost:8080/api/episode/create", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
+    await axios.postForm(
+      "http://localhost:8080/api/episode/create",
+      {
+        file: file ?? "",
+        title: data.title,
+        description: description,
+        author: data.author,
+        keywords: data.keywords,
+        episodeNumber: data.episodeNumber,
+        publishDate: getDate().toString(),
+        podcastId: podcast?.id ?? "",
       },
-      withCredentials: true,
-      onUploadProgress: (progressEvent) => {
-        if (progressEvent.total) {
-          setUploadProgress(
-            Math.round((progressEvent.loaded * 100) / progressEvent.total)
-          );
-        }
+      {
+        withCredentials: true,
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            setUploadProgress(
+              Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            );
+          }
 
-        if (progressEvent.progress === 1) {
-          setIsUploading(false);
-        }
-      },
-    });
+          if (progressEvent.progress === 1) {
+            setIsUploading(false);
+          }
+        },
+      }
+    );
   };
 
   return (

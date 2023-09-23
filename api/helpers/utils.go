@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"time"
@@ -91,20 +92,13 @@ func GoDotEnvVariable(key string) string {
 	return env
 }
 
-func WriteFileAndUpload(r *http.Request, uErr chan error) (uploadPath string) {
+func WriteFileAndUpload(r *http.Request, uErr chan error, file multipart.File, podcast_id string, file_name string) {
 	client := BunnyClient()
-
-	file, _, err := r.FormFile("file")
-	if err != nil {
-		fmt.Println("Error Retrieving the File")
-		fmt.Println(err)
-		uErr <- err
-		return
-	}
 
 	defer file.Close()
 
-	tempFile, err := os.CreateTemp("temp-files", "upload-*.mp3")
+	tempFile, err := os.CreateTemp("temp-files", "*.mp3")
+
 	if err != nil {
 		fmt.Println(err)
 		uErr <- err
@@ -131,10 +125,7 @@ func WriteFileAndUpload(r *http.Request, uErr chan error) (uploadPath string) {
 		return
 	}
 
-	// some-ID will be ID of podcast
-	uploadPathUrl := fmt.Sprintf("some-id/%s", "audio")
-
-	resp, err := client.Upload(context.Background(), "/", uploadPathUrl, "", newFile)
+	resp, err := client.Upload(context.Background(), "/"+podcast_id, file_name, "", newFile)
 
 	if err != nil {
 		log.Fatal(err)
@@ -142,8 +133,6 @@ func WriteFileAndUpload(r *http.Request, uErr chan error) (uploadPath string) {
 		return
 	}
 	defer newFile.Close()
-
-	fullPath := fmt.Sprintf("%s%s", BUNNY_URL_BASE, uploadPathUrl)
 
 	fmt.Printf("Successfully Uploaded File to Bunny: %d\n", resp.Status)
 
@@ -155,5 +144,4 @@ func WriteFileAndUpload(r *http.Request, uErr chan error) (uploadPath string) {
 		return
 	}
 
-	return fullPath
 }

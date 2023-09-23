@@ -28,11 +28,11 @@ func CreateEpisode(episode *model.Episode, db *sql.DB) (e error) {
 }
 
 func GetEpisodeById(id string, db *sql.DB) (episode model.Episode, e error) {
-	cmd := `SELECT id, title, description, url, user_id, keywords, publishDate, author, episode_number FROM Episodes WHERE id = $1`
+	cmd := `SELECT id, title, description, url, podcast_id, keywords, publishDate, author, episode_number FROM Episodes WHERE id = $1`
 
 	row := db.QueryRow(cmd, id)
 
-	err := row.Scan(&episode.ID, &episode.Title, &episode.Description, &episode.URL, &episode.UserID, &episode.Keywords, &episode.PublishDate, &episode.Author, &episode.EpisodeNumber)
+	err := row.Scan(&episode.ID, &episode.Title, &episode.Description, &episode.URL, &episode.PodcastId, &episode.Keywords, &episode.PublishDate, &episode.Author, &episode.EpisodeNumber)
 
 	if err != nil {
 		println(err.Error())

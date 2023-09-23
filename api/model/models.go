@@ -16,7 +16,7 @@ type Episode struct {
 	Description   string `json:"description"`
 	URL           string `json:"url"`
 	Image         string `json:"image"`
-	UserID        string `json:"user_id"`
+	PodcastId     string `json:"podcast_id"`
 	Keywords      string `json:"keywords"`
 	PublishDate   string `json:"publishDate"`
 	Author        string `json:"author"`

@@ -30,6 +30,7 @@ import { z } from "zod";
 import { format, fromUnixTime } from "date-fns";
 import clsx from "clsx";
 import { Badge } from "../ui/badge";
+import { usePodcastStore } from "@/hooks/stores/podcastStore";
 
 export interface SubmitHandlerProps {
   data: z.infer<typeof formSchema> | Episode;

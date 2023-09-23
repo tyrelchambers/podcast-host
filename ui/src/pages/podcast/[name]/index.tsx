@@ -23,10 +23,6 @@ const Podcast = () => {
   const podcast = data?.podcast;
   const latestEpisodes = data?.latestEpisode;
 
-  console.log(podcast);
-
-  // const latestUpload = podcast?.episodes[podcast.episodes?.length - 1];
-
   return (
     <DashLayout
       leftCol={<DashHeader rootPath={router.asPath} />}

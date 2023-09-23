@@ -51,8 +51,6 @@ interface Props {
   rootPath: string;
 }
 const DashNav = ({ rootPath }: Props) => {
-  console.log(rootPath);
-
   return (
     <nav className="my-10">
       <ul className="flex flex-col gap-4">

@@ -26,6 +26,7 @@ export const formSchema = z.object({
   scheduleMeridiem: z.string().optional(),
   publishDate: z.string().optional(),
   url: z.string().optional(),
+  podcastId: z.string().optional(),
 });
 
 export type Episode = z.infer<typeof formSchema>;
