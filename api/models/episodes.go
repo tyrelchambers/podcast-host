@@ -126,7 +126,7 @@ func GetLatestEpisodeByPodcast(podcastID string, db *sql.DB) (episode model.Epis
 
 	err := row.Scan(&episode.ID, &episode.Title, &episode.URL, &episode.PublishDate, &episode.EpisodeNumber)
 
-	if err != nil {
+	if err.Error() != "sql: no rows in result set" {
 		println(err.Error())
 		return episode, errors.New("Failed to get latest episode.")
 	}
@@ -136,7 +136,6 @@ func GetLatestEpisodeByPodcast(podcastID string, db *sql.DB) (episode model.Epis
 
 func GetEpisodesCountAndIncrement(podcastId string, db *sql.DB) (c int, e error) {
 
-	fmt.Println(podcastId)
 	cmd := `SELECT COUNT(*) FROM Episodes WHERE podcast_id = $1`
 
 	row := db.QueryRow(cmd, podcastId)

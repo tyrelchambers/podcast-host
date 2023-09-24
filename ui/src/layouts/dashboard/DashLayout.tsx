@@ -1,6 +1,7 @@
 import { usePodcastsQuery } from "@/hooks/api/usePodcastsQuery";
 import { usePodcastStore } from "@/hooks/stores/podcastStore";
 import { useUserStore } from "@/hooks/stores/userStore";
+import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 
 interface Props {
@@ -9,22 +10,17 @@ interface Props {
   rightCol: React.ReactNode;
 }
 const DashLayout = ({ leftCol, children, rightCol }: Props) => {
-  const user = useUserStore((state) => state.user);
+  const router = useRouter();
+  const nameParam = router.query.name;
 
-  const podcastsQuery = usePodcastsQuery(user?.id);
   const podcastStore = usePodcastStore();
-  const podcasts = podcastsQuery.data;
 
-  useEffect(() => {
-    if (podcasts && podcasts.length) {
-      podcastStore.setPodcasts(podcasts);
-    }
-  }, [podcasts]);
-
-  return (
-    <div className="dash-layout-grid h-screen">
+  return !nameParam ? null : (
+    <div className="dash-layout-grid h-screen ">
       <div className=" w-[250px] h-full">{leftCol}</div>
-      <section className="flex-1 h-full p-8">{children}</section>
+      <section className="flex-1 h-full p-8 overflow-y-auto">
+        {children}
+      </section>
       <div className=" w-[250px] h-full">{rightCol}</div>
     </div>
   );

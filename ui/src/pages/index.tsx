@@ -1,14 +1,13 @@
 import PodcastList from "@/components/PodcastList";
 import { Button } from "@/components/ui/button";
 import { usePodcastsQuery } from "@/hooks/api/usePodcastsQuery";
-import { usePodcastStore } from "@/hooks/stores/podcastStore";
 import { useUserStore } from "@/hooks/stores/userStore";
 import Header from "@/layouts/Header";
 import Link from "next/link";
-import { useEffect } from "react";
 
 export default function Home() {
   const user = useUserStore((state) => state.user);
+  const podcastsQuery = usePodcastsQuery(user?.id);
 
   return (
     <main className="w-full">
@@ -22,7 +21,7 @@ export default function Home() {
           </Link>
         </header>
         <section className="p-8 rounded-xl bg-card shadow-sm flex flex-col">
-          {/* <PodcastList podcasts={podcasts} /> */}
+          <PodcastList podcasts={podcastsQuery.data} />
         </section>
       </section>
     </main>

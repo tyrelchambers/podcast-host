@@ -5,6 +5,7 @@ import (
 	"api/model"
 	"api/models"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -73,6 +74,8 @@ func GetPodcastSettings(w http.ResponseWriter, r *http.Request) {
 	userId := helpers.ReadCookieHandler(w, r)
 
 	name := mux.Vars(r)["name"]
+
+	fmt.Println(name)
 
 	podcast, err := models.GetPodcastByNameWithEpisodes(name, userId, helpers.DbClient())
 

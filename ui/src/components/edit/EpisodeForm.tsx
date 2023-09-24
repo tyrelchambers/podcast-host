@@ -31,6 +31,7 @@ import { format, fromUnixTime } from "date-fns";
 import clsx from "clsx";
 import { Badge } from "../ui/badge";
 import { usePodcastStore } from "@/hooks/stores/podcastStore";
+import { Checkbox } from "../ui/checkbox";
 
 export interface SubmitHandlerProps {
   data: z.infer<typeof formSchema> | Episode;
@@ -105,8 +106,8 @@ const EpisodeForm = ({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(submit, console.log)}
-        className="flex flex-col gap-4 "
+        onSubmit={form.handleSubmit(submit)}
+        className="flex flex-col gap-6 "
       >
         <FormField
           name="title"
@@ -231,7 +232,7 @@ const EpisodeForm = ({
         <FormField
           name="episodeNumber"
           render={({ field }) => (
-            <FormItem className="w-full">
+            <FormItem>
               <Label htmlFor="episodeNumber">Episode number</Label>
               <Input defaultValue={0} type="number" {...field} />
               {errors.episodeNumber && (
@@ -290,7 +291,27 @@ const EpisodeForm = ({
             )}
           </>
         )}
-
+        <FormField
+          name="explicitContent"
+          render={({ field }) => (
+            <FormItem>
+              <div className="items-top flex space-x-2">
+                <Checkbox id={field.name} />
+                <div className="grid gap-1.5 leading-none">
+                  <label
+                    htmlFor={field.name}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Episode contains explicit content
+                  </label>
+                  <p className="text-sm font-light text-muted-foreground">
+                    This will mark your episode as containing explicit content.
+                  </p>
+                </div>
+              </div>
+            </FormItem>
+          )}
+        />
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? <FontAwesomeIcon icon={faSpinner} spin /> : ctaText}
         </Button>

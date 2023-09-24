@@ -9,19 +9,25 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { usePodcastQuery } from "@/hooks/api/usePodcastQuery";
+import { usePodcastStore } from "@/hooks/stores/podcastStore";
 import DashHeader from "@/layouts/dashboard/DashHeader";
 import DashLayout from "@/layouts/dashboard/DashLayout";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 
 const Podcast = () => {
   const router = useRouter();
   const nameParam = router.query.name;
   const { data } = usePodcastQuery(nameParam as string);
+  const podcastStore = usePodcastStore();
 
   const podcast = data?.podcast;
   const latestEpisodes = data?.latestEpisode;
+
+  useEffect(() => {
+    podcastStore.setActivePodcast(nameParam as string);
+  }, [nameParam]);
 
   return (
     <DashLayout

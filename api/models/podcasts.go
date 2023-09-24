@@ -100,6 +100,7 @@ func GetPodcastByNameWithEpisodes(name string, userId string, db *sql.DB) (p mod
 
 	parsedName := strings.Replace(name, "-", " ", -1)
 
+	fmt.Println(parsedName)
 	cmd := `
 		SELECT
 			Podcasts.*,

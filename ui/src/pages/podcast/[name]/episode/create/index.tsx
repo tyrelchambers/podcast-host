@@ -45,6 +45,7 @@ const Page = () => {
       scheduleHour: "12",
       scheduleMinute: "00",
       scheduleMeridiem: "PM",
+      explicitContent: false,
     },
   });
 

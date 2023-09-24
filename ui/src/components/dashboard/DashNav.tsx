@@ -20,27 +20,27 @@ interface Route {
 const routes = (rootPath: string): Route[] => {
   return [
     {
-      path: `/${rootPath}/`,
+      path: `${rootPath}/`,
       icon: faGrid2,
       label: "Overview",
     },
     {
-      path: `/${rootPath}/episodes`,
+      path: `${rootPath}/episodes`,
       icon: faListMusic,
       label: "Episodes",
     },
     {
-      path: `/${rootPath}/distribution`,
+      path: `${rootPath}/distribution`,
       icon: faTruckFast,
       label: "Distribution",
     },
     {
-      path: `/${rootPath}/analytics`,
+      path: `${rootPath}/analytics`,
       icon: faChartMixed,
       label: "Analytics",
     },
     {
-      path: `/${rootPath}/settings`,
+      path: `${rootPath}/settings`,
       icon: faCog,
       label: "Settings",
     },
@@ -52,7 +52,7 @@ interface Props {
 }
 const DashNav = ({ rootPath }: Props) => {
   return (
-    <nav className="my-10">
+    <nav className="my-10 flex-1">
       <ul className="flex flex-col gap-4">
         {routes(rootPath).map((route) => (
           <li key={route.path} className="hover:text-accent transition-all">

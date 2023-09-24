@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const getPodcasts = async (id: string | undefined) => {
+export const getPodcasts = async (id: string | undefined) => {
   const data = await axios
     .get(`http://localhost:8080/api/user/${id}/podcasts`, {
       withCredentials: true,

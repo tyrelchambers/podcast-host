@@ -6,6 +6,8 @@ interface Props {
   podcasts: Map<string, Podcast>;
   setPodcasts: (podcasts: Podcast[]) => void;
   findPodcast: (title: string | undefined) => Podcast | undefined;
+  activePodcast: Podcast | undefined;
+  setActivePodcast: (podcast: string) => void;
 }
 
 export const usePodcastStore = create<Props>((set, get) => ({
@@ -21,5 +23,10 @@ export const usePodcastStore = create<Props>((set, get) => ({
   },
   findPodcast: (title: string | undefined) => {
     return title ? get().podcasts.get(formatTitleFromUrl(title)) : undefined;
+  },
+  activePodcast: undefined,
+  setActivePodcast: (title: string) => {
+    const findPodcast = get().findPodcast(title);
+    set({ activePodcast: findPodcast });
   },
 }));

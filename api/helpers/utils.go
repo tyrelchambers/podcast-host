@@ -34,6 +34,8 @@ var DbUrl = fmt.Sprintf("host=%s port=%d user=%s "+
 func DbClient() *sql.DB {
 
 	db, err := sql.Open("postgres", DbUrl)
+	db.SetConnMaxLifetime(10 * time.Minute)
+	db.SetMaxOpenConns(5)
 	if err != nil {
 		panic(err)
 	}

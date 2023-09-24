@@ -2,7 +2,7 @@ import { User } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export const getCurrentUser = async () => {
+export const getCurrentUser = async (): Promise<User> => {
   const data = await axios
     .get("http://localhost:8080/api/user/me", {
       withCredentials: true,
