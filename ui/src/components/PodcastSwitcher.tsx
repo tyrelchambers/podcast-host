@@ -21,7 +21,11 @@ import { Podcast } from "@/lib/types";
 import { usePodcastStore } from "@/hooks/stores/podcastStore";
 import { useRouter } from "next/router";
 
-export function PodcastSwitcher({ activePodcast }: { activePodcast: Podcast }) {
+export function PodcastSwitcher({
+  activePodcast,
+}: {
+  activePodcast: Podcast | undefined;
+}) {
   const router = useRouter();
   const podcastState = usePodcastStore((state) => state.podcasts);
   const [open, setOpen] = React.useState(false);
