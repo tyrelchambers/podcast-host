@@ -11,7 +11,6 @@ import { z } from "zod";
 import axios from "axios";
 import DashLayout from "@/layouts/dashboard/DashLayout";
 import DashHeader from "@/layouts/dashboard/DashHeader";
-import { dashboardRoot } from "@/constants";
 import { useRouter } from "next/router";
 import { usePodcastStore } from "@/hooks/stores/podcastStore";
 import { useMiscInfoQuery } from "@/hooks/api/useMiscInfoQuery";
