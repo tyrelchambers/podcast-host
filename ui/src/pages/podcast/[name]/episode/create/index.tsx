@@ -27,10 +27,9 @@ const ACCEPTED_IMAGE_TYPES = [
 const Page = () => {
   const router = useRouter();
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
   const fileUploadRef = useRef<HTMLInputElement>(null);
   const podcastStore = usePodcastStore();
-  const podcast = podcastStore.findPodcast(router.query.name as string);
+  const podcast = podcastStore.activePodcast;
   const miscInfo = useMiscInfoQuery(podcast?.id ?? "");
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -40,7 +39,9 @@ const Page = () => {
       title: "",
       author: "",
       keywords: "",
-      episodeNumber: String(miscInfo.data?.nextEpisodeNumber) ?? "1",
+      episodeNumber: miscInfo.data?.nextEpisodeNumber
+        ? String(miscInfo.data?.nextEpisodeNumber)
+        : "1",
       description: "",
       scheduleHour: "12",
       scheduleMinute: "00",
@@ -77,8 +78,6 @@ const Page = () => {
       return getUnixTime(publishDate);
     };
 
-    setIsUploading(true);
-
     await axios.postForm(
       "http://localhost:8080/api/episode/create",
       {
@@ -99,10 +98,6 @@ const Page = () => {
               Math.round((progressEvent.loaded * 100) / progressEvent.total)
             );
           }
-
-          if (progressEvent.progress === 1) {
-            setIsUploading(false);
-          }
         },
       }
     );
@@ -110,7 +105,7 @@ const Page = () => {
 
   return (
     <DashLayout
-      leftCol={<DashHeader rootPath={dashboardRoot(router.asPath)} />}
+      leftCol={<DashHeader rootPath={router.query.name as string} />}
       rightCol={<p>hey over here</p>}
     >
       <h1 className="h1">Create your episode</h1>

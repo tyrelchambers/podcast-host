@@ -14,7 +14,7 @@ func CreateEpisode(episode *model.Episode, db *sql.DB) (e error) {
 
 	id := cuid.New()
 
-	_, err := db.Exec(cmd, id, episode.Title, episode.Description, episode.URL, episode.Keywords, episode.PublishDate, episode.Author, episode.EpisodeNumber, "clmtrjw3x000107tlo3xs68ed")
+	_, err := db.Exec(cmd, id, episode.Title, episode.Description, episode.URL, episode.Keywords, episode.PublishDate, episode.Author, episode.EpisodeNumber, episode.PodcastId)
 
 	if err != nil {
 		println(err.Error())
@@ -124,12 +124,7 @@ func GetLatestEpisodeByPodcast(podcastID string, db *sql.DB) (episode model.Epis
 
 	row := db.QueryRow(cmd, podcastID)
 
-	err := row.Scan(&episode.ID, &episode.Title, &episode.URL, &episode.PublishDate, &episode.EpisodeNumber)
-
-	if err.Error() != "sql: no rows in result set" {
-		println(err.Error())
-		return episode, errors.New("Failed to get latest episode.")
-	}
+	row.Scan(&episode.ID, &episode.Title, &episode.URL, &episode.PublishDate, &episode.EpisodeNumber)
 
 	return episode, nil
 }

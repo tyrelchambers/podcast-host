@@ -31,7 +31,7 @@ const Podcast = () => {
 
   return (
     <DashLayout
-      leftCol={<DashHeader rootPath={router.asPath} />}
+      leftCol={<DashHeader rootPath={router.query.name as string} />}
       rightCol={<p>hey over here</p>}
     >
       <h1 className="h1">{podcast?.title}</h1>

@@ -18,7 +18,7 @@ const Episodes = () => {
 
   return (
     <DashLayout
-      leftCol={<DashHeader rootPath={dashboardRoot(router.asPath)} />}
+      leftCol={<DashHeader rootPath={router.query.name as string} />}
       rightCol={<p>hey over here</p>}
     >
       <h1 className="h1">Episodes</h1>

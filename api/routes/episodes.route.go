@@ -28,6 +28,8 @@ func CreateEpisode(w http.ResponseWriter, r *http.Request) {
 	episode.EpisodeNumber = r.FormValue("episodeNumber")
 	episode.PodcastId = pId
 
+	fmt.Println(episode)
+
 	file, header, err := r.FormFile("file")
 
 	if err != nil {
@@ -35,8 +37,6 @@ func CreateEpisode(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-
-	fmt.Println(header.Filename)
 
 	defer file.Close()
 

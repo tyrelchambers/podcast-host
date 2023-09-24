@@ -13,8 +13,6 @@ const DashLayout = ({ leftCol, children, rightCol }: Props) => {
   const router = useRouter();
   const nameParam = router.query.name;
 
-  const podcastStore = usePodcastStore();
-
   return !nameParam ? null : (
     <div className="dash-layout-grid h-screen ">
       <div className=" w-[250px] h-full">{leftCol}</div>

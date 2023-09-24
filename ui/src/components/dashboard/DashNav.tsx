@@ -17,30 +17,30 @@ interface Route {
   label: string;
 }
 
-const routes = (rootPath: string): Route[] => {
+const routes = (name: string): Route[] => {
   return [
     {
-      path: `${rootPath}/`,
+      path: `/podcast/${name}/`,
       icon: faGrid2,
       label: "Overview",
     },
     {
-      path: `${rootPath}/episodes`,
+      path: `/podcast/${name}/episodes`,
       icon: faListMusic,
       label: "Episodes",
     },
     {
-      path: `${rootPath}/distribution`,
+      path: `/podcast/${name}/distribution`,
       icon: faTruckFast,
       label: "Distribution",
     },
     {
-      path: `${rootPath}/analytics`,
+      path: `/podcast/${name}/analytics`,
       icon: faChartMixed,
       label: "Analytics",
     },
     {
-      path: `${rootPath}/settings`,
+      path: `/podcast/${name}/settings`,
       icon: faCog,
       label: "Settings",
     },
