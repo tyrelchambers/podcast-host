@@ -1,6 +1,6 @@
 "use client";
 import { Episode, formSchema } from "@/lib/types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, FormField, FormItem } from "../ui/form";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -19,6 +19,7 @@ import { formatBytes } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheckCircle,
+  faCircleExclamation,
   faCloudArrowUp,
   faMusic,
   faSpinner,
@@ -32,6 +33,10 @@ import clsx from "clsx";
 import { Badge } from "../ui/badge";
 import { usePodcastStore } from "@/hooks/stores/podcastStore";
 import { Checkbox } from "../ui/checkbox";
+
+// 1GB in bytes
+const MAX_FILE_SIZE = 1073741824;
+const ACCEPTED_FILE_TYPES = ["audio/mpeg", "audio/ogg", "audio/wav"];
 
 export interface SubmitHandlerProps {
   data: z.infer<typeof formSchema> | Episode;
@@ -65,6 +70,7 @@ const EpisodeForm = ({
     throw new Error("EpisodeForm must have a deleteHandler");
   }
 
+  const [uploadError, setUploadError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const editor = useEditor({
     extensions: [
@@ -86,6 +92,16 @@ const EpisodeForm = ({
   const [publishDate, setPublishDate] = useState<Date>(new Date(Date.now()));
 
   // const [changePublishDate, setChangePublishDate] = useState(false);
+
+  useEffect(() => {
+    if (fileUploadRef.current && fileUploadRef.current?.files) {
+      if (fileUploadRef.current?.files[0]?.size > MAX_FILE_SIZE) {
+        setUploadError("File size must be less than 1GB");
+      } else {
+        setUploadError("");
+      }
+    }
+  }, [fileUploadRef.current]);
 
   const fileName = fileUploadRef.current?.files?.[0]?.name;
   const fileSize = fileUploadRef.current?.files?.[0]?.size
@@ -141,17 +157,26 @@ const EpisodeForm = ({
               <Label htmlFor={field.name}>
                 Upload new audio file
                 <div className="relative">
-                  <div className="w-full z-10 relative border-2 border-dashed border-border p-4 rounded-md h-[100px] flex items-center px-10 mt-2">
+                  <div className="w-full z-10 relative border-2 border-dashed border-border p-4 rounded-md h-[100px] flex items-center px-10 mt-2 hover:border-primary transition-all">
                     {!watchFileValue ? (
                       <NoFileSelected />
                     ) : (
                       <div className="flex items-center gap-4 z-0 w-full">
                         <FontAwesomeIcon icon={faMusic} className="text-3xl" />
                         <div className="flex flex-col flex-1">
-                          <p className="font-semibold">{fileName}</p>
-                          <p className="text-muted-foreground text-sm">
+                          <p className="font-medium mb-2">{fileName}</p>
+                          <p className="text-muted-foreground text-sm font-light">
                             {fileSize} - {fileType}
                           </p>
+                          {uploadError && (
+                            <Badge
+                              variant="destructive"
+                              className="font-light w-fit flex gap-2 mt-2"
+                            >
+                              <FontAwesomeIcon icon={faCircleExclamation} />
+                              {uploadError}
+                            </Badge>
+                          )}
                         </div>
                         {uploadProgress > 0 && (
                           <Badge variant="default">{uploadProgress}%</Badge>
@@ -161,6 +186,7 @@ const EpisodeForm = ({
                     <Input
                       type="file"
                       className="hidden"
+                      accept={ACCEPTED_FILE_TYPES.join(",")}
                       id={field.name}
                       {...field}
                       ref={fileUploadRef}
@@ -336,12 +362,10 @@ const NoFileSelected = () => (
   <div className="flex items-center gap-4">
     <FontAwesomeIcon icon={faCloudArrowUp} className="text-2xl" />
     <div className="flex flex-col">
-      <p className="font-semibold mb-2">
-        Drop an audio file or click to upload
-      </p>
-      <p className="text-muted-foreground text-sm">
-        Accepted filetypes - .mp3, .m4a, .aiff, .wav, .mp4, or .mov up to 1000MB
-        in size.
+      <p className="font-medium mb-2">Drop an audio file or click to upload</p>
+      <p className="text-muted-foreground text-sm font-light">
+        Accepted file types - .mp3, .m4a, .aiff, .wav, .mp4 up to 1000MB in
+        size.
       </p>
     </div>
   </div>

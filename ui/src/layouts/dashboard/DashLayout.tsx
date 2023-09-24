@@ -1,6 +1,3 @@
-import { usePodcastsQuery } from "@/hooks/api/usePodcastsQuery";
-import { usePodcastStore } from "@/hooks/stores/podcastStore";
-import { useUserStore } from "@/hooks/stores/userStore";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 
@@ -14,12 +11,14 @@ const DashLayout = ({ leftCol, children, rightCol }: Props) => {
   const nameParam = router.query.name;
 
   return !nameParam ? null : (
-    <div className="dash-layout-grid h-screen ">
-      <div className=" w-[250px] h-full">{leftCol}</div>
+    <div className="dash-layout-grid ">
+      <div className=" w-[250px] h-screen sticky top-0 bottom-0">{leftCol}</div>
       <section className="flex-1 h-full p-8 overflow-y-auto">
         {children}
       </section>
-      <div className=" w-[250px] h-full">{rightCol}</div>
+      <div className=" w-[250px] h-screen sticky top-0 bottom-0">
+        {rightCol}
+      </div>
     </div>
   );
 };
