@@ -119,10 +119,7 @@ const EpisodeForm = ({
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(submit)}
-        className="flex flex-col gap-6 "
-      >
+      <form className="flex flex-col gap-6 ">
         <FormField
           name="title"
           render={({ field }) => (
@@ -336,7 +333,11 @@ const EpisodeForm = ({
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          onClick={() => submit(form.getValues())}
+          disabled={isSubmitting}
+        >
           {isSubmitting ? <FontAwesomeIcon icon={faSpinner} spin /> : ctaText}
         </Button>
         {isEditing ? (
@@ -354,9 +355,15 @@ const EpisodeForm = ({
           <div className="flex justify-end">
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               className="w-fit"
-              onClick={() => deleteHandler?.(episode?.id)}
+              disabled={isSubmitting}
+              onClick={() =>
+                submit({
+                  ...form.getValues(),
+                  draft: true,
+                })
+              }
             >
               Save as draft
             </Button>

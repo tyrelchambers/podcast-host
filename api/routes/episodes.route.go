@@ -27,24 +27,19 @@ func CreateEpisode(w http.ResponseWriter, r *http.Request) {
 	episode.Author = r.FormValue("author")
 	episode.EpisodeNumber = r.FormValue("episodeNumber")
 	episode.PodcastId = pId
+	episode.Draft = r.FormValue("draft") == "true"
 
-	fmt.Println(episode)
+	file, header, _ := r.FormFile("file")
 
-	file, header, err := r.FormFile("file")
+	if file != nil {
+		defer file.Close()
 
-	if err != nil {
-		fmt.Println("Error Retrieving the File")
-		fmt.Println(err)
-		return
+		uploadPathUrl := fmt.Sprintf("/%s/%s.mp3", pId, header.Filename)
+
+		go helpers.WriteFileAndUpload(r, e, file, pId, header.Filename)
+
+		episode.URL = fmt.Sprintf("%s%s", helpers.BUNNY_URL_BASE, uploadPathUrl)
 	}
-
-	defer file.Close()
-
-	uploadPathUrl := fmt.Sprintf("/%s/%s.mp3", pId, header.Filename)
-
-	go helpers.WriteFileAndUpload(r, e, file, pId, header.Filename)
-
-	episode.URL = fmt.Sprintf("%s%s", helpers.BUNNY_URL_BASE, uploadPathUrl)
 
 	newEpError := models.CreateEpisode(&episode, helpers.DbClient())
 

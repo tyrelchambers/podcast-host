@@ -5,8 +5,6 @@ import (
 	"api/models"
 	"encoding/json"
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 func GetCurrentUser(w http.ResponseWriter, r *http.Request) {
@@ -29,22 +27,4 @@ func GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(user)
 
-}
-
-func GetUserEpisodes(w http.ResponseWriter, r *http.Request) {
-
-	vars := mux.Vars(r)
-
-	id := vars["id"]
-
-	db := helpers.DbClient()
-
-	episodes, err := models.GetEpisodes(id, db)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	json.NewEncoder(w).Encode(episodes)
 }

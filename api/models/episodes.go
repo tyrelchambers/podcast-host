@@ -10,11 +10,11 @@ import (
 )
 
 func CreateEpisode(episode *model.Episode, db *sql.DB) (e error) {
-	cmd := `INSERT INTO Episodes (id, title, description, url, keywords, publish_date, author, episode_number, podcast_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+	cmd := `INSERT INTO Episodes (id, title, description, url, keywords, publish_date, author, episode_number, podcast_id,draft) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
 	id := cuid.New()
 
-	_, err := db.Exec(cmd, id, episode.Title, episode.Description, episode.URL, episode.Keywords, episode.PublishDate, episode.Author, episode.EpisodeNumber, episode.PodcastId)
+	_, err := db.Exec(cmd, id, episode.Title, episode.Description, episode.URL, episode.Keywords, episode.PublishDate, episode.Author, episode.EpisodeNumber, episode.PodcastId, episode.Draft)
 
 	if err != nil {
 		println(err.Error())
@@ -86,37 +86,6 @@ func DeleteEpisode(id string, db *sql.DB) (e error) {
 
 	fmt.Printf("SUCCESS: deleted %d episode\n", count)
 	return
-}
-
-func GetEpisodes(id string, db *sql.DB) (episodes []model.Episode, e error) {
-	cmd := `SELECT id, title, url, publishDate, episodeNumber FROM Episodes WHERE user_id = $1`
-
-	rows, err := db.Query(cmd, id)
-
-	if err != nil {
-		fmt.Println(err.Error())
-		return nil, errors.New("Failed to get episodes.")
-	}
-
-	defer rows.Close()
-
-	var episode model.Episode
-
-	for rows.Next() {
-		err := rows.Scan(&episode.ID, &episode.Title, &episode.URL, &episode.PublishDate, &episode.EpisodeNumber)
-
-		if err != nil {
-			fmt.Println(err.Error())
-			return nil, errors.New("Failed to get episode.")
-
-		}
-
-		episodes = append(episodes, episode)
-
-	}
-
-	return episodes, nil
-
 }
 
 func GetLatestEpisodeByPodcast(podcastID string, db *sql.DB) (episode model.Episode, e error) {

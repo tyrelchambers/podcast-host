@@ -28,6 +28,7 @@ export const formSchema = z.object({
   url: z.string().optional(),
   podcastId: z.string().optional(),
   explicitContent: z.boolean().optional(),
+  draft: z.boolean(),
 });
 
 export type Episode = z.infer<typeof formSchema>;

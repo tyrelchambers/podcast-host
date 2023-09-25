@@ -23,8 +23,6 @@ const Page = () => {
   const podcast = podcastStore.activePodcast;
   const miscInfo = useMiscInfoQuery(podcast?.id ?? "");
 
-  console.log(miscInfo);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     values: {
@@ -39,6 +37,7 @@ const Page = () => {
       keywords: "",
       author: "",
       title: "",
+      draft: false,
     },
   });
 
@@ -81,11 +80,12 @@ const Page = () => {
         episodeNumber: data.episodeNumber,
         publishDate: getDate().toString(),
         podcastId: podcast?.id ?? "",
+        draft: data.draft,
       },
       {
         withCredentials: true,
         onUploadProgress: (progressEvent) => {
-          if (progressEvent.total) {
+          if (file && progressEvent.total) {
             setUploadProgress(
               Math.round((progressEvent.loaded * 100) / progressEvent.total)
             );

@@ -48,7 +48,11 @@ const EpisodesTable = ({ episodes }: Props) => {
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <Badge>Published</Badge>
+                  {!episode.draft ? (
+                    <Badge>Published</Badge>
+                  ) : (
+                    <Badge variant="secondary">Draft</Badge>
+                  )}
                 </TableCell>
                 <TableCell className="text-right text-muted-foreground font-light">
                   {format(

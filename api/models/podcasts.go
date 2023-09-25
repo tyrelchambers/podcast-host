@@ -181,7 +181,7 @@ func GetPodcastIdFromName(name string, db *sql.DB) (p model.Podcast, e error) {
 func GetPodcastEpisodesById(id string, db *sql.DB) ([]model.Episode, error) {
 	var episodes []model.Episode
 
-	cmd := `SELECT id, title, description, url, keywords, publish_date, author, episode_number FROM Episodes WHERE podcast_id = $1`
+	cmd := `SELECT id, title, description, url, keywords, publish_date, author, episode_number, draft FROM Episodes WHERE podcast_id = $1`
 
 	rows, err := db.Query(cmd, id)
 
@@ -204,6 +204,7 @@ func GetPodcastEpisodesById(id string, db *sql.DB) ([]model.Episode, error) {
 			&episode.PublishDate,
 			&episode.Author,
 			&episode.EpisodeNumber,
+			&episode.Draft,
 		)
 
 		if err != nil {
