@@ -13,7 +13,7 @@ const getMiscInfo = (id: string) => {
 
 export const useMiscInfoQuery = (podcastId: string) => {
   const query = useQuery<MiscInfo>({
-    queryKey: ["miscInfo"],
+    queryKey: ["miscInfo", podcastId],
     queryFn: () => getMiscInfo(podcastId),
     enabled: !!podcastId,
   });

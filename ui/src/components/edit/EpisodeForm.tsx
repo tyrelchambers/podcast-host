@@ -256,7 +256,7 @@ const EpisodeForm = ({
         <FormField
           name="episodeNumber"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-fit">
               <Label htmlFor="episodeNumber">Episode number</Label>
               <Input defaultValue={0} type="number" {...field} />
               {errors.episodeNumber && (
@@ -339,7 +339,7 @@ const EpisodeForm = ({
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? <FontAwesomeIcon icon={faSpinner} spin /> : ctaText}
         </Button>
-        {isEditing && (
+        {isEditing ? (
           <div className="flex justify-end">
             <Button
               type="button"
@@ -348,6 +348,17 @@ const EpisodeForm = ({
               onClick={() => deleteHandler?.(episode?.id)}
             >
               Delete episode
+            </Button>
+          </div>
+        ) : (
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-fit"
+              onClick={() => deleteHandler?.(episode?.id)}
+            >
+              Save as draft
             </Button>
           </div>
         )}

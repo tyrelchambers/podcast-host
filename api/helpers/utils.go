@@ -169,3 +169,12 @@ func ConvertToMp3(filename string) string {
 	mp3Filename := re.ReplaceAllString(filename, ".mp3")
 	return mp3Filename
 }
+
+func Contains(s []string, val string) bool {
+	for _, v := range s {
+		if v == val {
+			return true
+		}
+	}
+	return false
+}

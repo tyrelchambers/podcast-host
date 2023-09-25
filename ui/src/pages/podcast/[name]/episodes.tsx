@@ -24,14 +24,12 @@ const Episodes = () => {
       <h1 className="h1">Episodes</h1>
 
       <section className="flex mt-10 justify-between gap-4">
-        <div className="flex items-center gap-2 flex-1">
-          <FontAwesomeIcon icon={faSearch} />
-          <Input
-            type="search"
-            placeholder="Search for episodes"
-            className="flex-1"
-          />
-        </div>
+        <Input
+          type="search"
+          placeholder="Search for episodes"
+          className="flex-1"
+          icon={faSearch}
+        />
         <Link href={`/podcast/${nameParam}/episode/create`}>
           <Button>Create episode</Button>
         </Link>

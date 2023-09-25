@@ -11,6 +11,7 @@ import {
 import { Episode } from "@/lib/types";
 import Link from "next/link";
 import { format, fromUnixTime } from "date-fns";
+import { Badge } from "./ui/badge";
 
 interface Props {
   episodes: Episode[] | undefined;
@@ -33,24 +34,30 @@ const EpisodesTable = ({ episodes }: Props) => {
       </TableHeader>
       <TableBody>
         {episodes.length > 0 &&
-          episodes.map((episode) => (
-            <TableRow key={episode.id}>
-              <TableCell>{episode.episodeNumber}</TableCell>
-              <TableCell></TableCell>
-              <TableCell>
-                <Link href={`/episode/${episode.id}/edit`}>
-                  {episode.title}
-                </Link>
-              </TableCell>
-              <TableCell>Published</TableCell>
-              <TableCell className="text-right">
-                {format(
-                  fromUnixTime(Number(episode.publishDate) ?? 0),
-                  "MMM dd, yyyy hh:mm a"
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
+          episodes
+            .sort((a, b) => Number(b.episodeNumber) - Number(a.episodeNumber))
+            .map((episode) => (
+              <TableRow key={episode.id}>
+                <TableCell className="text-muted-foreground font-light">
+                  {episode.episodeNumber}
+                </TableCell>
+                <TableCell></TableCell>
+                <TableCell className="text-blue-500 underline font-medium">
+                  <Link href={`/episode/${episode.id}/edit`}>
+                    {episode.title}
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <Badge>Published</Badge>
+                </TableCell>
+                <TableCell className="text-right text-muted-foreground font-light">
+                  {format(
+                    fromUnixTime(Number(episode.publishDate) ?? 0),
+                    "MMM dd, yyyy hh:mm a"
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
       </TableBody>
     </Table>
   );

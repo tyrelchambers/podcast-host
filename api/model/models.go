@@ -21,6 +21,7 @@ type Episode struct {
 	PublishDate   string `json:"publishDate"`
 	Author        string `json:"author"`
 	EpisodeNumber string `json:"episodeNumber"`
+	Draft         bool   `json:"draft"`
 }
 
 type Podcast struct {

@@ -23,21 +23,22 @@ const Page = () => {
   const podcast = podcastStore.activePodcast;
   const miscInfo = useMiscInfoQuery(podcast?.id ?? "");
 
+  console.log(miscInfo);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      file: "",
-      title: "",
-      author: "",
-      keywords: "",
+    values: {
       episodeNumber: miscInfo.data?.nextEpisodeNumber
         ? String(miscInfo.data?.nextEpisodeNumber)
         : "1",
-      description: "",
       scheduleHour: "12",
       scheduleMinute: "00",
       scheduleMeridiem: "PM",
       explicitContent: false,
+      description: "",
+      keywords: "",
+      author: "",
+      title: "",
     },
   });
 
