@@ -6,12 +6,15 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"os"
-	"strings"
+	"regexp"
+	"time"
 
 	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/joho/godotenv"
+	ffmpeg_go "github.com/u2takey/ffmpeg-go"
 )
 
 const (
@@ -31,6 +34,8 @@ var DbUrl = fmt.Sprintf("host=%s port=%d user=%s "+
 func DbClient() *sql.DB {
 
 	db, err := sql.Open("postgres", DbUrl)
+	db.SetConnMaxLifetime(10 * time.Minute)
+	db.SetMaxOpenConns(5)
 	if err != nil {
 		panic(err)
 	}
@@ -59,6 +64,7 @@ func BunnyClient() *bunnystorage.Client {
 		Key:         readWriteKey,
 		ReadOnlyKey: readOnlyKey,
 		Endpoint:    bunnystorage.EndpointNewYork,
+		Timeout:     5 * time.Minute,
 	}
 
 	client, err := bunnystorage.NewClient(cfg)
@@ -90,21 +96,17 @@ func GoDotEnvVariable(key string) string {
 	return env
 }
 
-func WriteFileAndUpload(r *http.Request) (uploadPath string) {
+func WriteFileAndUpload(r *http.Request, uErr chan error, file multipart.File, podcast_id string, file_name string) {
 	client := BunnyClient()
-
-	file, _, err := r.FormFile("file")
-	if err != nil {
-		fmt.Println("Error Retrieving the File")
-		fmt.Println(err)
-		return
-	}
 
 	defer file.Close()
 
-	tempFile, err := os.CreateTemp("temp-files", "upload-*.mp3")
+	tempFile, err := os.CreateTemp("temp-files", fmt.Sprintf("*.%s", file_name))
+
 	if err != nil {
 		fmt.Println(err)
+		uErr <- err
+		return
 	}
 	defer tempFile.Close()
 
@@ -117,33 +119,62 @@ func WriteFileAndUpload(r *http.Request) (uploadPath string) {
 	// write this byte array to our temporary file
 	tempFile.Write(fileBytes)
 
+	iTemp := tempFile.Name()
+	oFile := ConvertToMp3(file_name)
+
+	err = ffmpeg_go.Input(iTemp).
+		Output("./temp-files/formatted/" + oFile).
+		OverWriteOutput().ErrorToStdOut().Run()
+
+	if err != nil {
+		fmt.Println(err)
+		uErr <- err
+		return
+	}
+
 	godotenv.Load(".env")
 
 	newFile, err := os.Open(tempFile.Name())
 
 	if err != nil {
 		log.Fatal(err)
+		uErr <- err
+		return
 	}
 
-	// some-ID will be ID of podcast
-	uploadPathUrl := fmt.Sprintf("/some-id/%s", strings.Split(tempFile.Name(), "/")[1])
-
-	resp, err := client.Upload(context.Background(), "/", uploadPathUrl, "", newFile)
+	resp, err := client.Upload(context.Background(), "/"+podcast_id, ConvertToMp3(file_name), "", newFile)
 
 	if err != nil {
 		log.Fatal(err)
+		uErr <- err
+		return
 	}
 	defer newFile.Close()
-
-	fullPath := fmt.Sprintf("%s%s", BUNNY_URL_BASE, uploadPathUrl)
 
 	fmt.Printf("Successfully Uploaded File to Bunny: %d\n", resp.Status)
 
 	removeErr := os.Remove(tempFile.Name())
+	removeErr = os.Remove("./temp-files/formatted/" + oFile)
 
 	if removeErr != nil {
 		log.Fatal(removeErr)
+		uErr <- err
+		return
 	}
 
-	return fullPath
+}
+
+func ConvertToMp3(filename string) string {
+	re := regexp.MustCompile(`\.[^./]+$`)
+	mp3Filename := re.ReplaceAllString(filename, ".mp3")
+	return mp3Filename
+}
+
+func Contains(s []string, val string) bool {
+	for _, v := range s {
+		if v == val {
+			return true
+		}
+	}
+	return false
 }

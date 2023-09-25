@@ -16,7 +16,7 @@ const PodcastList = ({ podcasts }: Props) => {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-4">
       {podcasts.map((podcast) => (
         <Link
           href={`/podcast/${formatUrlFromTitle(podcast.title)}`}

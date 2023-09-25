@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 
 import EpisodeForm, { SubmitHandlerProps } from "@/components/edit/EpisodeForm";
 import { getUnixTime } from "date-fns";
@@ -11,33 +11,33 @@ import { z } from "zod";
 import axios from "axios";
 import DashLayout from "@/layouts/dashboard/DashLayout";
 import DashHeader from "@/layouts/dashboard/DashHeader";
-import { dashboardRoot } from "@/constants";
 import { useRouter } from "next/router";
-
-const MAX_FILE_SIZE = 500000;
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
+import { usePodcastStore } from "@/hooks/stores/podcastStore";
+import { useMiscInfoQuery } from "@/hooks/api/useMiscInfoQuery";
 
 const Page = () => {
   const router = useRouter();
+  const [uploadProgress, setUploadProgress] = useState(0);
   const fileUploadRef = useRef<HTMLInputElement>(null);
+  const podcastStore = usePodcastStore();
+  const podcast = podcastStore.activePodcast;
+  const miscInfo = useMiscInfoQuery(podcast?.id ?? "");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      file: "",
-      title: "",
-      author: "",
-      keywords: "",
-      episodeNumber: "0",
-      description: "",
+    values: {
+      episodeNumber: miscInfo.data?.nextEpisodeNumber
+        ? String(miscInfo.data?.nextEpisodeNumber)
+        : "1",
       scheduleHour: "12",
       scheduleMinute: "00",
       scheduleMeridiem: "PM",
+      explicitContent: false,
+      description: "",
+      keywords: "",
+      author: "",
+      title: "",
+      draft: false,
     },
   });
 
@@ -47,13 +47,8 @@ const Page = () => {
     publishDate,
     whenToPublish,
   }: SubmitHandlerProps) => {
-    const formData = new FormData();
     const file = fileUploadRef.current?.files?.[0];
     const description = JSON.stringify(editor?.getJSON()) ?? "";
-
-    if (!file) {
-      return;
-    }
 
     const getDate = () => {
       if (whenToPublish === "schedule") {
@@ -74,25 +69,35 @@ const Page = () => {
       return getUnixTime(publishDate);
     };
 
-    formData.append("file", file);
-    formData.append("title", data.title);
-    formData.append("description", description);
-    formData.append("author", data.author);
-    formData.append("keywords", data.keywords);
-    formData.append("episodeNumber", data.episodeNumber.toString());
-    formData.append("publishDate", getDate().toString());
-
-    await axios.post("http://localhost:8080/api/episode/create", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
+    await axios.postForm(
+      "http://localhost:8080/api/episode/create",
+      {
+        file: file ?? "",
+        title: data.title,
+        description: description,
+        author: data.author,
+        keywords: data.keywords,
+        episodeNumber: data.episodeNumber,
+        publishDate: getDate().toString(),
+        podcastId: podcast?.id ?? "",
+        draft: data.draft,
       },
-      withCredentials: true,
-    });
+      {
+        withCredentials: true,
+        onUploadProgress: (progressEvent) => {
+          if (file && progressEvent.total) {
+            setUploadProgress(
+              Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            );
+          }
+        },
+      }
+    );
   };
 
   return (
     <DashLayout
-      leftCol={<DashHeader rootPath={dashboardRoot(router.asPath)} />}
+      leftCol={<DashHeader rootPath={router.query.name as string} />}
       rightCol={<p>hey over here</p>}
     >
       <h1 className="h1">Create your episode</h1>
@@ -102,6 +107,7 @@ const Page = () => {
           fileUploadRef={fileUploadRef}
           submitHandler={submitHandler}
           ctaText="Create episode"
+          uploadProgress={uploadProgress}
         />
       </section>
     </DashLayout>

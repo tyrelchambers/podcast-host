@@ -5,7 +5,6 @@ import (
 	"api/model"
 	"api/models"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -35,9 +34,12 @@ func CreatePodcast(w http.ResponseWriter, r *http.Request) {
 	podcast.DisplayEmailInRSS = r.FormValue("displayEmailInRSS") == "true"
 	podcast.UserID = userId
 
-	models.CreatePodcast(&podcast, helpers.DbClient())
+	err := models.CreatePodcast(&podcast, helpers.DbClient())
 
-	fmt.Println(podcast)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func GetUserPodcasts(w http.ResponseWriter, r *http.Request) {

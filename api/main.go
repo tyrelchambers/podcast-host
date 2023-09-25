@@ -30,12 +30,12 @@ func main() {
 	r.HandleFunc("/api/auth/register", routes.AuthHandler).Methods(http.MethodPost, http.MethodOptions)
 
 	r.HandleFunc("/api/user/me", routes.GetCurrentUser).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/api/user/{id}/episodes", routes.GetUserEpisodes).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/api/user/{id}/podcasts", routes.GetUserPodcasts).Methods(http.MethodGet, http.MethodOptions)
 
 	r.HandleFunc("/api/podcast/create", routes.CreatePodcast).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/api/podcast/{name}", routes.GetPodcastSettings).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/api/podcast/{name}/episodes", routes.GetPodcastEpisodes).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/api/podcast/{id}/info", routes.InfoRoute).Methods(http.MethodGet, http.MethodOptions)
 
 	err := http.ListenAndServe(":8080", handlers.CORS(credentials, exposedHeaders, headers, origins)(r))
 

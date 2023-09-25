@@ -41,19 +41,12 @@ export default function Register() {
       return;
     }
 
-    await axios
-      .post("http://localhost:8080/api/auth/register", data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      })
-      .then((res) => {
-        console.log(res);
-        if (res.status === 200) {
-          // setCookie("token", res.headers.get("Authorization"));
-        }
-      });
+    await axios.post("http://localhost:8080/api/auth/register", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    });
   };
 
   return (

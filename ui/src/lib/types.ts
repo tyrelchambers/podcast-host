@@ -26,6 +26,9 @@ export const formSchema = z.object({
   scheduleMeridiem: z.string().optional(),
   publishDate: z.string().optional(),
   url: z.string().optional(),
+  podcastId: z.string().optional(),
+  explicitContent: z.boolean().optional(),
+  draft: z.boolean(),
 });
 
 export type Episode = z.infer<typeof formSchema>;
@@ -60,4 +63,8 @@ export interface Podcast {
 export interface PodcastSettings {
   podcast: Podcast;
   latestEpisode: Episode;
+}
+
+export interface MiscInfo {
+  nextEpisodeNumber: number;
 }

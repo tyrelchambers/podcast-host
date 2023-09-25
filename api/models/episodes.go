@@ -10,11 +10,11 @@ import (
 )
 
 func CreateEpisode(episode *model.Episode, db *sql.DB) (e error) {
-	cmd := `INSERT INTO Episodes (id, title, description, url, keywords, publish_date, author, episode_number, podcast_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+	cmd := `INSERT INTO Episodes (id, title, description, url, keywords, publish_date, author, episode_number, podcast_id,draft) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
 	id := cuid.New()
 
-	_, err := db.Exec(cmd, id, episode.Title, episode.Description, episode.URL, episode.Keywords, episode.PublishDate, episode.Author, episode.EpisodeNumber, "clmtrjw3x000107tlo3xs68ed")
+	_, err := db.Exec(cmd, id, episode.Title, episode.Description, episode.URL, episode.Keywords, episode.PublishDate, episode.Author, episode.EpisodeNumber, episode.PodcastId, episode.Draft)
 
 	if err != nil {
 		println(err.Error())
@@ -28,11 +28,11 @@ func CreateEpisode(episode *model.Episode, db *sql.DB) (e error) {
 }
 
 func GetEpisodeById(id string, db *sql.DB) (episode model.Episode, e error) {
-	cmd := `SELECT id, title, description, url, user_id, keywords, publishDate, author, episode_number FROM Episodes WHERE id = $1`
+	cmd := `SELECT id, title, description, url, podcast_id, keywords, publishDate, author, episode_number FROM Episodes WHERE id = $1`
 
 	row := db.QueryRow(cmd, id)
 
-	err := row.Scan(&episode.ID, &episode.Title, &episode.Description, &episode.URL, &episode.UserID, &episode.Keywords, &episode.PublishDate, &episode.Author, &episode.EpisodeNumber)
+	err := row.Scan(&episode.ID, &episode.Title, &episode.Description, &episode.URL, &episode.PodcastId, &episode.Keywords, &episode.PublishDate, &episode.Author, &episode.EpisodeNumber)
 
 	if err != nil {
 		println(err.Error())
@@ -88,48 +88,30 @@ func DeleteEpisode(id string, db *sql.DB) (e error) {
 	return
 }
 
-func GetEpisodes(id string, db *sql.DB) (episodes []model.Episode, e error) {
-	cmd := `SELECT id, title, url, publishDate, episodeNumber FROM Episodes WHERE user_id = $1`
-
-	rows, err := db.Query(cmd, id)
-
-	if err != nil {
-		fmt.Println(err.Error())
-		return nil, errors.New("Failed to get episodes.")
-	}
-
-	defer rows.Close()
-
-	var episode model.Episode
-
-	for rows.Next() {
-		err := rows.Scan(&episode.ID, &episode.Title, &episode.URL, &episode.PublishDate, &episode.EpisodeNumber)
-
-		if err != nil {
-			fmt.Println(err.Error())
-			return nil, errors.New("Failed to get episode.")
-
-		}
-
-		episodes = append(episodes, episode)
-
-	}
-
-	return episodes, nil
-
-}
-
 func GetLatestEpisodeByPodcast(podcastID string, db *sql.DB) (episode model.Episode, e error) {
 	cmd := `SELECT id, title, url, publish_date, episode_number FROM Episodes WHERE podcast_id = $1 ORDER BY publish_date DESC LIMIT 1`
 
 	row := db.QueryRow(cmd, podcastID)
 
-	err := row.Scan(&episode.ID, &episode.Title, &episode.URL, &episode.PublishDate, &episode.EpisodeNumber)
+	row.Scan(&episode.ID, &episode.Title, &episode.URL, &episode.PublishDate, &episode.EpisodeNumber)
+
+	return episode, nil
+}
+
+func GetEpisodesCountAndIncrement(podcastId string, db *sql.DB) (c int, e error) {
+
+	cmd := `SELECT COUNT(*) FROM Episodes WHERE podcast_id = $1`
+
+	row := db.QueryRow(cmd, podcastId)
+
+	var count int
+
+	err := row.Scan(&count)
 
 	if err != nil {
 		println(err.Error())
-		return episode, errors.New("Failed to get latest episode.")
+		return count, errors.New("Failed to get episode count.")
 	}
 
-	return episode, nil
+	return count, nil
 }

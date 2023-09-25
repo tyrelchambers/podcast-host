@@ -1,6 +1,6 @@
 "use client";
 import { Episode, formSchema } from "@/lib/types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, FormField, FormItem } from "../ui/form";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -19,6 +19,7 @@ import { formatBytes } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheckCircle,
+  faCircleExclamation,
   faCloudArrowUp,
   faMusic,
   faSpinner,
@@ -28,6 +29,12 @@ import DatePicker from "../DatePicker";
 import { Button } from "../ui/button";
 import { z } from "zod";
 import { format, fromUnixTime } from "date-fns";
+import { Badge } from "../ui/badge";
+import { Checkbox } from "../ui/checkbox";
+
+// 1GB in bytes
+const MAX_FILE_SIZE = 1073741824;
+const ACCEPTED_FILE_TYPES = ["audio/mpeg", "audio/ogg", "audio/wav"];
 
 export interface SubmitHandlerProps {
   data: z.infer<typeof formSchema> | Episode;
@@ -44,6 +51,7 @@ interface Props {
   ctaText: string;
   isEditing?: boolean;
   deleteHandler?: (id: string | undefined) => void;
+  uploadProgress: number;
 }
 
 const EpisodeForm = ({
@@ -54,11 +62,13 @@ const EpisodeForm = ({
   ctaText,
   isEditing = false,
   deleteHandler,
+  uploadProgress,
 }: Props) => {
   if (isEditing && !deleteHandler) {
     throw new Error("EpisodeForm must have a deleteHandler");
   }
 
+  const [uploadError, setUploadError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const editor = useEditor({
     extensions: [
@@ -81,6 +91,16 @@ const EpisodeForm = ({
 
   // const [changePublishDate, setChangePublishDate] = useState(false);
 
+  useEffect(() => {
+    if (fileUploadRef.current && fileUploadRef.current?.files) {
+      if (fileUploadRef.current?.files[0]?.size > MAX_FILE_SIZE) {
+        setUploadError("File size must be less than 1GB");
+      } else {
+        setUploadError("");
+      }
+    }
+  }, [fileUploadRef.current]);
+
   const fileName = fileUploadRef.current?.files?.[0]?.name;
   const fileSize = fileUploadRef.current?.files?.[0]?.size
     ? formatBytes(fileUploadRef.current?.files?.[0]?.size)
@@ -99,10 +119,7 @@ const EpisodeForm = ({
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(submit, console.log)}
-        className="flex flex-col gap-4 "
-      >
+      <form className="flex flex-col gap-6 ">
         <FormField
           name="title"
           render={({ field }) => (
@@ -134,41 +151,50 @@ const EpisodeForm = ({
             <FormItem>
               <Label htmlFor={field.name}>
                 Upload new audio file
-                <div className="w-full border-2 border-dashed border-border p-4 rounded-md h-[100px] flex items-center px-10 mt-2">
-                  {!watchFileValue ? (
-                    <div className="flex items-center gap-4">
-                      <FontAwesomeIcon
-                        icon={faCloudArrowUp}
-                        className="text-2xl"
-                      />
-                      <div className="flex flex-col">
-                        <p className="font-semibold">
-                          Drop an audio file or click to upload
-                        </p>
-                        <p className="text-muted-foreground text-sm">
-                          Accepted filetypes - .mp3, .m4a, .aiff, .wav, .mp4, or
-                          .mov up to 1000MB in size.
-                        </p>
+                <div className="relative">
+                  <div className="w-full z-10 relative border-2 border-dashed border-border p-4 rounded-md h-[100px] flex items-center px-10 mt-2 hover:border-primary transition-all">
+                    {!watchFileValue ? (
+                      <NoFileSelected />
+                    ) : (
+                      <div className="flex items-center gap-4 z-0 w-full">
+                        <FontAwesomeIcon icon={faMusic} className="text-3xl" />
+                        <div className="flex flex-col flex-1">
+                          <p className="font-medium mb-2">{fileName}</p>
+                          <p className="text-muted-foreground text-sm font-light">
+                            {fileSize} - {fileType}
+                          </p>
+                          {uploadError && (
+                            <Badge
+                              variant="destructive"
+                              className="font-light w-fit flex gap-2 mt-2"
+                            >
+                              <FontAwesomeIcon icon={faCircleExclamation} />
+                              {uploadError}
+                            </Badge>
+                          )}
+                        </div>
+                        {uploadProgress > 0 && (
+                          <Badge variant="default">{uploadProgress}%</Badge>
+                        )}
                       </div>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-4">
-                      <FontAwesomeIcon icon={faMusic} className="text-3xl" />
-                      <div className="flex flex-col">
-                        <p className="font-semibold">{fileName}</p>
-                        <p className="text-muted-foreground text-sm">
-                          {fileSize} - {fileType}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  <Input
-                    type="file"
-                    className="hidden"
-                    id={field.name}
-                    {...field}
-                    ref={fileUploadRef}
-                  />
+                    )}
+                    <Input
+                      type="file"
+                      className="hidden"
+                      accept={ACCEPTED_FILE_TYPES.join(",")}
+                      id={field.name}
+                      {...field}
+                      ref={fileUploadRef}
+                    />
+                  </div>
+                  <div
+                    className="absolute top-0 z-10 h-full bg-green-600 mix-blend-screen rounded-md transition-all"
+                    style={{ width: `${uploadProgress}%` }}
+                  ></div>
+                  <div
+                    className="absolute top-0 z-0 h-full bg-green-100  rounded-md transition-all"
+                    style={{ width: `${uploadProgress}%` }}
+                  ></div>
                 </div>
               </Label>
             </FormItem>
@@ -227,7 +253,7 @@ const EpisodeForm = ({
         <FormField
           name="episodeNumber"
           render={({ field }) => (
-            <FormItem className="w-full">
+            <FormItem className="w-fit">
               <Label htmlFor="episodeNumber">Episode number</Label>
               <Input defaultValue={0} type="number" {...field} />
               {errors.episodeNumber && (
@@ -286,11 +312,35 @@ const EpisodeForm = ({
             )}
           </>
         )}
-
-        <Button type="submit" disabled={isSubmitting}>
+        <FormField
+          name="explicitContent"
+          render={({ field }) => (
+            <FormItem>
+              <div className="items-top flex space-x-2">
+                <Checkbox id={field.name} />
+                <div className="grid gap-1.5 leading-none">
+                  <label
+                    htmlFor={field.name}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Episode contains explicit content
+                  </label>
+                  <p className="text-sm font-light text-muted-foreground">
+                    This will mark your episode as containing explicit content.
+                  </p>
+                </div>
+              </div>
+            </FormItem>
+          )}
+        />
+        <Button
+          type="submit"
+          onClick={() => submit(form.getValues())}
+          disabled={isSubmitting}
+        >
           {isSubmitting ? <FontAwesomeIcon icon={faSpinner} spin /> : ctaText}
         </Button>
-        {isEditing && (
+        {isEditing ? (
           <div className="flex justify-end">
             <Button
               type="button"
@@ -301,10 +351,40 @@ const EpisodeForm = ({
               Delete episode
             </Button>
           </div>
+        ) : (
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="secondary"
+              className="w-fit"
+              disabled={isSubmitting}
+              onClick={() =>
+                submit({
+                  ...form.getValues(),
+                  draft: true,
+                })
+              }
+            >
+              Save as draft
+            </Button>
+          </div>
         )}
       </form>
     </Form>
   );
 };
+
+const NoFileSelected = () => (
+  <div className="flex items-center gap-4">
+    <FontAwesomeIcon icon={faCloudArrowUp} className="text-2xl" />
+    <div className="flex flex-col">
+      <p className="font-medium mb-2">Drop an audio file or click to upload</p>
+      <p className="text-muted-foreground text-sm font-light">
+        Accepted file types - .mp3, .m4a, .aiff, .wav, .mp4 up to 1000MB in
+        size.
+      </p>
+    </div>
+  </div>
+);
 
 export default EpisodeForm;

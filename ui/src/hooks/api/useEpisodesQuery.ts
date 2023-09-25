@@ -15,7 +15,7 @@ export const getAllEpisodes = async (name: string | undefined) => {
 
 export const useEpisodesQuery = (name: string | undefined) => {
   const query = useQuery<Episode[]>({
-    queryKey: ["episodes"],
+    queryKey: ["episodes", name],
     queryFn: () => getAllEpisodes(name),
     enabled: !!name,
   });

@@ -9,8 +9,6 @@ export default function Home() {
   const user = useUserStore((state) => state.user);
   const podcastsQuery = usePodcastsQuery(user?.id);
 
-  const podcasts = podcastsQuery.data;
-
   return (
     <main className="w-full">
       <Header />
@@ -23,7 +21,7 @@ export default function Home() {
           </Link>
         </header>
         <section className="p-8 rounded-xl bg-card shadow-sm flex flex-col">
-          <PodcastList podcasts={podcasts} />
+          <PodcastList podcasts={podcastsQuery.data} />
         </section>
       </section>
     </main>

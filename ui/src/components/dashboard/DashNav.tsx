@@ -17,30 +17,30 @@ interface Route {
   label: string;
 }
 
-const routes = (rootPath: string): Route[] => {
+const routes = (name: string): Route[] => {
   return [
     {
-      path: `/${rootPath}/`,
+      path: `/podcast/${name}/`,
       icon: faGrid2,
       label: "Overview",
     },
     {
-      path: `/${rootPath}/episodes`,
+      path: `/podcast/${name}/episodes`,
       icon: faListMusic,
       label: "Episodes",
     },
     {
-      path: `/${rootPath}/distribution`,
+      path: `/podcast/${name}/distribution`,
       icon: faTruckFast,
       label: "Distribution",
     },
     {
-      path: `/${rootPath}/analytics`,
+      path: `/podcast/${name}/analytics`,
       icon: faChartMixed,
       label: "Analytics",
     },
     {
-      path: `/${rootPath}/settings`,
+      path: `/podcast/${name}/settings`,
       icon: faCog,
       label: "Settings",
     },
@@ -51,15 +51,13 @@ interface Props {
   rootPath: string;
 }
 const DashNav = ({ rootPath }: Props) => {
-  console.log(rootPath);
-
   return (
-    <nav className="my-10">
+    <nav className="my-10 flex-1">
       <ul className="flex flex-col gap-4">
         {routes(rootPath).map((route) => (
           <li key={route.path} className="hover:text-accent transition-all">
             <Link href={route.path} className="flex items-center gap-3">
-              <FontAwesomeIcon icon={route.icon} />
+              <FontAwesomeIcon icon={route.icon} className="text-primary" />
               <span className="font-light ">{route.label}</span>
             </Link>
           </li>
