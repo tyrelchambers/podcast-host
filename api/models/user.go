@@ -66,11 +66,11 @@ func GetUser(id *string, db *sql.DB) (user model.User, e error) {
 
 func FindUserByEmail(email string, db *sql.DB) (user model.User, e error) {
 	var u model.User
-	cmd := `SELECT id, email FROM Users WHERE email = $1`
+	cmd := `SELECT id, password, email FROM Users WHERE email = $1`
 
 	row := db.QueryRow(cmd, email)
 
-	err := row.Scan(&u.ID, &u.Email)
+	err := row.Scan(&u.ID, &u.Password, &u.Email)
 
 	if err != nil {
 		return u, errors.New("Failed to get user. Doesn't exist.")

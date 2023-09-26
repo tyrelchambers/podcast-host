@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"api/model"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -58,6 +59,8 @@ func SetCookieHandler(value string, c echo.Context) error {
 
 func ReadCookieHandler(c echo.Context) (userId string, err error) {
 	cookie, err := c.Cookie("session-key")
+
+	fmt.Println(c.Cookies())
 	if err != nil {
 		return "", err
 	}

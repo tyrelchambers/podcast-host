@@ -43,23 +43,25 @@ func AuthHandler(c echo.Context) error {
 }
 
 func Login(c echo.Context) error {
-
-	email := c.FormValue("email")
-	password := c.FormValue("password")
-
-	userExists := models.CheckUserExists(email, helpers.DbClient())
-
-	if userExists {
-		return echo.NewHTTPError(http.StatusBadRequest, "User exists.")
+	type Body struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
 
-	user, err := models.FindUserByEmail(email, helpers.DbClient())
+	var body Body
+	err := c.Bind(&body)
+
+	if err != nil {
+		return c.String(http.StatusBadRequest, "bad request")
+	}
+
+	user, err := models.FindUserByEmail(body.Email, helpers.DbClient())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	diffPassword := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	diffPassword := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
 
 	if diffPassword != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Incorrect password.")
@@ -71,5 +73,5 @@ func Login(c echo.Context) error {
 
 	helpers.SessionHandler(c, cookieValues)
 
-	return c.JSON(http.StatusOK, user)
+	return c.JSON(http.StatusOK, "")
 }
