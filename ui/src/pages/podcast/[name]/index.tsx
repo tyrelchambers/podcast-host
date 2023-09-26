@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useMiscInfoQuery } from "@/hooks/api/useMiscInfoQuery";
 import { usePodcastQuery } from "@/hooks/api/usePodcastQuery";
 import { usePodcastStore } from "@/hooks/stores/podcastStore";
 import DashHeader from "@/layouts/dashboard/DashHeader";
@@ -21,13 +22,16 @@ const Podcast = () => {
   const nameParam = router.query.name;
   const { data } = usePodcastQuery(nameParam as string);
   const podcastStore = usePodcastStore();
+  const miscInfo = useMiscInfoQuery(podcastStore.activePodcast?.id ?? "");
 
   const podcast = data?.podcast;
   const latestEpisodes = data?.latestEpisode;
 
   useEffect(() => {
-    podcastStore.setActivePodcast(nameParam as string);
-  }, [nameParam]);
+    if (router.query.name) {
+      podcastStore.setActivePodcast(nameParam as string);
+    }
+  }, [nameParam, router.query.name]);
 
   return (
     <DashLayout

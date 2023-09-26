@@ -18,9 +18,9 @@ type Episode struct {
 	Image         string `json:"image"`
 	PodcastId     string `json:"podcast_id"`
 	Keywords      string `json:"keywords"`
-	PublishDate   string `json:"publishDate"`
+	PublishDate   string `json:"publish_date"`
 	Author        string `json:"author"`
-	EpisodeNumber string `json:"episodeNumber"`
+	EpisodeNumber string `json:"episode_number"`
 	Draft         bool   `json:"draft"`
 }
 
@@ -63,3 +63,6 @@ type PodcastEpisode struct {
 	Podcast
 	Episodes []Episode
 }
+
+// type RssFeed struct {
+// }

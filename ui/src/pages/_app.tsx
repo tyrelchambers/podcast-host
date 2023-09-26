@@ -31,7 +31,7 @@ const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   useEffect(() => {
     const fn = async () => {
       const currentUser = await getCurrentUser();
-      const podcasts = await getPodcasts(currentUser.id);
+      const podcasts = await getPodcasts(currentUser?.id);
 
       if (currentUser) {
         userStore.setUser(currentUser);

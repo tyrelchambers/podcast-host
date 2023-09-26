@@ -94,13 +94,70 @@ func GetUsersPodcasts(userId string, db *sql.DB) ([]model.Podcast, error) {
 	return parsedPodcasts, nil
 }
 
+func GetPodcastById(id string, userId string, db *sql.DB) (p model.Podcast, e error) {
+	var podcast model.Podcast
+	var episodeJSON []byte
+
+	cmd := `
+		SELECT
+			Podcasts.*,
+			(
+				SELECT COALESCE(json_agg(Episodes.*), '[]'::json)
+				FROM Episodes
+				WHERE Podcasts.ID = Episodes.podcast_id
+			) AS episodes
+		FROM
+				Podcasts
+		LEFT JOIN
+				Episodes
+		ON
+				Podcasts.ID = Episodes.podcast_id
+		WHERE
+				Podcasts.ID = $1 AND Podcasts.user_id = $2
+		GROUP BY
+				Podcasts.ID;
+	`
+	rows := db.QueryRow(cmd, id, userId)
+
+	err := rows.Scan(
+		&podcast.ID,
+		&podcast.Title,
+		&podcast.Description,
+		&podcast.Thumbnail,
+		&podcast.ExplicitContent,
+		&podcast.PrimaryCategory,
+		&podcast.SecondaryCategory,
+		&podcast.Author,
+		&podcast.Copyright,
+		&podcast.Keywords,
+		&podcast.Website,
+		&podcast.Language,
+		&podcast.Timezone,
+		&podcast.ShowOwner,
+		&podcast.OwnerEmail,
+		&podcast.DisplayEmailInRSS,
+		&podcast.UserID,
+		&episodeJSON,
+	)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return podcast, err
+	}
+
+	if err := json.Unmarshal(episodeJSON, &podcast.Episodes); err != nil {
+		return podcast, err
+	}
+
+	return podcast, nil
+}
+
 func GetPodcastByNameWithEpisodes(name string, userId string, db *sql.DB) (p model.Podcast, e error) {
 	var podcast model.Podcast
 	var episodeJSON []byte
 
 	parsedName := strings.Replace(name, "-", " ", -1)
 
-	fmt.Println(parsedName)
 	cmd := `
 		SELECT
 			Podcasts.*,

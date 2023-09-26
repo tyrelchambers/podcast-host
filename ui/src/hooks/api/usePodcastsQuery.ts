@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 export const getPodcasts = async (id: string | undefined) => {
+  if (!id) return;
   const data = await axios
     .get(`http://localhost:8080/api/user/${id}/podcasts`, {
       withCredentials: true,

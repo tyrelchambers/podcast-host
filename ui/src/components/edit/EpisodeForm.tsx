@@ -157,7 +157,10 @@ const EpisodeForm = ({
                       <NoFileSelected />
                     ) : (
                       <div className="flex items-center gap-4 z-0 w-full">
-                        <FontAwesomeIcon icon={faMusic} className="text-3xl" />
+                        <FontAwesomeIcon
+                          icon={faMusic}
+                          className="text-3xl text-primary"
+                        />
                         <div className="flex flex-col flex-1">
                           <p className="font-medium mb-2">{fileName}</p>
                           <p className="text-muted-foreground text-sm font-light">
@@ -266,7 +269,7 @@ const EpisodeForm = ({
         {form.getValues("publishDate") && (
           <div className="flex gap-4">
             <div className="bg-green-100 w-fit p-2 px-5 rounded-full text-green-700 flex items-center gap-2 text-sm">
-              <FontAwesomeIcon icon={faCheckCircle} />
+              <FontAwesomeIcon icon={faCheckCircle} className="text-primary" />
               <span className="font-bold">Published</span> on{" "}
               {format(
                 fromUnixTime(Number(form.getValues("publishDate"))),
@@ -376,7 +379,7 @@ const EpisodeForm = ({
 
 const NoFileSelected = () => (
   <div className="flex items-center gap-4">
-    <FontAwesomeIcon icon={faCloudArrowUp} className="text-2xl" />
+    <FontAwesomeIcon icon={faCloudArrowUp} className="text-2xl text-primary" />
     <div className="flex flex-col">
       <p className="font-medium mb-2">Drop an audio file or click to upload</p>
       <p className="text-muted-foreground text-sm font-light">

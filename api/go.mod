@@ -2,6 +2,8 @@ module api
 
 go 1.21.1
 
+require github.com/golang-migrate/migrate v3.5.4+incompatible
+
 require (
 	git.sr.ht/~jamesponddotco/bunnystorage-go v0.3.0 // indirect
 	git.sr.ht/~jamesponddotco/httpx-go v0.0.0-20230427215504-7c26a7f028e7 // indirect
@@ -11,8 +13,8 @@ require (
 	github.com/antonlindstrom/pgstore v0.0.0-20220421113606-e3a6e3fed12a // indirect
 	github.com/aws/aws-sdk-go v1.38.20 // indirect
 	github.com/felixge/httpsnoop v1.0.1 // indirect
-	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/golang-migrate/migrate/v4 v4.16.2 // indirect
+	github.com/gorilla/feeds v1.1.1 // indirect
 	github.com/gorilla/handlers v1.5.1 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
