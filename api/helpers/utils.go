@@ -7,13 +7,13 @@ import (
 	"io"
 	"log"
 	"mime/multipart"
-	"net/http"
 	"os"
 	"regexp"
 	"time"
 
 	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/joho/godotenv"
+	"github.com/labstack/echo"
 	ffmpeg_go "github.com/u2takey/ffmpeg-go"
 )
 
@@ -96,7 +96,7 @@ func GoDotEnvVariable(key string) string {
 	return env
 }
 
-func WriteFileAndUpload(r *http.Request, uErr chan error, file multipart.File, podcast_id string, file_name string) {
+func WriteFileAndUpload(c echo.Context, file multipart.File, podcast_id string, file_name string) {
 	client := BunnyClient()
 
 	defer file.Close()
@@ -105,7 +105,6 @@ func WriteFileAndUpload(r *http.Request, uErr chan error, file multipart.File, p
 
 	if err != nil {
 		fmt.Println(err)
-		uErr <- err
 		return
 	}
 	defer tempFile.Close()
@@ -128,7 +127,6 @@ func WriteFileAndUpload(r *http.Request, uErr chan error, file multipart.File, p
 
 	if err != nil {
 		fmt.Println(err)
-		uErr <- err
 		return
 	}
 
@@ -138,7 +136,6 @@ func WriteFileAndUpload(r *http.Request, uErr chan error, file multipart.File, p
 
 	if err != nil {
 		log.Fatal(err)
-		uErr <- err
 		return
 	}
 
@@ -146,7 +143,6 @@ func WriteFileAndUpload(r *http.Request, uErr chan error, file multipart.File, p
 
 	if err != nil {
 		log.Fatal(err)
-		uErr <- err
 		return
 	}
 	defer newFile.Close()
@@ -158,7 +154,6 @@ func WriteFileAndUpload(r *http.Request, uErr chan error, file multipart.File, p
 
 	if removeErr != nil {
 		log.Fatal(removeErr)
-		uErr <- err
 		return
 	}
 

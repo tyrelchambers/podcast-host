@@ -4,42 +4,72 @@ import (
 	"api/helpers"
 	"api/model"
 	"api/models"
-	"encoding/json"
 	"net/http"
+
+	"github.com/labstack/echo"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func AuthHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
-
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
+func AuthHandler(c echo.Context) error {
 
 	db := helpers.DbClient()
 
 	var u model.User
 
-	json.NewDecoder(r.Body).Decode(&u)
+	err := c.Bind(&u)
+	if err != nil {
+		return c.String(http.StatusBadRequest, "bad request")
+	}
 
 	userExists := models.CheckUserExists(u.Email, db)
 
 	if userExists == true {
-		http.Error(w, "User already exist", http.StatusBadRequest)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "User already exists.")
 	}
 
 	newUser, e := models.CreateUser(&u, db)
 
 	if e != nil {
-		http.Error(w, e.Error(), http.StatusInternalServerError)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, e.Error())
 	}
 
 	cookieValues := model.Cookie{
 		UserID: newUser.ID,
 	}
 
-	helpers.SessionHandler(w, r, cookieValues)
+	helpers.SessionHandler(c, cookieValues)
 
+	return c.JSON(http.StatusOK, newUser)
+}
+
+func Login(c echo.Context) error {
+
+	email := c.FormValue("email")
+	password := c.FormValue("password")
+
+	userExists := models.CheckUserExists(email, helpers.DbClient())
+
+	if userExists {
+		return echo.NewHTTPError(http.StatusBadRequest, "User exists.")
+	}
+
+	user, err := models.FindUserByEmail(email, helpers.DbClient())
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	diffPassword := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+
+	if diffPassword != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Incorrect password.")
+	}
+
+	cookieValues := model.Cookie{
+		UserID: user.ID,
+	}
+
+	helpers.SessionHandler(c, cookieValues)
+
+	return c.JSON(http.StatusOK, user)
 }

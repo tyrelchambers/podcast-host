@@ -9,46 +9,49 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/labstack/echo"
 )
 
-func CreateEpisode(w http.ResponseWriter, r *http.Request) {
+func CreateEpisode(c echo.Context) error {
 	e := make(chan error)
-
-	r.ParseMultipartForm(3 << 20)
 
 	var episode model.Episode
 
-	pId := r.FormValue("podcastId")
+	pId := c.FormValue("podcastId")
 
-	episode.Title = r.FormValue("title")
-	episode.Description = r.FormValue("description")
-	episode.Keywords = r.FormValue("keywords")
-	episode.PublishDate = r.FormValue("publishDate")
-	episode.Author = r.FormValue("author")
-	episode.EpisodeNumber = r.FormValue("episodeNumber")
+	episode.Title = c.FormValue("title")
+	episode.Description = c.FormValue("description")
+	episode.Keywords = c.FormValue("keywords")
+	episode.PublishDate = c.FormValue("publishDate")
+	episode.Author = c.FormValue("author")
+	episode.EpisodeNumber = c.FormValue("episodeNumber")
 	episode.PodcastId = pId
-	episode.Draft = r.FormValue("draft") == "true"
+	episode.Draft = c.FormValue("draft") == "true"
 
-	file, header, _ := r.FormFile("file")
+	file, _ := c.FormFile("file")
 
 	if file != nil {
-		defer file.Close()
+		src, _ := file.Open()
+		uploadPathUrl := fmt.Sprintf("/%s/%s.mp3", pId, file.Filename)
 
-		uploadPathUrl := fmt.Sprintf("/%s/%s.mp3", pId, header.Filename)
-
-		go helpers.WriteFileAndUpload(r, e, file, pId, header.Filename)
+		go helpers.WriteFileAndUpload(c, src, pId, file.Filename)
 
 		episode.URL = fmt.Sprintf("%s%s", helpers.BUNNY_URL_BASE, uploadPathUrl)
+
+		defer src.Close()
+
 	}
 
 	newEpError := models.CreateEpisode(&episode, helpers.DbClient())
 
 	if newEpError != nil {
-		http.Error(w, newEpError.Error(), http.StatusInternalServerError)
-		return
+
+		return echo.NewHTTPError(500, newEpError.Error())
 	}
 
 	close(e)
+
+	return nil
 }
 
 func GetEpisode(w http.ResponseWriter, r *http.Request) {
@@ -112,18 +115,15 @@ func UpdateEpisode(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func DeleteEpisode(w http.ResponseWriter, r *http.Request) {
+func DeleteEpisode(c echo.Context) error {
 
-	p := mux.Vars(r)
-
-	id := p["id"]
+	id := c.Param("id")
 
 	err := models.DeleteEpisode(id, helpers.DbClient())
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return echo.NewHTTPError(500, err.Error())
 	}
 
-	w.WriteHeader(http.StatusOK)
+	return c.String(200, "Success")
 }

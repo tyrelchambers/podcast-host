@@ -3,13 +3,12 @@ package routes
 import (
 	"api/helpers"
 	"api/models"
-	"encoding/json"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo"
 )
 
-func InfoRoute(w http.ResponseWriter, r *http.Request) {
+func InfoRoute(c echo.Context) error {
 	type PodcastID struct {
 		PodcastID string `json:"podcastId"`
 	}
@@ -19,25 +18,29 @@ func InfoRoute(w http.ResponseWriter, r *http.Request) {
 		RssFeed           string `json:"rssFeed"`
 	}
 
-	userId := helpers.ReadCookieHandler(w, r)
+	userId, err := helpers.ReadCookieHandler(c)
 
-	vars := mux.Vars(r)
-	pId := vars["id"]
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, "Please provide valid credentials")
 
-	c, err := models.GetEpisodesCountAndIncrement(pId, helpers.DbClient())
+	}
+
+	pId := c.Param("podcastId")
+
+	count, _ := models.GetEpisodesCountAndIncrement(pId, helpers.DbClient())
 	podcast, err2 := models.GetPodcastById(pId, userId, helpers.DbClient())
 	feed := helpers.CreateRssFeed(&podcast)
 
 	if err != nil && err2 != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+
+		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get episode count.")
 	}
 
 	response := Response{
-		NextEpisodeNumber: c + 1,
+		NextEpisodeNumber: count + 1,
 		RssFeed:           feed,
 	}
 
-	json.NewEncoder(w).Encode(response)
+	return c.JSON(http.StatusOK, response)
 
 }

@@ -3,28 +3,28 @@ package routes
 import (
 	"api/helpers"
 	"api/models"
-	"encoding/json"
 	"net/http"
+
+	"github.com/labstack/echo"
 )
 
-func GetCurrentUser(w http.ResponseWriter, r *http.Request) {
+func GetCurrentUser(c echo.Context) error {
 
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(http.StatusOK)
-		return
+	userId, err := helpers.ReadCookieHandler(c)
+
+	if err != nil {
+		return err
 	}
-
-	userId := helpers.ReadCookieHandler(w, r)
 
 	db := helpers.DbClient()
 
 	user, err := models.GetUser(&userId, db)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+
+		return echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
 	}
 
-	json.NewEncoder(w).Encode(user)
+	return c.JSON(http.StatusOK, user)
 
 }

@@ -2,13 +2,13 @@ package helpers
 
 import (
 	"api/model"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/antonlindstrom/pgstore"
 	"github.com/gorilla/securecookie"
+	"github.com/labstack/echo"
 )
 
 // Hash keys should be at least 32 bytes long
@@ -18,8 +18,9 @@ var hashKey = []byte("ikiQQVPZlgwH3J7c")
 // Shorter keys may weaken the encryption used.
 var blockKey = []byte("ikiQQVPZlgwH3J7c")
 var s = securecookie.New(hashKey, blockKey)
+var Hi = "sh"
 
-func SessionHandler(w http.ResponseWriter, r *http.Request, values model.Cookie) {
+func SessionHandler(c echo.Context, values model.Cookie) error {
 	store, err := pgstore.NewPGStore(DbUrl, []byte("secret-key"))
 
 	if err != nil {
@@ -29,48 +30,36 @@ func SessionHandler(w http.ResponseWriter, r *http.Request, values model.Cookie)
 
 	defer store.StopCleanup(store.Cleanup(time.Minute * 5))
 
-	session, _ := store.Get(r, "session-key")
+	session, _ := store.Get(c.Request(), "session-key")
 
 	// Set some session values.
 	session.Values["user_id"] = values.UserID
 	// session.Options.Domain = "localhost"
 
 	// Save it before we write to the response/return from the handler.
-	err = session.Save(r, w)
+	err = session.Save(c.Request(), c.Response())
 	if err != nil {
 
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	SetCookieHandler(values.UserID, w)
+	SetCookieHandler(values.UserID, c)
 
+	return nil
 }
 
-func SetCookieHandler(value string, w http.ResponseWriter) {
-	if encoded, err := s.Encode("session-key", value); err == nil {
-		cookie := &http.Cookie{
-			Name:   "session-key",
-			Value:  encoded,
-			Path:   "/",
-			Secure: true,
-			// HttpOnly: true,
-		}
-		http.SetCookie(w, cookie)
-	}
+func SetCookieHandler(value string, c echo.Context) error {
+	cookie := new(http.Cookie)
+	cookie.Name = "user_id"
+	cookie.Value = value
+	cookie.Expires = time.Now().Add(24 * time.Hour)
+	c.SetCookie(cookie)
+	return c.String(http.StatusOK, "write a cookie")
 }
 
-func ReadCookieHandler(w http.ResponseWriter, r *http.Request) (userId string) {
-	var str string
-	if cookie, err := r.Cookie("session-key"); err == nil {
-		err = s.Decode("session-key", cookie.Value, &str)
-
-		if err != nil {
-			fmt.Println(err.Error())
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
+func ReadCookieHandler(c echo.Context) (userId string, err error) {
+	cookie, err := c.Cookie("session-key")
+	if err != nil {
+		return "", err
 	}
-
-	return str
+	return cookie.Value, nil
 }

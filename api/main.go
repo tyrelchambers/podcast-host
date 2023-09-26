@@ -5,39 +5,43 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
+
 	_ "github.com/lib/pq"
 )
 
 func main() {
 	SetupDb()
 
-	r := mux.NewRouter()
+	e := echo.New()
 
-	r.Use(mux.CORSMethodMiddleware(r))
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:3000"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAccessControlAllowCredentials},
+	}))
 
-	credentials := handlers.AllowCredentials()
-	exposedHeaders := handlers.ExposedHeaders([]string{"Set-Cookie"})
-	headers := handlers.AllowedHeaders([]string{"Content-Type", "Access-Control-Allow-Origin"})
-	origins := handlers.AllowedOrigins([]string{"http://localhost:3000"})
+	e.POST("/api/episode/create", routes.CreateEpisode)
+	// r.HandleFunc("/api/episode/{id}/edit", routes.UpdateEpisode).Methods(http.MethodPost, http.MethodOptions)
+	e.DELETE("/api/episode/:id/delete", routes.DeleteEpisode)
+	// r.HandleFunc("/api/episode/{id}", routes.GetEpisode).Methods(http.MethodGet, http.MethodOptions)
 
-	r.HandleFunc("/api/episode/create", routes.CreateEpisode).Methods(http.MethodPost, http.MethodOptions)
-	r.HandleFunc("/api/episode/{id}/edit", routes.UpdateEpisode).Methods(http.MethodPost, http.MethodOptions)
-	r.HandleFunc("/api/episode/{id}/delete", routes.DeleteEpisode).Methods(http.MethodDelete, http.MethodOptions)
-	r.HandleFunc("/api/episode/{id}", routes.GetEpisode).Methods(http.MethodGet, http.MethodOptions)
+	e.POST("/api/auth/register", routes.AuthHandler)
+	e.GET("/api/auth/login", routes.AuthHandler)
 
-	r.HandleFunc("/api/auth/register", routes.AuthHandler).Methods(http.MethodPost, http.MethodOptions)
+	e.GET("/api/user/me", routes.GetCurrentUser)
 
-	r.HandleFunc("/api/user/me", routes.GetCurrentUser).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/api/user/{id}/podcasts", routes.GetUserPodcasts).Methods(http.MethodGet, http.MethodOptions)
+	e.GET("/api/user/:id/podcasts", routes.GetUserPodcasts)
 
-	r.HandleFunc("/api/podcast/create", routes.CreatePodcast).Methods(http.MethodPost, http.MethodOptions)
-	r.HandleFunc("/api/podcast/{name}", routes.GetPodcastSettings).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/api/podcast/{name}/episodes", routes.GetPodcastEpisodes).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/api/podcast/{id}/info", routes.InfoRoute).Methods(http.MethodGet, http.MethodOptions)
+	e.POST("/api/podcast/create", routes.CreatePodcast)
+	e.GET("/api/podcast/:name", routes.GetPodcastSettings)
+	e.GET("/api/podcast/:name/episodes", routes.GetPodcastEpisodes)
 
-	err := http.ListenAndServe(":8080", handlers.CORS(credentials, exposedHeaders, headers, origins)(r))
+	e.GET("/api/podcast/:id/info", routes.InfoRoute)
+
+	err := http.ListenAndServe(":8080", e)
 
 	if err != nil {
 		log.Fatal(err)
