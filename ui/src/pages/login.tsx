@@ -25,7 +25,7 @@ const Login = () => {
   });
 
   const submitHandler = async (data: z.infer<typeof loginSchema>) => {
-    await axios.post("http://localhost:8080/api/auth/register", data, {
+    await axios.post("http://localhost:8080/api/auth/login", data, {
       headers: {
         "Content-Type": "application/json",
       },

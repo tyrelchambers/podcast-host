@@ -13,11 +13,7 @@ import (
 func CreatePodcast(c echo.Context) error {
 	var podcast model.Podcast
 
-	userId, err := sessions.ReadCookieHandler(c)
-
-	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
-	}
+	user := sessions.GetUserFromSession(c)
 
 	podcast.Thumbnail = c.FormValue("thumbnail")
 	podcast.Title = c.FormValue("title")
@@ -34,25 +30,17 @@ func CreatePodcast(c echo.Context) error {
 	podcast.ShowOwner = c.FormValue("showOwner")
 	podcast.OwnerEmail = c.FormValue("ownerEmail")
 	podcast.DisplayEmailInRSS = c.FormValue("displayEmailInRSS") == "true"
-	podcast.UserID = userId
+	podcast.UserID = user.ID
 
-	err = models.CreatePodcast(&podcast, helpers.DbClient())
-
-	if err != nil {
-		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to create podcast.")
-	}
+	// err = models.CreatePodcast(&podcast, helpers.DbClient())
 
 	return c.JSON(http.StatusOK, podcast)
 }
 
 func GetUserPodcasts(c echo.Context) error {
-	userId, err := sessions.ReadCookieHandler(c)
+	user := sessions.GetUserFromSession(c)
 
-	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
-	}
-
-	podcasts, err := models.GetUsersPodcasts(userId, helpers.DbClient())
+	podcasts, err := models.GetUsersPodcasts(user.ID, helpers.DbClient())
 
 	if err != nil {
 
@@ -70,15 +58,11 @@ func GetPodcastSettings(c echo.Context) error {
 
 	var rBody Body
 
-	userId, err := sessions.ReadCookieHandler(c)
-
-	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
-	}
+	user := sessions.GetUserFromSession(c)
 
 	name := c.Param("name")
 
-	podcast, err := models.GetPodcastByNameWithEpisodes(name, userId, helpers.DbClient())
+	podcast, err := models.GetPodcastByNameWithEpisodes(name, user.ID, helpers.DbClient())
 
 	latestEpisodeData, err := models.GetLatestEpisodeByPodcast(podcast.ID, helpers.DbClient())
 

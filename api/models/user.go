@@ -49,11 +49,11 @@ func CreateUser(user *model.User, db *sql.DB) (u *model.User, e error) {
 	return &newUser, nil
 }
 
-func GetUser(id *string, db *sql.DB) (user model.User, e error) {
+func GetUser(id string, db *sql.DB) (user model.User, e error) {
 	var u model.User
 	cmd := `SELECT id, email FROM Users WHERE id = $1`
 
-	row := db.QueryRow(cmd, *id)
+	row := db.QueryRow(cmd, id)
 
 	err := row.Scan(&u.ID, &u.Email)
 
