@@ -7,6 +7,8 @@ config.autoAddCss = false;
 import { Poppins } from "next/font/google";
 
 import "../styles/globals.css";
+import "@mantine/core/styles.css";
+import "@mantine/tiptap/styles.css";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { getCurrentUser } from "@/hooks/api/useUserQuery";
@@ -15,6 +17,7 @@ import { useUserStore } from "@/hooks/stores/userStore";
 import { useRouter } from "next/router";
 import { usePodcastStore } from "@/hooks/stores/podcastStore";
 import { getPodcasts } from "@/hooks/api/usePodcastsQuery";
+import { MantineProvider } from "@mantine/core";
 
 const queryClient = new QueryClient();
 
@@ -49,9 +52,11 @@ const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <main className={font.className}>
-        <Component {...pageProps} />
-      </main>
+      <MantineProvider>
+        <main className={font.className}>
+          <Component {...pageProps} />
+        </main>
+      </MantineProvider>
     </QueryClientProvider>
   );
 };

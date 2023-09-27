@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/labstack/echo/v4"
@@ -20,12 +21,19 @@ func CreateEpisode(c echo.Context) error {
 
 	pId := c.FormValue("podcastId")
 
+	convertedDate := helpers.ConvertToUnix(c.FormValue("publishDate"))
+	convertedEpNum, err := strconv.ParseUint(c.FormValue("episodeNumber"), 10, 64)
+
+	if err != nil {
+		return echo.NewHTTPError(500, err.Error())
+	}
+
 	episode.Title = c.FormValue("title")
 	episode.Description = c.FormValue("description")
 	episode.Keywords = c.FormValue("keywords")
-	episode.PublishDate = c.FormValue("publishDate")
+	episode.PublishDate = convertedDate
 	episode.Author = c.FormValue("author")
-	episode.EpisodeNumber = c.FormValue("episodeNumber")
+	episode.EpisodeNumber = convertedEpNum
 	episode.PodcastId = pId
 	episode.Draft = c.FormValue("draft") == "true"
 

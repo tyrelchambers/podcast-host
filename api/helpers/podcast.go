@@ -42,6 +42,7 @@ func ParsePodcasts(rows *sql.Rows) []model.Podcast {
 
 		// Unmarshal the episodeJSON into the Episodes field of the Podcast struct
 		if err := json.Unmarshal(episodeJSON, &p.Episodes); err != nil {
+			fmt.Println(err.Error())
 			return nil
 		}
 

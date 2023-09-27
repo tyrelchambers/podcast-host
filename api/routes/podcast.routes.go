@@ -43,7 +43,6 @@ func GetUserPodcasts(c echo.Context) error {
 	podcasts, err := models.GetUsersPodcasts(user.ID, helpers.DbClient())
 
 	if err != nil {
-
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get podcasts.")
 	}
 

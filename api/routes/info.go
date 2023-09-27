@@ -21,14 +21,15 @@ func InfoRoute(c echo.Context) error {
 
 	user := sessions.GetUserFromSession(c)
 
-	pId := c.Param("podcastId")
+	pId := c.Param("id")
 
 	count, _ := models.GetEpisodesCountAndIncrement(pId, helpers.DbClient())
+
 	podcast, err := models.GetPodcastById(pId, user.ID, helpers.DbClient())
+
 	feed := helpers.CreateRssFeed(&podcast)
 
 	if err != nil {
-
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get episode count.")
 	}
 

@@ -4,7 +4,6 @@ import (
 	"api/helpers"
 	"api/model"
 	"api/models"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/sessions"
@@ -41,14 +40,4 @@ func GetUserFromSession(c echo.Context) model.User {
 	}
 
 	return user
-}
-
-func ReadCookieHandler(c echo.Context) error {
-	cookie, err := c.Cookie("username")
-	if err != nil {
-		return err
-	}
-	fmt.Println(cookie.Name)
-	fmt.Println(cookie.Value)
-	return c.String(http.StatusOK, "read a cookie")
 }

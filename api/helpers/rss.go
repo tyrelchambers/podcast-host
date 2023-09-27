@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"api/model"
-	"fmt"
 	"log"
 
 	"github.com/gorilla/feeds"
@@ -22,10 +21,7 @@ func CreateRssFeed(podcast *model.Podcast) string {
 
 	var feedItems []*feeds.Item
 
-	fmt.Println("here")
-
 	for _, episode := range podcast.Episodes {
-		fmt.Println(episode.PublishDate)
 
 		feedItems = append(feedItems, &feeds.Item{
 			Title:       episode.Title,
