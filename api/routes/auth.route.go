@@ -4,9 +4,10 @@ import (
 	"api/helpers"
 	"api/model"
 	"api/models"
+	sessions "api/session"
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -21,12 +22,6 @@ func AuthHandler(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "bad request")
 	}
 
-	userExists := models.CheckUserExists(u.Email, db)
-
-	if userExists == true {
-		return echo.NewHTTPError(http.StatusBadRequest, "User already exists.")
-	}
-
 	newUser, e := models.CreateUser(&u, db)
 
 	if e != nil {
@@ -37,7 +32,7 @@ func AuthHandler(c echo.Context) error {
 		UserID: newUser.ID,
 	}
 
-	helpers.SessionHandler(c, cookieValues)
+	sessions.SessionHandler(c, cookieValues)
 
 	return c.JSON(http.StatusOK, newUser)
 }
@@ -71,7 +66,7 @@ func Login(c echo.Context) error {
 		UserID: user.ID,
 	}
 
-	helpers.SessionHandler(c, cookieValues)
+	sessions.SessionHandler(c, cookieValues)
 
 	return c.JSON(http.StatusOK, "")
 }

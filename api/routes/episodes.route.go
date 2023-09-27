@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"api/constants"
 	"api/helpers"
 	"api/model"
 	"api/models"
@@ -9,7 +10,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func CreateEpisode(c echo.Context) error {
@@ -36,7 +37,7 @@ func CreateEpisode(c echo.Context) error {
 
 		go helpers.WriteFileAndUpload(c, src, pId, file.Filename)
 
-		episode.URL = fmt.Sprintf("%s%s", helpers.BUNNY_URL_BASE, uploadPathUrl)
+		episode.URL = fmt.Sprintf("%s%s", constants.BUNNY_URL_BASE, uploadPathUrl)
 
 		defer src.Close()
 

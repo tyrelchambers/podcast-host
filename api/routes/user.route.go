@@ -1,30 +1,31 @@
 package routes
 
 import (
-	"api/helpers"
-	"api/models"
-	"net/http"
+	sessions "api/session"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func GetCurrentUser(c echo.Context) error {
 
-	userId, err := helpers.ReadCookieHandler(c)
+	sessions.ReadCookie(c)
 
-	if err != nil {
-		return err
-	}
+	// userId, err := sessions.ReadCookieHandler(c)
 
-	db := helpers.DbClient()
+	// if err != nil {
+	// 	return err
+	// }
 
-	user, err := models.GetUser(&userId, db)
+	// db := helpers.DbClient()
 
-	if err != nil {
+	// fmt.Println("---->", userId)
 
-		return echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
-	}
+	// user, err := models.GetUser(&userId, db)
 
-	return c.JSON(http.StatusOK, user)
+	// if err != nil {
+	// 	return echo.NewHTTPError(http.StatusUnauthorized, "Can't find user from cookie")
+	// }
 
+	// return c.JSON(http.StatusOK, user)
+	return nil
 }

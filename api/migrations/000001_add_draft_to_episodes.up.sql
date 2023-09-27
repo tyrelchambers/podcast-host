@@ -1,1 +1,0 @@
-ALTER TABLE episodes ADD COLUMN draft boolean DEFAULT false;

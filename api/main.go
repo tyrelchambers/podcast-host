@@ -1,20 +1,29 @@
 package main
 
 import (
+	"api/constants"
 	"api/routes"
 	"log"
 	"net/http"
 
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/antonlindstrom/pgstore"
+	"github.com/labstack/echo-contrib/session"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 
 	_ "github.com/lib/pq"
 )
 
 func main() {
-	SetupDb()
+	store, err := pgstore.NewPGStore(constants.DbUrl, []byte("secret-key"))
+
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
 
 	e := echo.New()
+
+	e.Use(session.Middleware(store))
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -44,7 +53,7 @@ func main() {
 
 	e.GET("/api/podcast/:id/info", routes.InfoRoute)
 
-	err := http.ListenAndServe(":8080", e)
+	err = http.ListenAndServe(":8080", e)
 
 	if err != nil {
 		log.Fatal(err)

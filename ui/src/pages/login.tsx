@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@mantine/core";
 import axios from "axios";
 import Link from "next/link";
 import React from "react";
@@ -13,7 +13,6 @@ import { z } from "zod";
 const loginSchema = z.object({
   email: z.string(),
   password: z.string(),
-  confirmPassword: z.string(),
 });
 
 const Login = () => {
@@ -22,25 +21,10 @@ const Login = () => {
     defaultValues: {
       email: "",
       password: "",
-      confirmPassword: "",
     },
   });
 
   const submitHandler = async (data: z.infer<typeof loginSchema>) => {
-    if (!form.getValues("confirmPassword")) {
-      form.setError("confirmPassword", {
-        message: "Please confirm your password",
-      });
-      return;
-    }
-
-    if (data.password !== data.confirmPassword) {
-      form.setError("confirmPassword", {
-        message: "Passwords do not match",
-      });
-      return;
-    }
-
     await axios.post("http://localhost:8080/api/auth/register", data, {
       headers: {
         "Content-Type": "application/json",
@@ -91,29 +75,10 @@ const Login = () => {
             )}
           />
 
-          <FormField
-            name="confirmPassword"
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor={field.name}>Confirm password</Label>
-                <Input
-                  type="password"
-                  placeholder="Confirm your password"
-                  {...field}
-                />
-
-                {form.formState.errors.confirmPassword?.message && (
-                  <span className="text-red-500">
-                    {form.formState.errors.confirmPassword?.message}
-                  </span>
-                )}
-              </FormItem>
-            )}
-          />
           <Separator />
 
           <div>
-            <p className="text-muted font-light text-sm">
+            <p className="text-muted-foreground font-light text-sm">
               Haven&apos;t created an account yet?{" "}
               <Link href="/register" className="text-blue-500 underline">
                 Sign up.

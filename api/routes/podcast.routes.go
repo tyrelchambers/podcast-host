@@ -4,15 +4,16 @@ import (
 	"api/helpers"
 	"api/model"
 	"api/models"
+	sessions "api/session"
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func CreatePodcast(c echo.Context) error {
 	var podcast model.Podcast
 
-	userId, err := helpers.ReadCookieHandler(c)
+	userId, err := sessions.ReadCookieHandler(c)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
@@ -45,7 +46,7 @@ func CreatePodcast(c echo.Context) error {
 }
 
 func GetUserPodcasts(c echo.Context) error {
-	userId, err := helpers.ReadCookieHandler(c)
+	userId, err := sessions.ReadCookieHandler(c)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
@@ -69,7 +70,7 @@ func GetPodcastSettings(c echo.Context) error {
 
 	var rBody Body
 
-	userId, err := helpers.ReadCookieHandler(c)
+	userId, err := sessions.ReadCookieHandler(c)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")

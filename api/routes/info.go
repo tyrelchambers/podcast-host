@@ -3,9 +3,10 @@ package routes
 import (
 	"api/helpers"
 	"api/models"
+	sessions "api/session"
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func InfoRoute(c echo.Context) error {
@@ -18,12 +19,7 @@ func InfoRoute(c echo.Context) error {
 		RssFeed           string `json:"rssFeed"`
 	}
 
-	userId, err := helpers.ReadCookieHandler(c)
-
-	if err != nil {
-		return c.JSON(http.StatusUnauthorized, "Please provide valid credentials")
-
-	}
+	userId := sessions.GetUserId(c)
 
 	pId := c.Param("podcastId")
 
