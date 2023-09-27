@@ -162,8 +162,8 @@ func Contains(s []string, val string) bool {
 	return false
 }
 
-func ConvertToUnix(date string) int64 {
-	i, err := strconv.ParseInt(date, 10, 64)
+func ConvertToUnix(date string) uint64 {
+	i, err := strconv.ParseUint(date, 10, 64)
 	if err != nil {
 		panic(err)
 	}

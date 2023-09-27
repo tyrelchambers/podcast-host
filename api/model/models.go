@@ -18,7 +18,7 @@ type Episode struct {
 	Image         string `json:"image"`
 	PodcastId     string `json:"podcast_id"`
 	Keywords      string `json:"keywords"`
-	PublishDate   int64  `json:"publish_date"`
+	PublishDate   uint64 `json:"publish_date"`
 	Author        string `json:"author"`
 	EpisodeNumber uint64 `json:"episode_number"`
 	Draft         bool   `json:"draft"`
