@@ -5,12 +5,10 @@ import (
 	"api/helpers"
 	"api/model"
 	"api/models"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 
-	"github.com/gorilla/mux"
 	"github.com/labstack/echo/v4"
 )
 
@@ -63,65 +61,71 @@ func CreateEpisode(c echo.Context) error {
 	return nil
 }
 
-func GetEpisode(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+func GetEpisode(c echo.Context) error {
 
-	p := mux.Vars(r)
-
-	id := p["id"]
+	id := c.Param("id")
 
 	episode, err := models.GetEpisodeById(id, helpers.DbClient())
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		fmt.Println(err.Error())
+		return echo.NewHTTPError(500, err.Error())
 	}
 
-	json.NewEncoder(w).Encode(episode)
+	return c.JSON(http.StatusOK, episode)
 }
 
-func UpdateEpisode(w http.ResponseWriter, r *http.Request) {
-	// w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	// w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+func UpdateEpisode(c echo.Context) error {
+	e := make(chan error)
+	var episode model.Episode
 
-	// if r.Method == "OPTIONS" {
-	// 	w.WriteHeader(http.StatusOK)
-	// 	return
-	// }
+	var uploadPath = c.FormValue("url")
 
-	// e := make(chan error)
+	fmt.Println(c.FormValue("episodeNumber"))
 
-	// r.ParseMultipartForm(3 << 20)
+	var convertedDate uint64
 
-	// var episode model.Episode
-	// var uploadPath = r.FormValue("url")
+	if c.FormValue("publishDate") != "" {
+		convertedDate = helpers.ConvertToUnix(c.FormValue("publishDate"))
 
-	// file, _, noFile := r.FormFile("file")
+	}
 
-	// if noFile == nil {
-	// 	p := helpers.WriteFileAndUpload(r, e, file)
-	// 	uploadPath = p
-	// }
+	convertedEpNum, err := strconv.ParseUint(c.FormValue("episodeNumber"), 10, 64)
 
-	// episode.Title = r.FormValue("title")
-	// episode.Description = r.FormValue("description")
-	// episode.Keywords = r.FormValue("keywords")
-	// episode.PublishDate = r.FormValue("publishDate")
-	// episode.Author = r.FormValue("author")
-	// episode.EpisodeNumber = r.FormValue("episodeNumber")
-	// episode.ID = r.FormValue("id")
-	// episode.URL = uploadPath
-	// episode.PodcastId = r.FormValue("podcastId")
+	episode.Title = c.FormValue("title")
+	episode.Description = c.FormValue("description")
+	episode.Keywords = c.FormValue("keywords")
+	episode.PublishDate = convertedDate
+	episode.Author = c.FormValue("author")
+	episode.EpisodeNumber = convertedEpNum
+	episode.ID = c.FormValue("id")
+	episode.URL = uploadPath
+	episode.PodcastId = c.FormValue("podcastId")
 
-	// err := models.UpdateEpisode(episode, helpers.DbClient())
+	file, _ := c.FormFile("file")
 
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
+	if file != nil {
+		src, _ := file.Open()
+		uploadPathUrl := fmt.Sprintf("/%s/%s.mp3", episode.PodcastId, file.Filename)
 
-	// close(e)
+		go helpers.WriteFileAndUpload(c, src, episode.PodcastId, file.Filename)
 
+		episode.URL = fmt.Sprintf("%s%s", constants.BUNNY_URL_BASE, uploadPathUrl)
+
+		defer src.Close()
+
+	}
+
+	err = models.UpdateEpisode(episode, helpers.DbClient())
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return echo.NewHTTPError(500, err.Error())
+	}
+
+	close(e)
+
+	return nil
 }
 
 func DeleteEpisode(c echo.Context) error {

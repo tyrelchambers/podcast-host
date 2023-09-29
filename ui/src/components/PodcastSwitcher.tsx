@@ -52,7 +52,7 @@ export function PodcastSwitcher({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between text-foreground"
+          className="w-[200px] justify-between text-background-alt-foreground border-border bg-background-alt-foreground/10"
         >
           {value ? podcastState.get(value)?.title : activePodcast?.title}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

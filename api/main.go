@@ -36,10 +36,9 @@ func main() {
 	}))
 
 	e.POST("/api/episode/create", routes.CreateEpisode)
-	// r.HandleFunc("/api/episode/{id}/edit", routes.UpdateEpisode).Methods(http.MethodPost, http.MethodOptions)
+	e.POST("/api/episode/:id/edit", routes.UpdateEpisode)
 	e.DELETE("/api/episode/:id/delete", routes.DeleteEpisode)
-	// r.HandleFunc("/api/episode/{id}", routes.GetEpisode).Methods(http.MethodGet, http.MethodOptions)
-
+	e.GET("/api/episode/:id", routes.GetEpisode)
 	e.POST("/api/auth/register", routes.AuthHandler)
 	e.POST("/api/auth/login", routes.Login)
 

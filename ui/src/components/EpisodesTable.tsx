@@ -15,9 +15,10 @@ import { Badge } from "./ui/badge";
 
 interface Props {
   episodes: Episode[] | undefined;
+  podcastName: string;
 }
 
-const EpisodesTable = ({ episodes }: Props) => {
+const EpisodesTable = ({ episodes, podcastName }: Props) => {
   if (!episodes?.length) {
     return null;
   }
@@ -35,15 +36,17 @@ const EpisodesTable = ({ episodes }: Props) => {
       <TableBody>
         {episodes.length > 0 &&
           episodes
-            .sort((a, b) => Number(b.episodeNumber) - Number(a.episodeNumber))
+            .sort((a, b) => b.episode_number - a.episode_number)
             .map((episode) => (
               <TableRow key={episode.id}>
                 <TableCell className="text-muted-foreground font-light">
-                  {episode.episodeNumber}
+                  {episode.episode_number}
                 </TableCell>
                 <TableCell></TableCell>
                 <TableCell className="text-blue-500 underline font-medium">
-                  <Link href={`/episode/${episode.id}/edit`}>
+                  <Link
+                    href={`/podcast/${podcastName}/episode/${episode.id}/edit`}
+                  >
                     {episode.title}
                   </Link>
                 </TableCell>
@@ -55,10 +58,11 @@ const EpisodesTable = ({ episodes }: Props) => {
                   )}
                 </TableCell>
                 <TableCell className="text-right text-muted-foreground font-light">
-                  {format(
-                    fromUnixTime(Number(episode.publishDate) ?? 0),
-                    "MMM dd, yyyy hh:mm a"
-                  )}
+                  {episode.publish_date &&
+                    format(
+                      fromUnixTime(episode.publish_date),
+                      "MMM dd, yyyy hh:mm a"
+                    )}
                 </TableCell>
               </TableRow>
             ))}

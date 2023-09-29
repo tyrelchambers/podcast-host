@@ -3,7 +3,7 @@ import { Episode, formSchema } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import EpisodeForm, { SubmitHandlerProps } from "./edit/EpisodeForm";
-import { Suspense, useRef } from "react";
+import { Suspense, useRef, useState } from "react";
 import { z } from "zod";
 import { getUnixTime } from "date-fns";
 import axios from "axios";
@@ -12,6 +12,8 @@ import { useRouter } from "next/navigation";
 
 const EpisodeEditBody = ({ episode }: { episode: Episode | undefined }) => {
   const fileUploadRef = useRef<HTMLInputElement>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -57,8 +59,9 @@ const EpisodeEditBody = ({ episode }: { episode: Episode | undefined }) => {
           description,
           author: data.author,
           keywords: data.keywords,
-          episodeNumber: data.episodeNumber,
+          episodeNumber: data.episode_number,
           url: episode?.url,
+          publishDate: episode?.publish_date,
           file,
         },
         {
@@ -66,6 +69,13 @@ const EpisodeEditBody = ({ episode }: { episode: Episode | undefined }) => {
             "Content-Type": "multipart/form-data",
           },
           withCredentials: true,
+          onUploadProgress: (progressEvent) => {
+            if (file && progressEvent.total) {
+              setUploadProgress(
+                Math.round((progressEvent.loaded * 100) / progressEvent.total)
+              );
+            }
+          },
         }
       )
       .then(() => {
@@ -109,6 +119,7 @@ const EpisodeEditBody = ({ episode }: { episode: Episode | undefined }) => {
       ctaText="Edit episode"
       deleteHandler={deleteHandler}
       isEditing
+      uploadProgress={uploadProgress}
     />
   );
 };

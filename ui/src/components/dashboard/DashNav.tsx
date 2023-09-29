@@ -53,12 +53,15 @@ interface Props {
 const DashNav = ({ rootPath }: Props) => {
   return (
     <nav className="my-10 flex-1">
-      <ul className="flex flex-col gap-4">
+      <ul className="flex flex-col">
         {routes(rootPath).map((route) => (
-          <li key={route.path} className="hover:text-accent transition-all">
+          <li
+            key={route.path}
+            className="text-background-alt-foreground/70 hover:text-background-alt-foreground transition-all p-4 hover:bg-background-alt-foreground/10"
+          >
             <Link href={route.path} className="flex items-center gap-3">
-              <FontAwesomeIcon icon={route.icon} className="text-primary" />
-              <span className="font-light ">{route.label}</span>
+              <FontAwesomeIcon icon={route.icon} />
+              <span>{route.label}</span>
             </Link>
           </li>
         ))}

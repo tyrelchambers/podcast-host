@@ -1,5 +1,7 @@
 import EpisodeEditBody from "@/components/EpisodeEditBody";
 import { useEpisodeQuery } from "@/hooks/api/useEpisodeQuery";
+import DashHeader from "@/layouts/dashboard/DashHeader";
+import DashLayout from "@/layouts/dashboard/DashLayout";
 import { Episode } from "@/lib/types";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -11,10 +13,10 @@ const Page = () => {
   const episode = useEpisodeQuery(router.query.id as string);
 
   return (
-    <main className="max-w-screen-lg mx-auto py-10">
+    <DashLayout leftCol={<DashHeader rootPath={router.query.name as string} />}>
       <h1 className="h1">Edit episode</h1>
       <EpisodeEditBody episode={episode.data} />
-    </main>
+    </DashLayout>
   );
 };
 

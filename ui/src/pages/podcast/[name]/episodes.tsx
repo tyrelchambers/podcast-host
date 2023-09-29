@@ -17,10 +17,7 @@ const Episodes = () => {
   const episodes = useEpisodesQuery(nameParam as string);
 
   return (
-    <DashLayout
-      leftCol={<DashHeader rootPath={router.query.name as string} />}
-      rightCol={<p>hey over here</p>}
-    >
+    <DashLayout leftCol={<DashHeader rootPath={router.query.name as string} />}>
       <h1 className="h1">Episodes</h1>
 
       <section className="flex mt-10 justify-between gap-4">
@@ -36,7 +33,10 @@ const Episodes = () => {
       </section>
 
       <section className="bg-card p-4 rounded-xl shadow-sm mt-4">
-        <EpisodesTable episodes={episodes.data} />
+        <EpisodesTable
+          episodes={episodes.data}
+          podcastName={nameParam as string}
+        />
       </section>
     </DashLayout>
   );

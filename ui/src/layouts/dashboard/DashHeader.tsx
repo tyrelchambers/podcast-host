@@ -11,10 +11,14 @@ const DashHeader = ({ rootPath }: Props) => {
   const podcastStore = usePodcastStore();
 
   return (
-    <header className="bg-card h-full p-4 flex flex-col">
-      <p>Resonate</p>
+    <header className="bg-background-alt h-full  flex flex-col">
+      <header className="p-4">
+        <p className="text-background-alt-foreground">Resonate</p>
+      </header>
       <DashNav rootPath={rootPath} />
-      <PodcastSwitcher activePodcast={podcastStore.activePodcast} />
+      <footer className="p-4">
+        <PodcastSwitcher activePodcast={podcastStore.activePodcast} />
+      </footer>
     </header>
   );
 };

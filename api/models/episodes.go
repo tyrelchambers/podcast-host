@@ -28,7 +28,7 @@ func CreateEpisode(episode *model.Episode, db *sql.DB) (e error) {
 }
 
 func GetEpisodeById(id string, db *sql.DB) (episode model.Episode, e error) {
-	cmd := `SELECT id, title, description, url, podcast_id, keywords, publishDate, author, episode_number FROM Episodes WHERE id = $1`
+	cmd := `SELECT id, title, description, url, podcast_id, keywords, publish_date, author, episode_number FROM Episodes WHERE id = $1`
 
 	row := db.QueryRow(cmd, id)
 
@@ -48,7 +48,7 @@ func UpdateEpisode(episode model.Episode, db *sql.DB) (e error) {
 		return errors.New("Failed to update episode. Missing ID.")
 	}
 
-	cmd := `UPDATE Episodes SET title = $1, description = $2, url = $3, keywords = $5, author = $6, episode_number = $7 WHERE id = $8`
+	cmd := `UPDATE Episodes SET title = $1, description = $2, url = $3, keywords = $4, author = $5, episode_number = $6 WHERE id = $7`
 
 	res, err := db.Exec(cmd, episode.Title, episode.Description, episode.URL, episode.Keywords, episode.Author, episode.EpisodeNumber, episode.ID)
 

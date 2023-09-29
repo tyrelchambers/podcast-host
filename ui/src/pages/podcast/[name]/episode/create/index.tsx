@@ -26,7 +26,7 @@ const Page = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     values: {
-      episodeNumber: miscInfo.data?.nextEpisodeNumber
+      episode_number: miscInfo.data?.nextEpisodeNumber
         ? String(miscInfo.data?.nextEpisodeNumber)
         : "1",
       scheduleHour: "12",
@@ -77,7 +77,7 @@ const Page = () => {
         description: description,
         author: data.author,
         keywords: data.keywords,
-        episodeNumber: data.episodeNumber,
+        episodeNumber: data.episode_number,
         publishDate: getDate().toString(),
         podcastId: podcast?.id ?? "",
         draft: data.draft,
@@ -96,10 +96,7 @@ const Page = () => {
   };
 
   return (
-    <DashLayout
-      leftCol={<DashHeader rootPath={router.query.name as string} />}
-      rightCol={<p>hey over here</p>}
-    >
+    <DashLayout leftCol={<DashHeader rootPath={router.query.name as string} />}>
       <h1 className="h1">Create your episode</h1>
       <section className="section-card">
         <EpisodeForm
