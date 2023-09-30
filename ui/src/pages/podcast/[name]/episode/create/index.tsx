@@ -26,9 +26,7 @@ const Page = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     values: {
-      episode_number: miscInfo.data?.nextEpisodeNumber
-        ? String(miscInfo.data?.nextEpisodeNumber)
-        : "1",
+      episode_number: miscInfo.data?.nextEpisodeNumber ?? 0,
       scheduleHour: "12",
       scheduleMinute: "00",
       scheduleMeridiem: "PM",

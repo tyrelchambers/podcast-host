@@ -21,13 +21,13 @@ export const formSchema = z.object({
   author: z.string(),
   keywords: z.string(),
   episode_number: z.number(),
-  scheduleHour: z.string().optional(),
-  scheduleMinute: z.string().optional(),
-  scheduleMeridiem: z.string().optional(),
+  schedule_hour: z.string().optional(),
+  schedule_minute: z.string().optional(),
+  schedule_meridiem: z.string().optional(),
   publish_date: z.number().optional(),
   url: z.string().optional(),
-  podcastId: z.string().optional(),
-  explicitContent: z.boolean().optional(),
+  podcast_id: z.string().optional(),
+  explicit_content: z.boolean().optional(),
   draft: z.boolean(),
 });
 
@@ -36,7 +36,7 @@ export type Episode = z.infer<typeof formSchema>;
 export type SelectOptions = {
   value: string;
   display: string;
-  subCategories?: SelectOptions[];
+  sub_categories?: SelectOptions[];
 };
 
 export interface Podcast {
@@ -44,28 +44,28 @@ export interface Podcast {
   title: string;
   description: string;
   thumbnail: string | undefined;
-  explicitContent: boolean | undefined;
-  primaryCategory: string | undefined;
-  secondaryCategory: string | undefined;
+  explicit_content: boolean | undefined;
+  primary_category: string | undefined;
+  secondary_category: string | undefined;
   author: string;
   copyright: string | undefined;
   keywords: string | undefined;
   website: string | undefined;
   language: string | undefined;
   timezone: string | undefined;
-  showOwner: string | undefined;
-  ownerEmail: string;
-  displayEmailInRSS: boolean | undefined;
-  userID: string;
+  show_owner: string | undefined;
+  owner_email: string;
+  display_email_in_RSS: boolean | undefined;
+  user_id: string;
   episodes: Episode[];
 }
 
 export interface PodcastSettings {
   podcast: Podcast;
-  latestEpisode: Episode;
+  latest_episode: Episode;
 }
 
 export interface MiscInfo {
-  nextEpisodeNumber: number;
-  rssFeed: string;
+  next_episode_number: number;
+  rss_feed: string;
 }

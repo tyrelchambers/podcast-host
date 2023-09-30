@@ -38,8 +38,8 @@ const EpisodeEditBody = ({ episode }: { episode: Episode | undefined }) => {
             publishDate.getUTCFullYear(),
             publishDate.getUTCMonth(),
             publishDate.getUTCDate(),
-            Number(data.scheduleHour),
-            Number(data.scheduleMinute),
+            Number(data.schedule_hour),
+            Number(data.schedule_minute),
             0
           )
         );
@@ -62,6 +62,7 @@ const EpisodeEditBody = ({ episode }: { episode: Episode | undefined }) => {
           episodeNumber: data.episode_number,
           url: episode?.url,
           publishDate: episode?.publish_date,
+          podcastId: episode?.podcast_id,
           file,
         },
         {
@@ -111,16 +112,18 @@ const EpisodeEditBody = ({ episode }: { episode: Episode | undefined }) => {
   };
 
   return (
-    <EpisodeForm
-      form={form}
-      episode={episode}
-      submitHandler={submitHandler}
-      fileUploadRef={fileUploadRef}
-      ctaText="Edit episode"
-      deleteHandler={deleteHandler}
-      isEditing
-      uploadProgress={uploadProgress}
-    />
+    <section className="section-card">
+      <EpisodeForm
+        form={form}
+        episode={episode}
+        submitHandler={submitHandler}
+        fileUploadRef={fileUploadRef}
+        ctaText="Edit episode"
+        deleteHandler={deleteHandler}
+        isEditing
+        uploadProgress={uploadProgress}
+      />
+    </section>
   );
 };
 

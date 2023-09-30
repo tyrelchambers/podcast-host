@@ -37,7 +37,7 @@ const Podcast = () => {
   const miscInfo = useMiscInfoQuery(podcastStore.activePodcast?.id ?? "");
 
   const podcast = data?.podcast;
-  const latestEpisodes = data?.latestEpisode;
+  const latestEpisodes = data?.latest_episode;
 
   useEffect(() => {
     if (router.query.name) {

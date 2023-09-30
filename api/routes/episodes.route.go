@@ -104,9 +104,13 @@ func UpdateEpisode(c echo.Context) error {
 
 	file, _ := c.FormFile("file")
 
+	if episode.PodcastId == "" {
+		return echo.NewHTTPError(500, "Missing podcastId")
+	}
+
 	if file != nil {
 		src, _ := file.Open()
-		uploadPathUrl := fmt.Sprintf("/%s/%s.mp3", episode.PodcastId, file.Filename)
+		uploadPathUrl := fmt.Sprintf("/%s/%s", episode.PodcastId, helpers.ConvertToMp3(file.Filename))
 
 		go helpers.WriteFileAndUpload(c, src, episode.PodcastId, file.Filename)
 

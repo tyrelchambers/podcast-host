@@ -254,39 +254,17 @@ const EpisodeForm = ({
           />
         </div>
         <FormField
-          name="episodeNumber"
+          name="episode_number"
           render={({ field }) => (
             <FormItem className="w-fit">
-              <Label htmlFor="episodeNumber">Episode number</Label>
-              <Input defaultValue={0} type="number" {...field} />
-              {errors.episodeNumber && (
-                <p className="text-red-500">{errors.episodeNumber.message}</p>
+              <Label htmlFor="episode_number">Episode number</Label>
+              <Input type="number" min={0} {...field} />
+              {errors.episode_number && (
+                <p className="text-red-500">{errors.episode_number.message}</p>
               )}
             </FormItem>
           )}
         />
-
-        {form.getValues("publishDate") && (
-          <div className="flex gap-4">
-            <div className="bg-green-100 w-fit p-2 px-5 rounded-full text-green-700 flex items-center gap-2 text-sm">
-              <FontAwesomeIcon icon={faCheckCircle} className="text-primary" />
-              <span className="font-bold">Published</span> on{" "}
-              {format(
-                fromUnixTime(Number(form.getValues("publishDate"))),
-                "MMMM dd, yyyy hh:mm a"
-              )}
-            </div>
-
-            {/* <Button
-              variant="ghost"
-              className="w-fit"
-              type="button"
-              onClick={() => setChangePublishDate(!changePublishDate)}
-            >
-              Change date
-            </Button> */}
-          </div>
-        )}
 
         {!isEditing && (
           <>
@@ -300,16 +278,16 @@ const EpisodeForm = ({
                 <DatePicker date={publishDate} setDate={setPublishDate} />
                 <span>at</span>
                 <ScheduleHourSelector
-                  time={form.getValues("scheduleHour")}
-                  setTime={(v) => form.setValue("scheduleHour", v)}
+                  time={form.getValues("schedule_hour")}
+                  setTime={(v) => form.setValue("schedule_hour", v)}
                 />
                 <ScheduleMinuteSelector
-                  time={form.getValues("scheduleMinute")}
-                  setTime={(v) => form.setValue("scheduleMinute", v)}
+                  time={form.getValues("schedule_minute")}
+                  setTime={(v) => form.setValue("schedule_minute", v)}
                 />
                 <ScheduleMeridiemSelector
-                  time={form.getValues("scheduleMeridiem")}
-                  setTime={(v) => form.setValue("scheduleMeridiem", v)}
+                  time={form.getValues("schedule_meridiem")}
+                  setTime={(v) => form.setValue("schedule_meridiem", v)}
                 />
               </div>
             )}
@@ -336,6 +314,28 @@ const EpisodeForm = ({
             </FormItem>
           )}
         />
+
+        {form.getValues("publish_date") && (
+          <div className="flex gap-4">
+            <div className="bg-green-100 w-fit p-2 px-5 rounded-full text-green-700 flex items-center gap-2 text-sm">
+              <FontAwesomeIcon icon={faCheckCircle} className="text-primary" />
+              <span className="font-bold">Published</span> on{" "}
+              {format(
+                fromUnixTime(Number(form.getValues("publish_date"))),
+                "MMMM dd, yyyy hh:mm a"
+              )}
+            </div>
+
+            {/* <Button
+              variant="ghost"
+              className="w-fit"
+              type="button"
+              onClick={() => setChangePublishDate(!changePublishDate)}
+            >
+              Change date
+            </Button> */}
+          </div>
+        )}
         <Button
           type="submit"
           onClick={() => submit(form.getValues())}
