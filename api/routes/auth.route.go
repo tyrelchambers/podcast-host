@@ -5,6 +5,7 @@ import (
 	"api/model"
 	"api/models"
 	sessions "api/session"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -15,22 +16,29 @@ func AuthHandler(c echo.Context) error {
 
 	db := helpers.DbClient()
 
-	var u model.User
+	var body model.RegisterBody
 
-	err := c.Bind(&u)
+	err := (&echo.DefaultBinder{}).BindBody(c, &body)
+
 	if err != nil {
-		return c.String(http.StatusBadRequest, "bad request")
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	newUser, e := models.CreateUser(&u, db)
+	if body.Password == "" || body.Email == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid email or password.")
+	}
+
+	newUser, e := models.CreateUser(body, db)
 
 	if e != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, e.Error())
 	}
 
 	cookieValues := model.Cookie{
-		UserID: newUser.ID,
+		UserID: newUser.UUID,
 	}
+
+	fmt.Println(cookieValues)
 
 	sessions.SessionHandler(c, cookieValues)
 
@@ -38,16 +46,13 @@ func AuthHandler(c echo.Context) error {
 }
 
 func Login(c echo.Context) error {
-	type Body struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
 
-	var body Body
-	err := c.Bind(&body)
+	var body *model.RegisterBody
+
+	err := (&echo.DefaultBinder{}).BindBody(c, &body)
 
 	if err != nil {
-		return c.String(http.StatusBadRequest, "bad request")
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	user, err := models.FindUserByEmail(body.Email, helpers.DbClient())
@@ -63,7 +68,7 @@ func Login(c echo.Context) error {
 	}
 
 	cookieValues := model.Cookie{
-		UserID: user.ID,
+		UserID: user.UUID,
 	}
 
 	sessions.SessionHandler(c, cookieValues)

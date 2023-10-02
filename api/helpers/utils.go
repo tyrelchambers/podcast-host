@@ -3,7 +3,6 @@ package helpers
 import (
 	"api/constants"
 	"context"
-	"database/sql"
 	"fmt"
 	"io"
 	"log"
@@ -13,22 +12,18 @@ import (
 	"strconv"
 	"time"
 
+	"gorm.io/driver/postgres"
+
 	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	ffmpeg_go "github.com/u2takey/ffmpeg-go"
+	"gorm.io/gorm"
 )
 
-func DbClient() *sql.DB {
+func DbClient() *gorm.DB {
 
-	db, err := sql.Open("postgres", constants.DbUrl)
-	db.SetConnMaxLifetime(10 * time.Minute)
-	db.SetMaxOpenConns(5)
-	if err != nil {
-		panic(err)
-	}
-
-	err = db.Ping()
+	db, err := gorm.Open(postgres.Open(constants.DbUrl), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}

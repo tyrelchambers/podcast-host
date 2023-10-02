@@ -30,7 +30,7 @@ func CreatePodcast(c echo.Context) error {
 	podcast.ShowOwner = c.FormValue("showOwner")
 	podcast.OwnerEmail = c.FormValue("ownerEmail")
 	podcast.DisplayEmailInRSS = c.FormValue("displayEmailInRSS") == "true"
-	podcast.UserID = user.ID
+	podcast.UserID = user.UUID
 
 	// err = models.CreatePodcast(&podcast, helpers.DbClient())
 
@@ -40,7 +40,7 @@ func CreatePodcast(c echo.Context) error {
 func GetUserPodcasts(c echo.Context) error {
 	user := sessions.GetUserFromSession(c)
 
-	podcasts, err := models.GetUsersPodcasts(user.ID, helpers.DbClient())
+	podcasts, err := models.GetUsersPodcasts(user.UUID, helpers.DbClient())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get podcasts.")
@@ -61,9 +61,9 @@ func GetPodcastSettings(c echo.Context) error {
 
 	name := c.Param("name")
 
-	podcast, err := models.GetPodcastByNameWithEpisodes(name, user.ID, helpers.DbClient())
+	podcast, err := models.GetPodcastByNameWithEpisodes(name, user.UUID, helpers.DbClient())
 
-	latestEpisodeData, err := models.GetLatestEpisodeByPodcast(podcast.ID, helpers.DbClient())
+	latestEpisodeData, err := models.GetLatestEpisodeByPodcast(podcast.UUID, helpers.DbClient())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get latest episode.")
@@ -85,9 +85,9 @@ func GetPodcastEpisodes(c echo.Context) error {
 
 	pName := c.Param("name")
 
-	podcast, err := models.GetPodcastIdFromName(pName, helpers.DbClient())
+	podcastId, err := models.GetPodcastIdFromName(pName, helpers.DbClient())
 
-	episodes, err := models.GetPodcastEpisodesById(podcast.ID, helpers.DbClient())
+	episodes, err := models.GetPodcastEpisodesById(podcastId, helpers.DbClient())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get episodes.")

@@ -98,7 +98,7 @@ func UpdateEpisode(c echo.Context) error {
 	episode.PublishDate = convertedDate
 	episode.Author = c.FormValue("author")
 	episode.EpisodeNumber = convertedEpNum
-	episode.ID = c.FormValue("id")
+	episode.UUID = c.FormValue("id")
 	episode.URL = uploadPath
 	episode.PodcastId = c.FormValue("podcastId")
 

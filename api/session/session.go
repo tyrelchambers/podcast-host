@@ -4,6 +4,7 @@ import (
 	"api/helpers"
 	"api/model"
 	"api/models"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/sessions"
@@ -24,20 +25,22 @@ func SessionHandler(c echo.Context, values model.Cookie) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func GetUserFromSession(c echo.Context) model.User {
+func GetUserFromSession(c echo.Context) *model.User {
 	s, _ := session.Get("session-key", c)
 
 	val := s.Values["user_id"]
 
-	if val == nil {
-		return model.User{}
+	fmt.Println(val)
+
+	if val == nil || val.(string) == "" {
+		return nil
 	}
 
 	user, err := models.GetUser(val.(string), helpers.DbClient())
 
 	if err != nil {
-		return model.User{}
+		return nil
 	}
 
-	return user
+	return &user
 }
