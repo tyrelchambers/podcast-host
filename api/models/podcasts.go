@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreatePodcast(p *model.Podcast, db *gorm.DB) error {
+func CreatePodcast(p *model.PodcastDTO, db *gorm.DB) error {
 
 	db.Create(p)
 
@@ -17,25 +17,25 @@ func CreatePodcast(p *model.Podcast, db *gorm.DB) error {
 	return nil
 }
 
-func GetUsersPodcasts(userId string, db *gorm.DB) ([]model.Podcast, error) {
-	var podcasts []model.Podcast
+func GetUsersPodcasts(userId string, db *gorm.DB) ([]model.PodcastDTO, error) {
+	var podcasts []model.PodcastDTO
 
 	db.Find(&podcasts, "user_id = ?", userId)
 
 	return podcasts, nil
 }
 
-func GetPodcastById(id string, userId string, db *gorm.DB) (p model.Podcast, e error) {
-	var podcast model.Podcast
+func GetPodcastById(id string, userId string, db *gorm.DB) (p model.PodcastDTO, e error) {
+	var podcast model.PodcastDTO
 
 	db.First(&podcast, "id = ? AND user_id = ?", id, userId)
 
 	return podcast, nil
 }
 
-func GetPodcastByNameWithEpisodes(name string, userId string, db *gorm.DB) (p model.Podcast, e error) {
+func GetPodcastByNameWithEpisodes(name string, userId string, db *gorm.DB) (p model.PodcastDTO, e error) {
 
-	var podcast model.Podcast
+	var podcast model.PodcastDTO
 
 	parsedName := strings.Replace(name, "-", " ", -1)
 
@@ -46,7 +46,7 @@ func GetPodcastByNameWithEpisodes(name string, userId string, db *gorm.DB) (p mo
 }
 
 func GetPodcastIdFromName(name string, db *gorm.DB) (string, error) {
-	var podcast model.Podcast
+	var podcast model.PodcastDTO
 
 	parsedName := strings.Replace(name, "-", " ", -1)
 

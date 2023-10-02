@@ -5,7 +5,6 @@ import (
 	"api/model"
 	"api/models"
 	sessions "api/session"
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -37,8 +36,6 @@ func AuthHandler(c echo.Context) error {
 	cookieValues := model.Cookie{
 		UserID: newUser.UUID,
 	}
-
-	fmt.Println(cookieValues)
 
 	sessions.SessionHandler(c, cookieValues)
 

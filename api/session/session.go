@@ -4,7 +4,6 @@ import (
 	"api/helpers"
 	"api/model"
 	"api/models"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/sessions"
@@ -29,8 +28,6 @@ func GetUserFromSession(c echo.Context) *model.User {
 	s, _ := session.Get("session-key", c)
 
 	val := s.Values["user_id"]
-
-	fmt.Println(val)
 
 	if val == nil || val.(string) == "" {
 		return nil

@@ -11,28 +11,19 @@ import (
 )
 
 func CreatePodcast(c echo.Context) error {
-	var podcast model.Podcast
+	var podcast model.PodcastDTO
 
 	user := sessions.GetUserFromSession(c)
 
-	podcast.Thumbnail = c.FormValue("thumbnail")
-	podcast.Title = c.FormValue("title")
-	podcast.Description = c.FormValue("description")
-	podcast.ExplicitContent = c.FormValue("explicitContent") == "true"
-	podcast.PrimaryCategory = c.FormValue("primaryCategory")
-	podcast.SecondaryCategory = c.FormValue("secondaryCategory")
-	podcast.Author = c.FormValue("author")
-	podcast.Copyright = c.FormValue("copyright")
-	podcast.Keywords = c.FormValue("keywords")
-	podcast.Website = c.FormValue("website")
-	podcast.Language = c.FormValue("language")
-	podcast.Timezone = c.FormValue("timezone")
-	podcast.ShowOwner = c.FormValue("showOwner")
-	podcast.OwnerEmail = c.FormValue("ownerEmail")
-	podcast.DisplayEmailInRSS = c.FormValue("displayEmailInRSS") == "true"
+	err := (&echo.DefaultBinder{}).BindBody(c, &podcast)
+
 	podcast.UserID = user.UUID
 
 	// err = models.CreatePodcast(&podcast, helpers.DbClient())
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to create podcast.")
+	}
 
 	return c.JSON(http.StatusOK, podcast)
 }
@@ -51,8 +42,8 @@ func GetUserPodcasts(c echo.Context) error {
 
 func GetPodcastSettings(c echo.Context) error {
 	type Body struct {
-		Podcast       model.Podcast `json:"podcast"`
-		LatestEpisode model.Episode `json:"latestEpisode"`
+		Podcast       model.PodcastDTO `json:"podcast"`
+		LatestEpisode model.Episode    `json:"latestEpisode"`
 	}
 
 	var rBody Body

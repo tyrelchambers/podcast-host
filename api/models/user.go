@@ -28,33 +28,38 @@ func CheckUserExists(email string, db *gorm.DB) (userExists bool) {
 	return true
 }
 
-func CreateUser(user model.RegisterBody, db *gorm.DB) (u *model.User, e error) {
+func CreateUser(user model.RegisterBody, db *gorm.DB) (*model.UserDTO, error) {
 
 	id := cuid.New()
-
-	var newUser model.User
 
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 
 	if err != nil {
 		fmt.Println("ERROR: ", err)
-		return u, err
+		return nil, err
 	}
 
-	db.Create(&model.User{
+	newUser := model.UserDTO{
 		UUID:     id,
 		Email:    user.Email,
 		Password: string(hashPassword),
-	})
+	}
 
-	fmt.Println("SUCCESS: new user created")
+	db.Create(&newUser)
+
+	if db.Error != nil {
+		fmt.Println("ERROR: ", err)
+		return nil, err
+	}
+
+	fmt.Printf("SUCCESS: new user created: %s\n", newUser.UUID)
 	return &newUser, nil
 }
 
-func GetUser(id string, db *gorm.DB) (user model.User, e error) {
+func GetUser(id string, db *gorm.DB) (model.User, error) {
 	var u model.User
 
-	db.Where("uuid = ?", id).First(&u)
+	db.Table("user_dtos").Where("uuid = ?", id).First(&u)
 
 	if db.Error != nil {
 		return u, errors.New("Failed to get user. Doesn't exist.")

@@ -7,60 +7,53 @@ import (
 )
 
 type User struct {
-	UUID      string         `gorm:"primaryKey" json:"uuid"`
-	Email     string         `gorm:"unique;not null" json:"email"`
-	Password  string         `gorm:"not null" json:"password"`
-	Podcasts  []Podcast      `json:"podcasts"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	gorm.Model
+	UUID     string     `json:"uuid"`
+	Email    string     `json:"email"`
+	Password string     `json:"password"`
+	Podcasts []*Podcast `json:"podcasts" gorm:"foreignKey:UserID"`
 }
 type Podcast struct {
-	UUID              string         `gorm:"primaryKey" json:"uuid"`
-	Title             string         `gorm:"not null" json:"title"`
-	Description       string         `gorm:"not null" json:"description"`
-	Thumbnail         string         `json:"thumbnail"`
-	ExplicitContent   bool           `json:"explicit_content"`
-	PrimaryCategory   string         `json:"primary_category"`
-	SecondaryCategory string         `json:"secondary_category"`
-	Author            string         `gorm:"not null" json:"author"`
-	Copyright         string         `json:"copyright"`
-	Keywords          string         `json:"keywords"`
-	Website           string         `json:"website"`
-	Language          string         `json:"language"`
-	Timezone          string         `json:"timezone"`
-	ShowOwner         string         `json:"show_owner"`
-	OwnerEmail        string         `gorm:"not null" json:"owner_email"`
-	DisplayEmailInRSS bool           `json:"display_email_in_rss"`
-	UserID            string         `json:"user_id"`
-	Episodes          []Episode      `json:"episodes"`
-	CreatedAt         time.Time      `json:"created_at"`
-	UpdatedAt         time.Time      `json:"updated_at"`
-	DeletedAt         gorm.DeletedAt `gorm:"index" json:"-"`
+	gorm.Model
+	UUID              string     `json:"uuid"`
+	Title             string     `json:"title"`
+	Description       string     `json:"description"`
+	Thumbnail         string     `json:"thumbnail"`
+	ExplicitContent   bool       `json:"explicit_content"`
+	PrimaryCategory   string     `json:"primary_category"`
+	SecondaryCategory string     `json:"secondary_category"`
+	Author            string     `json:"author"`
+	Copyright         string     `json:"copyright"`
+	Keywords          string     `json:"keywords"`
+	Website           string     `json:"website"`
+	Language          string     `json:"language"`
+	Timezone          string     `json:"timezone"`
+	ShowOwner         string     `json:"show_owner"`
+	OwnerEmail        string     `json:"owner_email"`
+	DisplayEmailInRSS bool       `json:"display_email_in_rss"`
+	UserID            string     `json:"user_id"`
+	Episodes          []*Episode `gorm:"foreignKey:PodcastId" json:"episodes"`
 }
 
 type Episode struct {
-	UUID          string         `gorm:"primaryKey" json:"uuid"`
-	Title         string         `gorm:"not null" json:"title"`
-	Description   string         `json:"description"`
-	URL           string         `json:"url"`
-	Image         string         `json:"image"`
-	PodcastId     string         `json:"podcast_id"`
-	Keywords      string         `json:"keywords"`
-	PublishDate   uint64         `json:"publish_date"`
-	Author        string         `json:"author"`
-	EpisodeNumber uint64         `json:"episode_number"`
-	Draft         bool           `json:"draft"`
-	CreatedAt     time.Time      `json:"created_at"`
-	UpdatedAt     time.Time      `json:"updated_at"`
-	DeletedAt     gorm.DeletedAt `gorm:"index" json:"-"`
+	UUID          string   `json:"uuid"`
+	Title         string   `json:"title"`
+	Description   string   `json:"description"`
+	URL           string   `json:"url"`
+	Image         string   `json:"image"`
+	PodcastId     string   `json:"podcast_id"`
+	Podcast       *Podcast `gorm:"foreignKey:UUID;references:PodcastId"`
+	Keywords      string   `json:"keywords"`
+	PublishDate   uint64   `json:"publish_date"`
+	Author        string   `json:"author"`
+	EpisodeNumber uint64   `json:"episode_number"`
+	Draft         bool     `json:"draft"`
 }
 
 type Cookie struct {
 	UserID       string
 	UUID         string `gorm:"primaryKey"`
 	SessionToken string
-	ExpiresAt    time.Time
 }
 
 type PodcastEpisode struct {

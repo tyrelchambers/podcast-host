@@ -42,7 +42,7 @@ func DeleteEpisode(id string, db *gorm.DB) (e error) {
 }
 
 func GetLatestEpisodeByPodcast(podcastID string, db *gorm.DB) (model.Episode, error) {
-	var podcast model.Podcast
+	var podcast model.PodcastDTO
 	var episode model.Episode
 
 	db.First(&podcast, "id = ?", podcastID)

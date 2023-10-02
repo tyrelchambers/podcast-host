@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/feeds"
 )
 
-func CreateRssFeed(podcast *model.Podcast) string {
+func CreateRssFeed(podcast *model.PodcastDTO) string {
 	feed := &feeds.Feed{
 		Title:       podcast.Title,
 		Link:        &feeds.Link{Href: "https://tyrelchambers.com"},

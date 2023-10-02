@@ -19,7 +19,11 @@ import (
 func main() {
 	db := helpers.DbClient()
 
-	db.AutoMigrate(&model.User{}, &model.Podcast{}, &model.Episode{})
+	err := db.AutoMigrate(&model.UserDTO{}, &model.PodcastDTO{}, &model.EpisodeDTO{})
+
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
 
 	store, err := pgstore.NewPGStore(constants.DbUrl, []byte("secret-key"))
 
