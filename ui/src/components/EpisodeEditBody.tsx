@@ -2,7 +2,7 @@
 import { Episode, formSchema } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import EpisodeForm, { SubmitHandlerProps } from "./edit/EpisodeForm";
+import EpisodeForm, { SubmitHandlerProps } from "../forms/EpisodeForm";
 import { Suspense, useRef, useState } from "react";
 import { z } from "zod";
 import { getUnixTime } from "date-fns";

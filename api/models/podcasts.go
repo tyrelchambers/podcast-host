@@ -276,3 +276,60 @@ func GetPodcastEpisodesById(id string, db *sql.DB) ([]model.Episode, error) {
 	return episodes, nil
 
 }
+
+func UpdatePodcast(podcast *model.Podcast, db *sql.DB) error {
+	cmd := `
+		UPDATE Podcasts SET
+			title = $1,
+			description = $2,
+			thumbnail = $3,
+			explicit_content = $4,
+			primary_category = $5,
+			secondary_category = $6,
+			author = $7,
+			copyright = $8,
+			keywords = $9,
+			website = $10,
+			language = $11,
+			timezone = $12,
+			show_owner = $13,
+			owner_email = $14,
+			display_email_in_rss = $15
+		WHERE
+			id = $16
+	`
+
+	res, err := db.Exec(cmd,
+		podcast.Title,
+		podcast.Description,
+		podcast.Thumbnail,
+		podcast.ExplicitContent,
+		podcast.PrimaryCategory,
+		podcast.SecondaryCategory,
+		podcast.Author,
+		podcast.Copyright,
+		podcast.Keywords,
+		podcast.Website,
+		podcast.Language,
+		podcast.Timezone,
+		podcast.ShowOwner,
+		podcast.OwnerEmail,
+		podcast.DisplayEmailInRSS,
+		podcast.ID,
+	)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+
+	count, err := res.RowsAffected()
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("SUCCESS: updated %d podcast\n", count)
+
+	return nil
+}

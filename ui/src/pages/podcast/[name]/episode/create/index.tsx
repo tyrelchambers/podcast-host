@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from "react";
 
-import EpisodeForm, { SubmitHandlerProps } from "@/components/edit/EpisodeForm";
+import EpisodeForm, { SubmitHandlerProps } from "@/forms/EpisodeForm";
 import { getUnixTime } from "date-fns";
 import { useForm } from "react-hook-form";
 import { formSchema } from "@/lib/types";

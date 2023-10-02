@@ -95,3 +95,22 @@ func GetPodcastEpisodes(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, episodes)
 }
+
+func UpdatePodcast(c echo.Context) error {
+	pName := c.Param("name")
+
+	podcast, err := models.GetPodcastIdFromName(pName, helpers.DbClient())
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get podcast.")
+	}
+
+	err = models.UpdatePodcast(&podcast, helpers.DbClient())
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to update podcast.")
+	}
+
+	return c.JSON(http.StatusOK, "")
+
+}

@@ -69,3 +69,21 @@ export interface MiscInfo {
   next_episode_number: number;
   rss_feed: string;
 }
+
+export const podcastSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  thumbnail: z.string().optional(),
+  explicit_content: z.boolean(),
+  primary_category: z.string().optional(),
+  secondary_category: z.string().optional(),
+  author: z.string(),
+  copyright: z.string().optional(),
+  keywords: z.string().optional(),
+  website: z.string().optional(),
+  language: z.string().optional(),
+  timezone: z.string().optional(),
+  show_owner: z.string(),
+  owner_email: z.string().optional(),
+  display_email_in_rss_feed: z.boolean().optional(),
+});
