@@ -49,6 +49,7 @@ func main() {
 	e.POST("/api/podcast/create", routes.CreatePodcast)
 	e.GET("/api/podcast/:name", routes.GetPodcastSettings)
 	e.GET("/api/podcast/:name/episodes", routes.GetPodcastEpisodes)
+	e.POST("/api/podcast/:name/edit", routes.UpdatePodcast)
 
 	e.GET("/api/podcast/:id/info", routes.InfoRoute)
 

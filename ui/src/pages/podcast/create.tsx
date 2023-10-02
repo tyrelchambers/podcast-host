@@ -12,6 +12,7 @@ import {
   timeZones,
 } from "@/constants";
 import Header from "@/layouts/Header";
+import { podcastSchema } from "@/lib/types";
 import { formatBytes, formatCategoryOptions } from "@/lib/utils";
 import { faCloudArrowUp, faImage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -21,29 +22,11 @@ import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const formSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  thumbnail: z.string().optional(),
-  explicitContent: z.boolean(),
-  primaryCategory: z.string().optional(),
-  secondaryCategory: z.string().optional(),
-  author: z.string(),
-  copyright: z.string().optional(),
-  keywords: z.string().optional(),
-  website: z.string().optional(),
-  language: z.string().optional(),
-  timezone: z.string().optional(),
-  showOwner: z.string(),
-  ownerEmail: z.string().optional(),
-  displayEmailInRssFeed: z.boolean().optional(),
-});
-
 const Create = () => {
   const fileUploadRef = useRef<HTMLInputElement>(null);
 
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(podcastSchema),
     defaultValues: {
       title: "",
       description: "",
@@ -71,7 +54,7 @@ const Create = () => {
 
   const watchFileValue = form.watch("thumbnail");
 
-  const submit = async (data: z.infer<typeof formSchema>) => {
+  const submit = async (data: z.infer<typeof podcastSchema>) => {
     await axios.postForm("http://localhost:8080/api/podcast/create", data, {
       withCredentials: true,
     });

@@ -1,9 +1,9 @@
 "use client";
 import { Episode, formSchema } from "@/lib/types";
 import React, { useEffect, useState } from "react";
-import { Form, FormField, FormItem } from "../ui/form";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
+import { Form, FormField, FormItem } from "../components/ui/form";
+import { Label } from "../components/ui/label";
+import { Input } from "../components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { Editor, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -11,10 +11,10 @@ import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
-import { TextEditor } from "../TextEditor";
-import ScheduleHourSelector from "../ScheduleHourSelector";
-import ScheduleMinuteSelector from "../ScheduleMinuteSelector";
-import ScheduleMeridiemSelector from "../ScheduleMeridiemSelector";
+import { TextEditor } from "../components/TextEditor";
+import ScheduleHourSelector from "../components/ScheduleHourSelector";
+import ScheduleMinuteSelector from "../components/ScheduleMinuteSelector";
+import ScheduleMeridiemSelector from "../components/ScheduleMeridiemSelector";
 import { formatBytes } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -24,13 +24,13 @@ import {
   faMusic,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
-import PublishSelector from "../PublishSelector";
-import DatePicker from "../DatePicker";
-import { Button } from "../ui/button";
+import PublishSelector from "../components/PublishSelector";
+import DatePicker from "../components/DatePicker";
+import { Button } from "../components/ui/button";
 import { z } from "zod";
 import { format, fromUnixTime } from "date-fns";
-import { Badge } from "../ui/badge";
-import { Checkbox } from "../ui/checkbox";
+import { Badge } from "../components/ui/badge";
+import { Checkbox } from "../components/ui/checkbox";
 
 // 1GB in bytes
 const MAX_FILE_SIZE = 1073741824;
