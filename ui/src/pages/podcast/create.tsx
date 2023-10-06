@@ -31,18 +31,18 @@ const Create = () => {
       title: "",
       description: "",
       thumbnail: "",
-      explicitContent: false,
-      primaryCategory: "",
-      secondaryCategory: "",
+      explicit_content: false,
+      primary_category: "",
+      secondary_category: "",
       author: "",
       copyright: "",
       keywords: "",
       website: "",
       language: "",
       timezone: "",
-      showOwner: "",
-      ownerEmail: "",
-      displayEmailInRssFeed: false,
+      show_owner: "",
+      owner_email: "",
+      display_email_in_rss_feed: false,
     },
   });
 
@@ -71,7 +71,7 @@ const Create = () => {
           <Form {...form}>
             <form
               className="flex flex-col gap-6"
-              onSubmit={form.handleSubmit(submit)}
+              onSubmit={form.handleSubmit(submit, console.log)}
             >
               <FormField
                 name="title"
@@ -155,7 +155,7 @@ const Create = () => {
 
               <div className="flex gap-3">
                 <FormField
-                  name="primaryCategory"
+                  name="primary_content"
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <Label htmlFor={field.name}>Primary category</Label>
@@ -170,7 +170,7 @@ const Create = () => {
                 />
 
                 <FormField
-                  name="secondaryCategory"
+                  name="secondary_content"
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <Label htmlFor={field.name}>Secondary category</Label>
@@ -262,7 +262,7 @@ const Create = () => {
                 />
 
                 <FormField
-                  name="showOwner"
+                  name="show_owner"
                   render={({ field }) => (
                     <FormItem>
                       <Label htmlFor={field.name}>Show owner</Label>
@@ -272,7 +272,7 @@ const Create = () => {
                 />
 
                 <FormField
-                  name="ownerEmail"
+                  name="owner_email"
                   render={({ field }) => (
                     <FormItem>
                       <Label htmlFor={field.name} required>
@@ -285,7 +285,7 @@ const Create = () => {
               </div>
 
               <FormField
-                name="explicitContent"
+                name="explicit_content"
                 render={({ field }) => (
                   <FormItem>
                     <div className="items-top flex space-x-2">
@@ -308,7 +308,7 @@ const Create = () => {
               />
 
               <FormField
-                name="displayEmailInRssFeed"
+                name="display_email_in_rss_feed"
                 render={({ field }) => (
                   <FormItem>
                     <div className="items-top flex space-x-2">

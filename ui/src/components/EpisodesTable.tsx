@@ -45,7 +45,7 @@ const EpisodesTable = ({ episodes, podcastName }: Props) => {
                 <TableCell></TableCell>
                 <TableCell className="text-blue-500 underline font-medium">
                   <Link
-                    href={`/podcast/${podcastName}/episode/${episode.id}/edit`}
+                    href={`/podcast/${podcastName}/episode/${episode.uuid}/edit`}
                   >
                     {episode.title}
                   </Link>

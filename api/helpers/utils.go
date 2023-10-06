@@ -3,32 +3,30 @@ package helpers
 import (
 	"api/constants"
 	"context"
-	"database/sql"
 	"fmt"
 	"io"
 	"log"
 	"mime/multipart"
 	"os"
+	"reflect"
 	"regexp"
 	"strconv"
 	"time"
+
+	"gorm.io/driver/postgres"
 
 	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	ffmpeg_go "github.com/u2takey/ffmpeg-go"
+	"gorm.io/gorm"
 )
 
-func DbClient() *sql.DB {
+func DbClient() *gorm.DB {
 
-	db, err := sql.Open("postgres", constants.DbUrl)
-	db.SetConnMaxLifetime(10 * time.Minute)
-	db.SetMaxOpenConns(5)
-	if err != nil {
-		panic(err)
-	}
-
-	err = db.Ping()
+	db, err := gorm.Open(postgres.Open(constants.DbUrl), &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true,
+	})
 	if err != nil {
 		panic(err)
 	}
@@ -168,4 +166,22 @@ func ConvertToUnix(date string) uint64 {
 		panic(err)
 	}
 	return i
+}
+
+func ConvertToDto(model interface{}, dto interface{}) {
+	modelValue := reflect.ValueOf(model)
+	dtoValue := reflect.ValueOf(dto).Elem()
+
+	for i := 0; i < dtoValue.NumField(); i++ {
+		dtoField := dtoValue.Type().Field(i)
+		modelName := dtoField.Name
+
+		if modelName != "" {
+			modelField := modelValue.FieldByName(modelName)
+
+			if modelField.IsValid() {
+				dtoValue.Field(i).Set(modelField)
+			}
+		}
+	}
 }

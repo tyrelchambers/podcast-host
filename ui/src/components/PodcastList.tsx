@@ -38,7 +38,7 @@ const PodcastList = ({ podcasts }: Props) => {
             <footer className="flex gap-3">
               <p className="flex gap-1 items-center text-muted-foreground text-sm font-light">
                 <FontAwesomeIcon icon={faListMusic} />
-                {podcast.episodes?.length} episodes
+                {podcast.episodes?.length ?? "0"} episodes
               </p>
             </footer>
           </div>

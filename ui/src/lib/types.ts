@@ -9,12 +9,13 @@ export interface IFile {
 }
 
 export interface User {
-  id: string;
+  uuid: string;
   email: string;
 }
 
 export const formSchema = z.object({
   id: z.string().optional(),
+  uuid: z.string(),
   file: z.unknown(),
   title: z.string(),
   description: z.string(),

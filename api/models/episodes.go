@@ -1,117 +1,83 @@
 package models
 
 import (
+	"api/helpers"
 	"api/model"
-	"database/sql"
-	"errors"
 	"fmt"
 
 	"github.com/lucsky/cuid"
+	"gorm.io/gorm"
 )
 
-func CreateEpisode(episode *model.Episode, db *sql.DB) (e error) {
-	cmd := `INSERT INTO Episodes (id, title, description, url, keywords, publish_date, author, episode_number, podcast_id,draft) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
+func CreateEpisode(episode *model.Episode, db *gorm.DB) (e error) {
 
 	id := cuid.New()
 
-	_, err := db.Exec(cmd, id, episode.Title, episode.Description, episode.URL, episode.Keywords, episode.PublishDate, episode.Author, episode.EpisodeNumber, episode.PodcastId, episode.Draft)
-
-	if err != nil {
-		println(err.Error())
-		return errors.New("Failed to create episode.")
+	ep := &model.Episode{
+		UUID:          id,
+		Title:         episode.Title,
+		Description:   episode.Description,
+		Keywords:      episode.Keywords,
+		PublishDate:   episode.PublishDate,
+		Author:        episode.Author,
+		Draft:         episode.Draft,
+		URL:           episode.URL,
+		Image:         episode.Image,
+		EpisodeNumber: episode.EpisodeNumber,
+		PodcastId:     episode.PodcastId,
 	}
+
+	db.Create(ep)
 
 	fmt.Println("SUCCESS: new episode created")
 
 	return
-
 }
 
-func GetEpisodeById(id string, db *sql.DB) (episode model.Episode, e error) {
-	cmd := `SELECT id, title, description, url, podcast_id, keywords, publish_date, author, episode_number FROM Episodes WHERE id = $1`
+func GetEpisodeById(id string, db *gorm.DB) (model.EpisodeDTO, error) {
+	var episode model.Episode
+	var eDto model.EpisodeDTO
 
-	row := db.QueryRow(cmd, id)
+	db.First(&episode, "id = ?", id)
 
-	err := row.Scan(&episode.ID, &episode.Title, &episode.Description, &episode.URL, &episode.PodcastId, &episode.Keywords, &episode.PublishDate, &episode.Author, &episode.EpisodeNumber)
+	helpers.ConvertToDto(episode, &eDto)
 
-	if err != nil {
-		println(err.Error())
-		return episode, errors.New("Failed to get episode.")
-	}
-
-	return episode, nil
+	return eDto, nil
 }
 
-func UpdateEpisode(episode model.Episode, db *sql.DB) (e error) {
+func UpdateEpisode(episode model.Episode, db *gorm.DB) (e error) {
 
-	if episode.ID == "" {
-		return errors.New("Failed to update episode. Missing ID.")
-	}
+	res := db.Model(&episode).Updates(episode)
 
-	cmd := `UPDATE Episodes SET title = $1, description = $2, url = $3, keywords = $4, author = $5, episode_number = $6 WHERE id = $7`
-
-	res, err := db.Exec(cmd, episode.Title, episode.Description, episode.URL, episode.Keywords, episode.Author, episode.EpisodeNumber, episode.ID)
-
-	if err != nil {
-		println(err.Error())
-		return errors.New("Failed to update episode.")
-	}
-
-	count, err := res.RowsAffected()
-	if err != nil {
-
-		return errors.New(fmt.Sprintf("Failed to update episode. Error: %s", err.Error()))
-	}
-
-	fmt.Printf("SUCCESS: updated %d episode\n", count)
+	fmt.Printf("SUCCESS: updated %d episode\n", res.RowsAffected)
 	return
 
 }
 
-func DeleteEpisode(id string, db *sql.DB) (e error) {
-	cmd := `DELETE FROM Episodes WHERE id = $1`
+func DeleteEpisode(id string, db *gorm.DB) (e error) {
 
-	res, err := db.Exec(cmd, id)
+	res := db.Delete(&model.Episode{}, id)
 
-	if err != nil {
-		println(err.Error())
-		return errors.New("Failed to delete episode.")
-	}
-
-	count, err := res.RowsAffected()
-
-	if err != nil {
-		return errors.New(fmt.Sprintf("Failure reading rows. Error: %s", err.Error()))
-	}
-
-	fmt.Printf("SUCCESS: deleted %d episode\n", count)
+	fmt.Printf("SUCCESS: deleted %d episode\n", res.RowsAffected)
 	return
 }
 
-func GetLatestEpisodeByPodcast(podcastID string, db *sql.DB) (episode model.Episode, e error) {
-	cmd := `SELECT id, title, url, publish_date, episode_number FROM Episodes WHERE podcast_id = $1 ORDER BY publish_date DESC LIMIT 1`
+func GetLatestEpisodeByPodcast(podcastID string, db *gorm.DB) (model.Episode, error) {
+	var podcast model.Podcast
+	var episode model.Episode
 
-	row := db.QueryRow(cmd, podcastID)
+	db.First(&podcast, "id = ?", podcastID)
 
-	row.Scan(&episode.ID, &episode.Title, &episode.URL, &episode.PublishDate, &episode.EpisodeNumber)
+	db.Where("podcast_id = ?", podcastID).Order("episode_number DESC").First(&episode)
 
 	return episode, nil
 }
 
-func GetEpisodesCountAndIncrement(podcastId string, db *sql.DB) (c int, e error) {
+func GetEpisodesCountAndIncrement(podcastId string, db *gorm.DB) (int64, error) {
 
-	cmd := `SELECT COUNT(*) FROM Episodes WHERE podcast_id = $1`
+	var count int64
 
-	row := db.QueryRow(cmd, podcastId)
-
-	var count int
-
-	err := row.Scan(&count)
-
-	if err != nil {
-		println(err.Error())
-		return count, errors.New("Failed to get episode count.")
-	}
+	db.Model(&model.Episode{}).Where("podcast_id = ?", podcastId).Count(&count)
 
 	return count, nil
 }

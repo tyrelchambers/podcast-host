@@ -15,7 +15,7 @@ func InfoRoute(c echo.Context) error {
 	}
 
 	type Response struct {
-		NextEpisodeNumber int    `json:"nextEpisodeNumber"`
+		NextEpisodeNumber int64  `json:"nextEpisodeNumber"`
 		RssFeed           string `json:"rssFeed"`
 	}
 
@@ -25,7 +25,7 @@ func InfoRoute(c echo.Context) error {
 
 	count, _ := models.GetEpisodesCountAndIncrement(pId, helpers.DbClient())
 
-	podcast, err := models.GetPodcastById(pId, user.ID, helpers.DbClient())
+	podcast, err := models.GetPodcastById(pId, user.UUID, helpers.DbClient())
 
 	feed := helpers.CreateRssFeed(&podcast)
 

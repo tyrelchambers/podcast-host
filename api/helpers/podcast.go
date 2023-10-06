@@ -15,7 +15,7 @@ func ParsePodcasts(rows *sql.Rows) []model.Podcast {
 		var episodeJSON []byte
 
 		err := rows.Scan(
-			&p.ID,
+			&p.UUID,
 			&p.Title,
 			&p.Description,
 			&p.Thumbnail,

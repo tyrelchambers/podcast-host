@@ -1,80 +1,87 @@
 package models
 
 import (
+	"api/helpers"
 	"api/model"
-	"database/sql"
 	"errors"
 	"fmt"
 
 	"github.com/lucsky/cuid"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
-func CheckUserExists(email string, db *sql.DB) (userExists bool) {
+func CheckUserExists(email string, db *gorm.DB) (userExists bool) {
 	if email == "" {
 		panic(errors.New("Email cannot be empty."))
 	}
-	cmd := `SELECT id FROM Users WHERE email = $1`
 
-	row := db.QueryRow(cmd, email)
+	db.Where("email = ?", email).First(&model.User{})
 
-	var user model.User
+	if db.Error != nil {
+		return false
+	}
 
-	_ = row.Scan(&user.ID)
-
-	if user.ID == "" {
+	if db.RowsAffected == 0 {
 		return false
 	}
 
 	return true
 }
 
-func CreateUser(user *model.User, db *sql.DB) (u *model.User, e error) {
-	stmt, _ := db.Prepare(`INSERT INTO Users (id, email, password) VALUES ($1, $2, $3) RETURNING id, email`)
+func CreateUser(user model.RegisterBody, db *gorm.DB) (*model.User, error) {
 
 	id := cuid.New()
-
-	var newUser model.User
 
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 
 	if err != nil {
-		fmt.Println(err.Error())
-		return u, errors.New("Failed to hash password.")
+		fmt.Println("ERROR: ", err)
+		return nil, err
 	}
 
-	stmt.QueryRow(id, user.Email, hashPassword).Scan(&newUser.ID, &newUser.Email)
+	newUser := model.User{
+		UUID:     id,
+		Email:    user.Email,
+		Password: string(hashPassword),
+	}
 
-	fmt.Println("SUCCESS: new user created")
+	db.Create(&newUser)
+
+	if db.Error != nil {
+		fmt.Println("ERROR: ", err)
+		return nil, err
+	}
+
+	fmt.Printf("SUCCESS: new user created: %s\n", newUser.UUID)
 	return &newUser, nil
 }
 
-func GetUser(id string, db *sql.DB) (user model.User, e error) {
+func GetUser(id string, db *gorm.DB) (*model.UserDTO, error) {
 	var u model.User
-	cmd := `SELECT id, email FROM Users WHERE id = $1`
+	var uDto model.UserDTO
 
-	row := db.QueryRow(cmd, id)
+	db.Table("users").Where("uuid = ?", id).First(&u)
 
-	err := row.Scan(&u.ID, &u.Email)
-
-	if err != nil {
-		return u, errors.New("Failed to get user. Doesn't exist.")
+	if db.Error != nil {
+		return nil, errors.New("Failed to get user. Doesn't exist.")
 	}
 
-	return u, nil
+	helpers.ConvertToDto(u, &uDto)
+
+	fmt.Println(uDto)
+
+	return &uDto, nil
 }
 
-func FindUserByEmail(email string, db *sql.DB) (user model.User, e error) {
+func FindUserByEmail(email string, db *gorm.DB) (*model.User, error) {
 	var u model.User
-	cmd := `SELECT id, password, email FROM Users WHERE email = $1`
 
-	row := db.QueryRow(cmd, email)
+	db.Table("users").Where("email = ?", email).First(&u).Omit("password")
 
-	err := row.Scan(&u.ID, &u.Password, &u.Email)
-
-	if err != nil {
-		return u, errors.New("Failed to get user. Doesn't exist.")
+	if db.Error != nil {
+		return nil, errors.New("Failed to get user. Doesn't exist.")
 	}
 
-	return u, nil
+	return &u, nil
 }

@@ -2,6 +2,8 @@ package main
 
 import (
 	"api/constants"
+	"api/helpers"
+	"api/model"
 	"api/routes"
 	"log"
 	"net/http"
@@ -15,6 +17,14 @@ import (
 )
 
 func main() {
+	db := helpers.DbClient()
+
+	err := db.AutoMigrate(&model.User{}, &model.Podcast{}, &model.Episode{})
+
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
 	store, err := pgstore.NewPGStore(constants.DbUrl, []byte("secret-key"))
 
 	if err != nil {
