@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function Home() {
   const user = useUserStore((state) => state.user);
-  const podcastsQuery = usePodcastsQuery(user?.id);
+  const podcastsQuery = usePodcastsQuery(user?.uuid);
 
   return (
     <main className="w-full">

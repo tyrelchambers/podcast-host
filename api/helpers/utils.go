@@ -8,6 +8,7 @@ import (
 	"log"
 	"mime/multipart"
 	"os"
+	"reflect"
 	"regexp"
 	"strconv"
 	"time"
@@ -23,7 +24,9 @@ import (
 
 func DbClient() *gorm.DB {
 
-	db, err := gorm.Open(postgres.Open(constants.DbUrl), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(constants.DbUrl), &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true,
+	})
 	if err != nil {
 		panic(err)
 	}
@@ -163,4 +166,22 @@ func ConvertToUnix(date string) uint64 {
 		panic(err)
 	}
 	return i
+}
+
+func ConvertToDto(model interface{}, dto interface{}) {
+	modelValue := reflect.ValueOf(model)
+	dtoValue := reflect.ValueOf(dto).Elem()
+
+	for i := 0; i < dtoValue.NumField(); i++ {
+		dtoField := dtoValue.Type().Field(i)
+		modelName := dtoField.Name
+
+		if modelName != "" {
+			modelField := modelValue.FieldByName(modelName)
+
+			if modelField.IsValid() {
+				dtoValue.Field(i).Set(modelField)
+			}
+		}
+	}
 }

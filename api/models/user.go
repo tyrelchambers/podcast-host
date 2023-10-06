@@ -1,6 +1,7 @@
 package models
 
 import (
+	"api/helpers"
 	"api/model"
 	"errors"
 	"fmt"
@@ -28,7 +29,7 @@ func CheckUserExists(email string, db *gorm.DB) (userExists bool) {
 	return true
 }
 
-func CreateUser(user model.RegisterBody, db *gorm.DB) (*model.UserDTO, error) {
+func CreateUser(user model.RegisterBody, db *gorm.DB) (*model.User, error) {
 
 	id := cuid.New()
 
@@ -39,7 +40,7 @@ func CreateUser(user model.RegisterBody, db *gorm.DB) (*model.UserDTO, error) {
 		return nil, err
 	}
 
-	newUser := model.UserDTO{
+	newUser := model.User{
 		UUID:     id,
 		Email:    user.Email,
 		Password: string(hashPassword),
@@ -56,22 +57,27 @@ func CreateUser(user model.RegisterBody, db *gorm.DB) (*model.UserDTO, error) {
 	return &newUser, nil
 }
 
-func GetUser(id string, db *gorm.DB) (model.User, error) {
+func GetUser(id string, db *gorm.DB) (*model.UserDTO, error) {
 	var u model.User
+	var uDto model.UserDTO
 
-	db.Table("user_dtos").Where("uuid = ?", id).First(&u)
+	db.Table("users").Where("uuid = ?", id).First(&u)
 
 	if db.Error != nil {
-		return u, errors.New("Failed to get user. Doesn't exist.")
+		return nil, errors.New("Failed to get user. Doesn't exist.")
 	}
 
-	return u, nil
+	helpers.ConvertToDto(u, &uDto)
+
+	fmt.Println(uDto)
+
+	return &uDto, nil
 }
 
-func FindUserByEmail(email string, db *gorm.DB) (user *model.User, e error) {
+func FindUserByEmail(email string, db *gorm.DB) (*model.User, error) {
 	var u model.User
 
-	db.Where("email = ?", email).First(&u).Omit("password")
+	db.Table("users").Where("email = ?", email).First(&u).Omit("password")
 
 	if db.Error != nil {
 		return nil, errors.New("Failed to get user. Doesn't exist.")

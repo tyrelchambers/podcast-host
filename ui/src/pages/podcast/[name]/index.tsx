@@ -32,12 +32,10 @@ import React, { useEffect } from "react";
 const Podcast = () => {
   const router = useRouter();
   const nameParam = router.query.name;
-  const { data } = usePodcastQuery(nameParam as string);
   const podcastStore = usePodcastStore();
   const miscInfo = useMiscInfoQuery(podcastStore.activePodcast?.id ?? "");
 
-  const podcast = data?.podcast;
-  const latestEpisodes = data?.latest_episode;
+  const podcast = podcastStore?.activePodcast;
 
   useEffect(() => {
     if (router.query.name) {
@@ -93,21 +91,6 @@ const Podcast = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </section>
-
-      <section className="my-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Latest episode analytics</CardTitle>
-            <CardDescription>{latestEpisodes?.title}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p>Card Content</p>
-          </CardContent>
-          <CardFooter>
-            <p>Card Footer</p>
-          </CardFooter>
-        </Card>
       </section>
     </DashLayout>
   );

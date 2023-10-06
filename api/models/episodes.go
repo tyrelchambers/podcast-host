@@ -1,27 +1,48 @@
 package models
 
 import (
+	"api/helpers"
 	"api/model"
 	"fmt"
 
+	"github.com/lucsky/cuid"
 	"gorm.io/gorm"
 )
 
 func CreateEpisode(episode *model.Episode, db *gorm.DB) (e error) {
-	db.Create(episode)
+
+	id := cuid.New()
+
+	ep := &model.Episode{
+		UUID:          id,
+		Title:         episode.Title,
+		Description:   episode.Description,
+		Keywords:      episode.Keywords,
+		PublishDate:   episode.PublishDate,
+		Author:        episode.Author,
+		Draft:         episode.Draft,
+		URL:           episode.URL,
+		Image:         episode.Image,
+		EpisodeNumber: episode.EpisodeNumber,
+		PodcastId:     episode.PodcastId,
+	}
+
+	db.Create(ep)
 
 	fmt.Println("SUCCESS: new episode created")
 
 	return
-
 }
 
-func GetEpisodeById(id string, db *gorm.DB) (model.Episode, error) {
+func GetEpisodeById(id string, db *gorm.DB) (model.EpisodeDTO, error) {
 	var episode model.Episode
+	var eDto model.EpisodeDTO
 
 	db.First(&episode, "id = ?", id)
 
-	return episode, nil
+	helpers.ConvertToDto(episode, &eDto)
+
+	return eDto, nil
 }
 
 func UpdateEpisode(episode model.Episode, db *gorm.DB) (e error) {
@@ -42,7 +63,7 @@ func DeleteEpisode(id string, db *gorm.DB) (e error) {
 }
 
 func GetLatestEpisodeByPodcast(podcastID string, db *gorm.DB) (model.Episode, error) {
-	var podcast model.PodcastDTO
+	var podcast model.Podcast
 	var episode model.Episode
 
 	db.First(&podcast, "id = ?", podcastID)

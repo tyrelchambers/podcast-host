@@ -1,6 +1,7 @@
 package models
 
 import (
+	"api/helpers"
 	"api/model"
 	"fmt"
 	"strings"
@@ -8,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreatePodcast(p *model.PodcastDTO, db *gorm.DB) error {
+func CreatePodcast(p *model.Podcast, db *gorm.DB) error {
 
 	db.Create(p)
 
@@ -18,24 +19,35 @@ func CreatePodcast(p *model.PodcastDTO, db *gorm.DB) error {
 }
 
 func GetUsersPodcasts(userId string, db *gorm.DB) ([]model.PodcastDTO, error) {
-	var podcasts []model.PodcastDTO
+	var podcasts []model.Podcast
+	var podcastsDto []model.PodcastDTO
 
-	db.Find(&podcasts, "user_id = ?", userId)
+	db.Preload("Episodes").Find(&podcasts, "user_id = ?", userId)
 
-	return podcasts, nil
+	for _, v := range podcasts {
+		var dto model.PodcastDTO
+
+		helpers.ConvertToDto(v, &dto)
+
+		podcastsDto = append(podcastsDto, dto)
+	}
+
+	fmt.Println(podcasts[0].Episodes)
+
+	return podcastsDto, nil
 }
 
-func GetPodcastById(id string, userId string, db *gorm.DB) (p model.PodcastDTO, e error) {
-	var podcast model.PodcastDTO
+func GetPodcastById(id string, userId string, db *gorm.DB) (p model.Podcast, e error) {
+	var podcast model.Podcast
 
 	db.First(&podcast, "id = ? AND user_id = ?", id, userId)
 
 	return podcast, nil
 }
 
-func GetPodcastByNameWithEpisodes(name string, userId string, db *gorm.DB) (p model.PodcastDTO, e error) {
+func GetPodcastByNameWithEpisodes(name string, userId string, db *gorm.DB) (p model.Podcast, e error) {
 
-	var podcast model.PodcastDTO
+	var podcast model.Podcast
 
 	parsedName := strings.Replace(name, "-", " ", -1)
 
@@ -46,7 +58,7 @@ func GetPodcastByNameWithEpisodes(name string, userId string, db *gorm.DB) (p mo
 }
 
 func GetPodcastIdFromName(name string, db *gorm.DB) (string, error) {
-	var podcast model.PodcastDTO
+	var podcast model.Podcast
 
 	parsedName := strings.Replace(name, "-", " ", -1)
 
@@ -55,12 +67,21 @@ func GetPodcastIdFromName(name string, db *gorm.DB) (string, error) {
 	return podcast.UUID, nil
 }
 
-func GetPodcastEpisodesById(id string, db *gorm.DB) ([]model.Episode, error) {
+func GetPodcastEpisodesById(id string, db *gorm.DB) ([]model.EpisodeDTO, error) {
 	var episodes []model.Episode
+	var eDtos []model.EpisodeDTO
 
 	db.Find(&episodes, "podcast_id = ?", id)
 
-	return episodes, nil
+	for _, v := range episodes {
+		var dto model.EpisodeDTO
+
+		helpers.ConvertToDto(v, &dto)
+
+		eDtos = append(eDtos, dto)
+	}
+
+	return eDtos, nil
 
 }
 

@@ -19,7 +19,7 @@ import (
 func main() {
 	db := helpers.DbClient()
 
-	err := db.AutoMigrate(&model.UserDTO{}, &model.PodcastDTO{}, &model.EpisodeDTO{})
+	err := db.AutoMigrate(&model.User{}, &model.Podcast{}, &model.Episode{})
 
 	if err != nil {
 		log.Fatalf(err.Error())
