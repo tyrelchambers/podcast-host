@@ -66,7 +66,7 @@ func GetUsersPodcasts(userId string, db *gorm.DB) ([]model.PodcastDTO, error) {
 func GetPodcastById(id string, userId string, db *gorm.DB) (p model.Podcast, e error) {
 	var podcast model.Podcast
 
-	db.First(&podcast, "id = ? AND user_id = ?", id, userId)
+	db.First(&podcast, "uuid = ? AND user_id = ?", id, userId)
 
 	return podcast, nil
 }

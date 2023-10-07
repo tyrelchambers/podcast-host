@@ -32,13 +32,13 @@ export const formatCategoryOptions = (options: SelectOptions[]) => {
   const arr = [];
 
   for (let index = 0; index < options.length; index++) {
-    const { value, display, subCategories } = options[index];
+    const { value, display, sub_categories } = options[index];
 
     arr.push({ value, display });
 
-    if (subCategories) {
-      for (let j = 0; j < subCategories.length; j++) {
-        const subEl = subCategories[j];
+    if (sub_categories) {
+      for (let j = 0; j < sub_categories.length; j++) {
+        const subEl = sub_categories[j];
         arr.push({ ...subEl, value: subEl.value.replace("|", " :: ") });
       }
     }

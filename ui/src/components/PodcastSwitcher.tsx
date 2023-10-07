@@ -54,7 +54,9 @@ export function PodcastSwitcher({
           aria-expanded={open}
           className="w-[200px] justify-between text-background-alt-foreground border-0 bg-background-alt-foreground/10"
         >
-          {value ? podcastState.get(value)?.title : activePodcast?.title}
+          {value
+            ? podcastState.find((p) => p.title === value)?.title
+            : activePodcast?.title}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

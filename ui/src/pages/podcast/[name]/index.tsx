@@ -37,12 +37,6 @@ const Podcast = () => {
 
   const podcast = podcastStore?.activePodcast;
 
-  useEffect(() => {
-    if (router.query.name) {
-      podcastStore.setActivePodcast(nameParam as string);
-    }
-  }, [nameParam, router.query.name]);
-
   return (
     <DashLayout leftCol={<DashHeader rootPath={router.query.name as string} />}>
       <h1 className="h1">{podcast?.title}</h1>
@@ -52,8 +46,8 @@ const Podcast = () => {
           <Button className="w-full">Create episode</Button>
         </Link>
         <Dialog>
-          <DialogTrigger>
-            <Button variant="secondary" className="w-full">
+          <DialogTrigger asChild>
+            <Button variant="secondary">
               <FontAwesomeIcon icon={faRss} className="mr-3" />
               RSS feed
             </Button>

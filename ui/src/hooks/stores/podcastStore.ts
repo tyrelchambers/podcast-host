@@ -3,32 +3,24 @@ import { formatTitleFromUrl } from "@/lib/utils";
 import { create } from "zustand";
 
 interface Props {
-  podcasts: Map<string, Podcast>;
+  podcasts: Podcast[];
   setPodcasts: (podcasts: Podcast[]) => void;
-  findPodcast: (title: string | undefined) => Podcast | undefined;
   activePodcast: Podcast | undefined;
   setActivePodcast: (podcast: string) => void;
 }
 
 export const usePodcastStore = create<Props>((set, get) => ({
-  podcasts: new Map(),
+  podcasts: [],
   setPodcasts: (podcasts: Podcast[]) => {
-    const obj = new Map();
-
-    for (const podcast of podcasts) {
-      obj.set(podcast.title, podcast);
-    }
-
-    set({ podcasts: obj });
-  },
-  findPodcast: (title: string | undefined) => {
-    return title ? get().podcasts.get(formatTitleFromUrl(title)) : undefined;
+    set({ podcasts: podcasts });
   },
   activePodcast: undefined,
-  setActivePodcast: async (title: string) => {
-    const findPodcast = await get().findPodcast(title);
-    console.log("------>", get().podcasts);
+  setActivePodcast: (title: string) => {
+    const newTitle = formatTitleFromUrl(title).toLowerCase();
+    const podcast = get().podcasts.find((podcast) => {
+      return podcast.title.toLowerCase() === newTitle;
+    });
 
-    set({ activePodcast: findPodcast });
+    set({ activePodcast: podcast });
   },
 }));
