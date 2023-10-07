@@ -21,16 +21,18 @@ const Page = () => {
   const fileUploadRef = useRef<HTMLInputElement>(null);
   const podcastStore = usePodcastStore();
   const podcast = podcastStore.activePodcast;
-  const miscInfo = useMiscInfoQuery(podcast?.id ?? "");
+  const miscInfo = useMiscInfoQuery(podcast?.uuid ?? "");
+
+  console.log(podcast);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     values: {
-      episode_number: miscInfo.data?.nextEpisodeNumber ?? 0,
-      scheduleHour: "12",
-      scheduleMinute: "00",
-      scheduleMeridiem: "PM",
-      explicitContent: false,
+      episode_number: miscInfo.data?.next_episode_number ?? 0,
+      schedule_hour: "12",
+      schedule_minute: "00",
+      schedule_meridiem: "PM",
+      explicit_content: false,
       description: "",
       keywords: "",
       author: "",
@@ -55,8 +57,8 @@ const Page = () => {
             publishDate.getUTCFullYear(),
             publishDate.getUTCMonth(),
             publishDate.getUTCDate(),
-            Number(data.scheduleHour),
-            Number(data.scheduleMinute),
+            Number(data.schedule_hour),
+            Number(data.schedule_minute),
             0
           )
         );
@@ -77,7 +79,7 @@ const Page = () => {
         keywords: data.keywords,
         episodeNumber: data.episode_number,
         publishDate: getDate().toString(),
-        podcastId: podcast?.id ?? "",
+        podcastId: podcast?.uuid ?? "",
         draft: data.draft,
       },
       {

@@ -33,7 +33,7 @@ const Podcast = () => {
   const router = useRouter();
   const nameParam = router.query.name;
   const podcastStore = usePodcastStore();
-  const miscInfo = useMiscInfoQuery(podcastStore.activePodcast?.id ?? "");
+  const miscInfo = useMiscInfoQuery(podcastStore.activePodcast?.uuid ?? "");
 
   const podcast = podcastStore?.activePodcast;
 

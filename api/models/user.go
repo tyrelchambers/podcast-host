@@ -69,8 +69,6 @@ func GetUser(id string, db *gorm.DB) (*model.UserDTO, error) {
 
 	helpers.ConvertToDto(u, &uDto)
 
-	fmt.Println(uDto)
-
 	return &uDto, nil
 }
 

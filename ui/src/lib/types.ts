@@ -15,7 +15,7 @@ export interface User {
 
 export const formSchema = z.object({
   id: z.string().optional(),
-  uuid: z.string(),
+  uuid: z.string().optional(),
   file: z.unknown(),
   title: z.string(),
   description: z.string(),
@@ -41,7 +41,7 @@ export type SelectOptions = {
 };
 
 export interface Podcast {
-  id: string;
+  uuid: string;
   title: string;
   description: string;
   thumbnail: string | undefined;

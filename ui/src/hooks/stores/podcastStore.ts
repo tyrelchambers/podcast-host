@@ -25,8 +25,10 @@ export const usePodcastStore = create<Props>((set, get) => ({
     return title ? get().podcasts.get(formatTitleFromUrl(title)) : undefined;
   },
   activePodcast: undefined,
-  setActivePodcast: (title: string) => {
-    const findPodcast = get().findPodcast(title);
+  setActivePodcast: async (title: string) => {
+    const findPodcast = await get().findPodcast(title);
+    console.log("------>", get().podcasts);
+
     set({ activePodcast: findPodcast });
   },
 }));

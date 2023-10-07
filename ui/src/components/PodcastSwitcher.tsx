@@ -47,12 +47,12 @@ export function PodcastSwitcher({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger asChild className="">
         <Button
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between text-background-alt-foreground border-border bg-background-alt-foreground/10"
+          className="w-[200px] justify-between text-background-alt-foreground border-0 bg-background-alt-foreground/10"
         >
           {value ? podcastState.get(value)?.title : activePodcast?.title}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -64,7 +64,7 @@ export function PodcastSwitcher({
           <CommandEmpty>No podcast found.</CommandEmpty>
           <CommandGroup>
             {podcasts.map((p) => (
-              <CommandItem key={p.id} onSelect={clickHandler}>
+              <CommandItem key={p.uuid} onSelect={clickHandler}>
                 <Check
                   className={cn(
                     "mr-2 h-4 w-4",

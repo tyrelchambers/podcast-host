@@ -18,6 +18,7 @@ import { useRouter } from "next/router";
 import { usePodcastStore } from "@/hooks/stores/podcastStore";
 import { getPodcasts } from "@/hooks/api/usePodcastsQuery";
 import { MantineProvider } from "@mantine/core";
+import { GetServerSideProps } from "next";
 
 const queryClient = new QueryClient();
 
@@ -35,19 +36,22 @@ const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
     const fn = async () => {
       const currentUser = await getCurrentUser();
       const podcasts = await getPodcasts(currentUser?.uuid);
+      console.log(podcasts);
 
       if (currentUser) {
         userStore.setUser(currentUser);
       }
 
-      if (podcasts) {
+      if (podcasts.length) {
         podcastStore.setPodcasts(podcasts);
       }
-
-      podcastStore.setActivePodcast(router.query.name as string);
     };
 
     fn();
+  }, []);
+
+  useEffect(() => {
+    podcastStore.setActivePodcast(router.query.name as string);
   }, [router.query.name]);
 
   return (

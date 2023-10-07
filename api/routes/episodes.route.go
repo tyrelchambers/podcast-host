@@ -81,8 +81,6 @@ func UpdateEpisode(c echo.Context) error {
 
 	var uploadPath = c.FormValue("url")
 
-	fmt.Println(c.FormValue("episodeNumber"))
-
 	var convertedDate uint64
 
 	if c.FormValue("publishDate") != "" {

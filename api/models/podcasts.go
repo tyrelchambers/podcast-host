@@ -6,12 +6,40 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/lucsky/cuid"
 	"gorm.io/gorm"
 )
 
 func CreatePodcast(p *model.Podcast, db *gorm.DB) error {
 
-	db.Create(p)
+	id := cuid.New()
+
+	pd := &model.Podcast{
+		UUID:              id,
+		Title:             p.Title,
+		Description:       p.Description,
+		Thumbnail:         p.Thumbnail,
+		ExplicitContent:   p.ExplicitContent,
+		PrimaryCategory:   p.PrimaryCategory,
+		SecondaryCategory: p.SecondaryCategory,
+		Author:            p.Author,
+		Copyright:         p.Copyright,
+		Keywords:          p.Keywords,
+		Website:           p.Website,
+		Language:          p.Language,
+		Timezone:          p.Timezone,
+		ShowOwner:         p.ShowOwner,
+		OwnerEmail:        p.OwnerEmail,
+		DisplayEmailInRSS: p.DisplayEmailInRSS,
+		UserID:            p.UserID,
+	}
+
+	db.Create(pd)
+
+	if db.Error != nil {
+		fmt.Println("ERROR: ", db.Error)
+		return db.Error
+	}
 
 	fmt.Println("SUCCESS: new podcast created")
 
@@ -31,8 +59,6 @@ func GetUsersPodcasts(userId string, db *gorm.DB) ([]model.PodcastDTO, error) {
 
 		podcastsDto = append(podcastsDto, dto)
 	}
-
-	fmt.Println(podcasts[0].Episodes)
 
 	return podcastsDto, nil
 }
