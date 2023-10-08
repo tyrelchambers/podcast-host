@@ -50,11 +50,7 @@ const InitialData = ({ children }: { children: React.ReactNode }) => {
     if (router.query.name && router.isReady && podcastStore.podcasts) {
       podcastStore.setActivePodcast(router.query.name as string);
     }
-  }, [router.query.name, router.isReady]);
-
-  if (user.isFetching || podcasts.isFetching) {
-    return <div>Loading...</div>;
-  }
+  }, [router.query.name, router.isReady, podcastStore.podcasts]);
 
   return <>{children}</>;
 };

@@ -49,7 +49,7 @@ func CreateEpisode(c echo.Context) error {
 
 	}
 
-	newEpError := models.CreateEpisode(&episode, helpers.DbClient())
+	newEpError := models.CreateEpisode(&episode, helpers.DB())
 
 	if newEpError != nil {
 
@@ -65,7 +65,7 @@ func GetEpisode(c echo.Context) error {
 
 	id := c.Param("id")
 
-	episode, err := models.GetEpisodeById(id, helpers.DbClient())
+	episode, err := models.GetEpisodeById(id, helpers.DB())
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -118,7 +118,7 @@ func UpdateEpisode(c echo.Context) error {
 
 	}
 
-	err = models.UpdateEpisode(episode, helpers.DbClient())
+	err = models.UpdateEpisode(episode, helpers.DB())
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -134,7 +134,7 @@ func DeleteEpisode(c echo.Context) error {
 
 	id := c.Param("id")
 
-	err := models.DeleteEpisode(id, helpers.DbClient())
+	err := models.DeleteEpisode(id, helpers.DB())
 
 	if err != nil {
 		return echo.NewHTTPError(500, err.Error())

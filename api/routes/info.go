@@ -23,9 +23,9 @@ func InfoRoute(c echo.Context) error {
 
 	pId := c.Param("id")
 
-	count, _ := models.GetEpisodesCountAndIncrement(pId, helpers.DbClient())
+	count, _ := models.GetEpisodesCountAndIncrement(pId, helpers.DB())
 
-	podcast, err := models.GetPodcastById(pId, user.UUID, helpers.DbClient())
+	podcast, err := models.GetPodcastById(pId, user.UUID, helpers.DB())
 
 	feed := helpers.CreateRssFeed(&podcast)
 

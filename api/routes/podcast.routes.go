@@ -32,7 +32,7 @@ func CreatePodcast(c echo.Context) error {
 	podcast.OwnerEmail = c.FormValue("owner_email")
 	podcast.DisplayEmailInRSS = c.FormValue("display_email_in_rss") == "true"
 
-	err := models.CreatePodcast(&podcast, helpers.DbClient())
+	err := models.CreatePodcast(&podcast, helpers.DB())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to create podcast.")
@@ -44,7 +44,7 @@ func CreatePodcast(c echo.Context) error {
 func GetUserPodcasts(c echo.Context) error {
 	user := sessions.GetUserFromSession(c)
 
-	podcasts, err := models.GetUsersPodcasts(user.UUID, helpers.DbClient())
+	podcasts, err := models.GetUsersPodcasts(user.UUID, helpers.DB())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get podcasts.")
@@ -65,9 +65,9 @@ func GetPodcastSettings(c echo.Context) error {
 
 	name := c.Param("name")
 
-	podcast, err := models.GetPodcastByNameWithEpisodes(name, user.UUID, helpers.DbClient())
+	podcast, err := models.GetPodcastByNameWithEpisodes(name, user.UUID, helpers.DB())
 
-	latestEpisodeData, err := models.GetLatestEpisodeByPodcast(podcast.UUID, helpers.DbClient())
+	latestEpisodeData, err := models.GetLatestEpisodeByPodcast(podcast.UUID, helpers.DB())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get latest episode.")
@@ -89,9 +89,9 @@ func GetPodcastEpisodes(c echo.Context) error {
 
 	pName := c.Param("name")
 
-	podcastId, err := models.GetPodcastIdFromName(pName, helpers.DbClient())
+	podcastId, err := models.GetPodcastIdFromName(pName, helpers.DB())
 
-	episodes, err := models.GetPodcastEpisodesById(podcastId, helpers.DbClient())
+	episodes, err := models.GetPodcastEpisodesById(podcastId, helpers.DB())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get episodes.")
@@ -103,13 +103,13 @@ func GetPodcastEpisodes(c echo.Context) error {
 func UpdatePodcast(c echo.Context) error {
 	pName := c.Param("name")
 
-	podcast, err := models.GetPodcastIdFromName(pName, helpers.DbClient())
+	podcast, err := models.GetPodcastIdFromName(pName, helpers.DB())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get podcast.")
 	}
 
-	err = models.UpdatePodcast(&podcast, helpers.DbClient())
+	err = models.UpdatePodcast(&podcast, helpers.DB())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to update podcast.")

@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"api/constants"
+	"api/model"
 	"context"
 	"fmt"
 	"io"
@@ -13,26 +14,34 @@ import (
 	"strconv"
 	"time"
 
-	"gorm.io/driver/postgres"
-
 	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	ffmpeg_go "github.com/u2takey/ffmpeg-go"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func DbClient() *gorm.DB {
+var db *gorm.DB
 
-	db, err := gorm.Open(postgres.Open(constants.DbUrl), &gorm.Config{
+func DB() *gorm.DB {
+	return db
+}
+
+func InitDb() {
+	var err error
+
+	db, err = gorm.Open(postgres.Open(constants.DbUrl), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,
 	})
+
 	if err != nil {
-		panic(err)
+		log.Fatalf(err.Error())
 	}
 
-	fmt.Println("Successfully connected!")
-	return db
+	err = db.AutoMigrate(&model.User{}, &model.Podcast{}, &model.Episode{})
+
+	fmt.Println("Successfully connected to the database.")
 }
 
 func BunnyClient() *bunnystorage.Client {

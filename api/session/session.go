@@ -35,7 +35,7 @@ func GetUserFromSession(c echo.Context) *model.UserDTO {
 		return nil
 	}
 
-	user, err := models.GetUser(val.(string), helpers.DbClient())
+	user, err := models.GetUser(val.(string), helpers.DB())
 
 	if err != nil {
 		fmt.Println("ERROR: ", err)

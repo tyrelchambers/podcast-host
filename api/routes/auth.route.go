@@ -13,7 +13,7 @@ import (
 
 func AuthHandler(c echo.Context) error {
 
-	db := helpers.DbClient()
+	db := helpers.DB()
 
 	var body model.RegisterBody
 
@@ -52,7 +52,7 @@ func Login(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	user, err := models.FindUserByEmail(body.Email, helpers.DbClient())
+	user, err := models.FindUserByEmail(body.Email, helpers.DB())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())

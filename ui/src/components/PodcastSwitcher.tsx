@@ -34,6 +34,8 @@ export function PodcastSwitcher({
   const podcasts = Array.from(podcastState.values());
 
   const clickHandler = (currentValue: string) => {
+    console.log(currentValue, value);
+
     if (currentValue !== value) {
       setValue(currentValue);
       router.push({
@@ -54,9 +56,13 @@ export function PodcastSwitcher({
           aria-expanded={open}
           className="w-[200px] justify-between text-background-alt-foreground border-0 bg-background-alt-foreground/10"
         >
-          {value
-            ? podcastState.find((p) => p.title === value)?.title
-            : activePodcast?.title}
+          <span className="truncate">
+            {value
+              ? podcastState.find(
+                  (p) => p.title.toLowerCase() === value.toLowerCase()
+                )?.title
+              : activePodcast?.title}
+          </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -70,7 +76,9 @@ export function PodcastSwitcher({
                 <Check
                   className={cn(
                     "mr-2 h-4 w-4",
-                    value === p.title ? "opacity-100" : "opacity-0"
+                    value.toLowerCase() === p.title.toLowerCase()
+                      ? "opacity-100"
+                      : "opacity-0"
                   )}
                 />
                 {p.title}
