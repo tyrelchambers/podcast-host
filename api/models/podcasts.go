@@ -63,21 +63,19 @@ func GetUsersPodcasts(userId string, db *gorm.DB) ([]model.PodcastDTO, error) {
 	return podcastsDto, nil
 }
 
-func GetPodcastById(id string, userId string, db *gorm.DB) (p model.Podcast, e error) {
+func GetPodcastById(id string, userId string, db *gorm.DB) (p *model.Podcast, e error) {
 	var podcast model.Podcast
 
 	db.First(&podcast, "uuid = ? AND user_id = ?", id, userId)
 
-	return podcast, nil
+	return &podcast, nil
 }
 
-func GetPodcastByNameWithEpisodes(name string, userId string, db *gorm.DB) (p model.Podcast, e error) {
+func GetEpisodes(id string, userId string, db *gorm.DB) (p model.Podcast, e error) {
 
 	var podcast model.Podcast
 
-	parsedName := strings.Replace(name, "-", " ", -1)
-
-	db.First(&podcast, "title = ? AND user_id = ?", parsedName, userId)
+	db.First(&podcast, "uuid = ? AND user_id = ?", id, userId)
 
 	return podcast, nil
 
@@ -111,7 +109,7 @@ func GetPodcastEpisodesById(id string, db *gorm.DB) ([]model.EpisodeDTO, error) 
 
 }
 
-func UpdatePodcast(podcast *string, db *gorm.DB) error {
+func UpdatePodcast(podcast *model.Podcast, db *gorm.DB) error {
 
 	db.Model(&podcast).Updates(podcast)
 

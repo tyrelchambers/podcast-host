@@ -20,7 +20,7 @@ const PodcastList = ({ podcasts }: Props) => {
       {podcasts.map((podcast) => (
         <Link
           href={`/podcast/${formatUrlFromTitle(podcast.title)}`}
-          key={podcast.id}
+          key={podcast.uuid}
           className="flex gap-6"
         >
           {podcast.thumbnail ? (

@@ -21,7 +21,7 @@ export const formSchema = z.object({
   description: z.string(),
   author: z.string(),
   keywords: z.string(),
-  episode_number: z.number(),
+  episode_number: z.string(),
   schedule_hour: z.string().optional(),
   schedule_minute: z.string().optional(),
   schedule_meridiem: z.string().optional(),
@@ -67,7 +67,7 @@ export interface PodcastSettings {
 }
 
 export interface MiscInfo {
-  next_episode_number: number;
+  next_episode_number: string;
   rss_feed: string;
 }
 

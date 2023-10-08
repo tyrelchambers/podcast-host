@@ -1,13 +1,4 @@
-import DashCard from "@/components/dashboard/DashCard";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -19,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useMiscInfoQuery } from "@/hooks/api/useMiscInfoQuery";
-import { usePodcastQuery } from "@/hooks/api/usePodcastQuery";
 import { usePodcastStore } from "@/hooks/stores/podcastStore";
 import DashHeader from "@/layouts/dashboard/DashHeader";
 import DashLayout from "@/layouts/dashboard/DashLayout";
@@ -27,7 +17,7 @@ import { faArrowRight, faRss } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React from "react";
 
 const Podcast = () => {
   const router = useRouter();

@@ -5,6 +5,7 @@ import (
 	"api/model"
 	"api/models"
 	sessions "api/session"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -63,11 +64,13 @@ func GetPodcastSettings(c echo.Context) error {
 
 	user := sessions.GetUserFromSession(c)
 
-	name := c.Param("name")
+	id := c.Param("id")
 
-	podcast, err := models.GetPodcastByNameWithEpisodes(name, user.UUID, helpers.DB())
+	fmt.Println("ID: ---> ", id)
 
-	latestEpisodeData, err := models.GetLatestEpisodeByPodcast(podcast.UUID, helpers.DB())
+	podcast, err := models.GetEpisodes(id, user.UUID, helpers.DB())
+
+	latestEpisodeData, err := models.GetLatestEpisodeByPodcast(id, helpers.DB())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get latest episode.")
@@ -87,11 +90,9 @@ func GetPodcastSettings(c echo.Context) error {
 
 func GetPodcastEpisodes(c echo.Context) error {
 
-	pName := c.Param("name")
+	id := c.Param("id")
 
-	podcastId, err := models.GetPodcastIdFromName(pName, helpers.DB())
-
-	episodes, err := models.GetPodcastEpisodesById(podcastId, helpers.DB())
+	episodes, err := models.GetPodcastEpisodesById(id, helpers.DB())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get episodes.")
@@ -101,15 +102,17 @@ func GetPodcastEpisodes(c echo.Context) error {
 }
 
 func UpdatePodcast(c echo.Context) error {
-	pName := c.Param("name")
+	id := c.Param("id")
 
-	podcast, err := models.GetPodcastIdFromName(pName, helpers.DB())
+	user := sessions.GetUserFromSession(c)
+
+	podcast, err := models.GetPodcastById(id, user.UUID, helpers.DB())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get podcast.")
 	}
 
-	err = models.UpdatePodcast(&podcast, helpers.DB())
+	err = models.UpdatePodcast(podcast, helpers.DB())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to update podcast.")

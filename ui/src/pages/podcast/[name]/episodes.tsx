@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { dashboardRoot } from "@/constants";
 import { useEpisodesQuery } from "@/hooks/api/useEpisodesQuery";
+import { usePodcastStore } from "@/hooks/stores/podcastStore";
 import DashHeader from "@/layouts/dashboard/DashHeader";
 import DashLayout from "@/layouts/dashboard/DashLayout";
 import { faSearch } from "@fortawesome/pro-regular-svg-icons";
@@ -14,7 +15,8 @@ import React from "react";
 const Episodes = () => {
   const router = useRouter();
   const nameParam = router.query.name;
-  const episodes = useEpisodesQuery(nameParam as string);
+  const activePodcast = usePodcastStore((state) => state.activePodcast);
+  const episodes = useEpisodesQuery(activePodcast?.uuid);
 
   return (
     <DashLayout leftCol={<DashHeader rootPath={router.query.name as string} />}>

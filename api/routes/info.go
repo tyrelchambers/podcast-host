@@ -15,8 +15,8 @@ func InfoRoute(c echo.Context) error {
 	}
 
 	type Response struct {
-		NextEpisodeNumber int64  `json:"nextEpisodeNumber"`
-		RssFeed           string `json:"rssFeed"`
+		NextEpisodeNumber string `json:"next_episode_number"`
+		RssFeed           string `json:"rss_feed"`
 	}
 
 	user := sessions.GetUserFromSession(c)
@@ -27,14 +27,14 @@ func InfoRoute(c echo.Context) error {
 
 	podcast, err := models.GetPodcastById(pId, user.UUID, helpers.DB())
 
-	feed := helpers.CreateRssFeed(&podcast)
+	feed := helpers.CreateRssFeed(podcast)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get episode count.")
 	}
 
 	response := Response{
-		NextEpisodeNumber: count + 1,
+		NextEpisodeNumber: count,
 		RssFeed:           feed,
 	}
 

@@ -3,13 +3,19 @@ package models
 import (
 	"api/helpers"
 	"api/model"
+	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/lucsky/cuid"
 	"gorm.io/gorm"
 )
 
 func CreateEpisode(episode *model.Episode, db *gorm.DB) (e error) {
+
+	if episode.PodcastId == "" {
+		return errors.New("Podcast ID is required")
+	}
 
 	id := cuid.New()
 
@@ -73,11 +79,11 @@ func GetLatestEpisodeByPodcast(podcastID string, db *gorm.DB) (model.Episode, er
 	return episode, nil
 }
 
-func GetEpisodesCountAndIncrement(podcastId string, db *gorm.DB) (int64, error) {
+func GetEpisodesCountAndIncrement(podcastId string, db *gorm.DB) (string, error) {
 
 	var count int64
 
 	db.Model(&model.Episode{}).Where("podcast_id = ?", podcastId).Count(&count)
 
-	return count, nil
+	return strconv.FormatInt(count+1, 10), nil
 }

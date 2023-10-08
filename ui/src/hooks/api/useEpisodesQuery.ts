@@ -2,9 +2,9 @@ import { Episode } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export const getAllEpisodes = async (name: string | undefined) => {
+export const getAllEpisodes = async (id: string | undefined) => {
   const data = await axios
-    .get(`http://localhost:8080/api/podcast/${name}/episodes`)
+    .get(`http://localhost:8080/api/podcast/${id}/episodes`)
     .then((res) => res.data)
     .catch((err) => {
       console.log(err);
@@ -13,11 +13,11 @@ export const getAllEpisodes = async (name: string | undefined) => {
   return data;
 };
 
-export const useEpisodesQuery = (name: string | undefined) => {
+export const useEpisodesQuery = (id: string | undefined) => {
   const query = useQuery<Episode[]>({
-    queryKey: ["episodes", name],
-    queryFn: () => getAllEpisodes(name),
-    enabled: !!name,
+    queryKey: ["episodes", id],
+    queryFn: () => getAllEpisodes(id),
+    enabled: !!id,
   });
 
   return query;
