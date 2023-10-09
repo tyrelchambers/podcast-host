@@ -1,7 +1,6 @@
 package models
 
 import (
-	"api/helpers"
 	"api/model"
 	"errors"
 	"fmt"
@@ -59,7 +58,6 @@ func CreateUser(user model.RegisterBody, db *gorm.DB) (*model.User, error) {
 
 func GetUser(id string, db *gorm.DB) (*model.UserDTO, error) {
 	var u model.User
-	var uDto model.UserDTO
 
 	db.Table("users").Where("uuid = ?", id).First(&u)
 
@@ -67,9 +65,7 @@ func GetUser(id string, db *gorm.DB) (*model.UserDTO, error) {
 		return nil, errors.New("Failed to get user. Doesn't exist.")
 	}
 
-	helpers.ConvertToDto(u, &uDto)
-
-	return &uDto, nil
+	return u.ToDTO(), nil
 }
 
 func FindUserByEmail(email string, db *gorm.DB) (*model.User, error) {

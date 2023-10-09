@@ -20,6 +20,21 @@ import { useRouter } from "next/router";
 import React from "react";
 import Svgs from "../../../images/svgs.svg";
 import Image from "next/image";
+import { format, fromUnixTime, getUnixTime } from "date-fns";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  faClock,
+  faDownload,
+  faListMusic,
+  faPenRuler,
+} from "@fortawesome/pro-duotone-svg-icons";
 
 const Podcast = () => {
   const router = useRouter();
@@ -31,61 +46,133 @@ const Podcast = () => {
 
   return (
     <DashLayout leftCol={<DashHeader rootPath={router.query.name as string} />}>
-      <header className="flex gap-4 mb-10">
-        <h1 className="h1 flex-1">{podcast?.title}</h1>
-        <section className="relative max-w-2xl h-full max-h-[300px] w-full">
-          <Image src={Svgs} alt="" className="bg-overlay" />
+      <h1 className="font-bold text-foreground flex-1 text-5xl mb-8">
+        {podcast?.title}
+      </h1>
+      <section className="bg-card p-4 rounded-xl w-full flex gap-3 mb-8">
+        <Link href={`/podcast/${nameParam}/episode/create`}>
+          <Button className="w-full">Create episode</Button>
+        </Link>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="secondary">
+              <FontAwesomeIcon icon={faRss} className="mr-3" />
+              RSS feed
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                <FontAwesomeIcon icon={faRss} className="mr-3" />
+                Your RSS feed
+              </DialogTitle>
+              <DialogDescription>
+                An RSS feed for a podcast is used to syndicate and distribute
+                episodes of the podcast to various platforms and apps, allowing
+                subscribers to automatically receive new episodes as they are
+                released.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="flex !flex-col gap-2">
+              <div className="flex gap-2">
+                <Input
+                  value="https://feeds.transistor.fm/the-midnight-podcast"
+                  readOnly
+                />
+                <Button variant="outline">Copy</Button>
+              </div>
+              <DialogDescription>
+                <Link
+                  href="https://feeds.transistor.fm/the-midnight-podcast"
+                  className="flex items-center"
+                >
+                  Configure your RSS feed settings{" "}
+                  <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
+                </Link>
+              </DialogDescription>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </section>
+      <section className="flex gap-4 mb-10 h-[300px] flex-1">
+        <div className="flex flex-col w-full">
+          <div className="grid grid-cols-2 gap-3 h-full">
+            <Card className="flex-1 h-full">
+              <CardHeader>
+                <CardTitle className="text-lg">
+                  <FontAwesomeIcon icon={faDownload} className="mr-2" />
+                  Total downloads
+                </CardTitle>
+                <CardDescription>Card Description</CardDescription>
+              </CardHeader>
+            </Card>
 
-          <div className="absolute inset-0 z-10 p-10">
-            <p className="font-light text-background-alt-foreground text-xl">
-              Your latest episode
-            </p>
+            <Card className="flex-1 h-full">
+              <CardHeader>
+                <CardTitle className="text-lg">
+                  <FontAwesomeIcon icon={faPenRuler} className="mr-2" /> Drafts
+                </CardTitle>
+                <CardDescription className="text-5xl">
+                  {miscInfo.data?.draft_count}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="flex-1 h-full">
+              <CardHeader>
+                <CardTitle className="text-lg">
+                  <FontAwesomeIcon
+                    icon={faClock}
+                    style={{ ["--fa-secondary-opacity" as string]: "0.1" }}
+                    className="mr-2"
+                  />{" "}
+                  Scheduled
+                </CardTitle>
+                <CardDescription>Card Description</CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="flex-1 h-full">
+              <CardHeader>
+                <CardTitle className="text-lg">
+                  <FontAwesomeIcon icon={faListMusic} className="mr-2" />{" "}
+                  Published episodes
+                </CardTitle>
+                <CardDescription className="text-5xl">
+                  {miscInfo.data?.episode_count}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+        </div>
+        <section className="relative max-w-2xl h-full  w-full shadow-lg rounded-3xl overflow-hidden">
+          <Image src={Svgs} alt="" className="bg-overlay rounded-3xl  h-full" />
+
+          <div className="absolute inset-0 z-10 p-10 h-[245px] flex flex-col top-[50%] translate-y-[-50%]">
+            <div className="flex flex-col flex-1">
+              <h3 className="text-4xl font-medium text-background-alt-foreground">
+                {miscInfo.data?.latest_episode.title}
+              </h3>
+              <p className="text-background-alt-foreground/60">
+                Published on{" "}
+                {miscInfo.data?.latest_episode.publish_date &&
+                  format(
+                    fromUnixTime(miscInfo.data?.latest_episode.publish_date),
+                    "MMM d, yyyy"
+                  )}
+              </p>
+            </div>
+
+            <Link
+              href={`/podcast/${nameParam}/episode/${miscInfo.data?.latest_episode.uuid}`}
+            >
+              <Button variant="outline" className="w-fit">
+                View episode
+              </Button>
+            </Link>
           </div>
         </section>
-      </header>
-      <Link href={`/podcast/${nameParam}/episode/create`}>
-        <Button className="w-full">Create episode</Button>
-      </Link>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="secondary">
-            <FontAwesomeIcon icon={faRss} className="mr-3" />
-            RSS feed
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              <FontAwesomeIcon icon={faRss} className="mr-3" />
-              Your RSS feed
-            </DialogTitle>
-            <DialogDescription>
-              An RSS feed for a podcast is used to syndicate and distribute
-              episodes of the podcast to various platforms and apps, allowing
-              subscribers to automatically receive new episodes as they are
-              released.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex !flex-col gap-2">
-            <div className="flex gap-2">
-              <Input
-                value="https://feeds.transistor.fm/the-midnight-podcast"
-                readOnly
-              />
-              <Button variant="outline">Copy</Button>
-            </div>
-            <DialogDescription>
-              <Link
-                href="https://feeds.transistor.fm/the-midnight-podcast"
-                className="flex items-center"
-              >
-                Configure your RSS feed settings{" "}
-                <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
-              </Link>
-            </DialogDescription>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      </section>
     </DashLayout>
   );
 };

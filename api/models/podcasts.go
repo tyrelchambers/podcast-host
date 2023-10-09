@@ -55,7 +55,7 @@ func GetUsersPodcasts(userId string, db *gorm.DB) ([]model.PodcastDTO, error) {
 	for _, v := range podcasts {
 		var dto model.PodcastDTO
 
-		helpers.ConvertToDto(v, &dto)
+		dto = *v.ToDTO()
 
 		podcastsDto = append(podcastsDto, dto)
 	}
@@ -63,12 +63,25 @@ func GetUsersPodcasts(userId string, db *gorm.DB) ([]model.PodcastDTO, error) {
 	return podcastsDto, nil
 }
 
-func GetPodcastById(id string, userId string, db *gorm.DB) (p *model.Podcast, e error) {
+func GetPodcastById(id string, userId string, db *gorm.DB) (p *model.PodcastDTO, e error) {
 	var podcast model.Podcast
+	var episodesDto []*model.EpisodeDTO
 
-	db.First(&podcast, "uuid = ? AND user_id = ?", id, userId)
+	db.Table("podcasts").Preload("Episodes").First(&podcast, "uuid = ? AND user_id = ?", id, userId)
 
-	return &podcast, nil
+	podcastDto := podcast.ToDTO()
+
+	for _, v := range podcast.Episodes {
+		var dto model.EpisodeDTO
+
+		dto = *v.ToDTO()
+
+		episodesDto = append(episodesDto, &dto)
+	}
+
+	podcastDto.Episodes = episodesDto
+
+	return podcastDto, nil
 }
 
 func GetEpisodes(id string, userId string, db *gorm.DB) (p model.Podcast, e error) {

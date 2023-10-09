@@ -69,6 +69,9 @@ export interface PodcastSettings {
 export interface MiscInfo {
   next_episode_number: string;
   rss_feed: string;
+  latest_episode: Episode;
+  episode_count: number;
+  draft_count: number;
 }
 
 export const podcastSchema = z.object({

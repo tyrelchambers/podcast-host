@@ -53,6 +53,7 @@ type Episode struct {
 	Author        string
 	EpisodeNumber uint64
 	Draft         bool
+	ScheduledDate uint64
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	DeletedAt     gorm.DeletedAt `gorm:"index" `

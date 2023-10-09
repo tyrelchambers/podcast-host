@@ -92,6 +92,6 @@
   }
 
   .bg-overlay {
-    @apply border border-border rounded-3xl bg-background-alt;
+    @apply border border-border bg-background-alt;
   }
 }

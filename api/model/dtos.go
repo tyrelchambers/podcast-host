@@ -8,7 +8,7 @@ type UserDTO struct {
 	UUID     string        `json:"uuid"`
 	Email    string        `json:"email"`
 	Password string        `json:"password"`
-	Podcasts []*PodcastDTO `json:"podcasts" gorm:"foreignKey:UserID"`
+	Podcasts []*PodcastDTO `json:"podcasts"`
 }
 type PodcastDTO struct {
 	UUID              string        `json:"uuid"`
@@ -28,7 +28,7 @@ type PodcastDTO struct {
 	OwnerEmail        string        `json:"owner_email"`
 	DisplayEmailInRSS bool          `json:"display_email_in_rss"`
 	UserID            string        `json:"user_id"`
-	Episodes          []*EpisodeDTO `gorm:"foreignKey:PodcastId" json:"episodes"`
+	Episodes          []*EpisodeDTO `json:"episodes"`
 }
 
 type EpisodeDTO struct {
@@ -38,7 +38,7 @@ type EpisodeDTO struct {
 	URL           string      `json:"url"`
 	Image         string      `json:"image"`
 	PodcastId     string      `json:"podcast_id"`
-	Podcast       *PodcastDTO `gorm:"foreignKey:UUID;references:PodcastId"`
+	Podcast       *PodcastDTO `json:"podcast"`
 	Keywords      string      `json:"keywords"`
 	PublishDate   uint64      `json:"publish_date"`
 	Author        string      `json:"author"`

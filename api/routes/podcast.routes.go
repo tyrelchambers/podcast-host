@@ -5,7 +5,6 @@ import (
 	"api/model"
 	"api/models"
 	sessions "api/session"
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -66,8 +65,6 @@ func GetPodcastSettings(c echo.Context) error {
 
 	id := c.Param("id")
 
-	fmt.Println("ID: ---> ", id)
-
 	podcast, err := models.GetEpisodes(id, user.UUID, helpers.DB())
 
 	latestEpisodeData, err := models.GetLatestEpisodeByPodcast(id, helpers.DB())
@@ -102,17 +99,20 @@ func GetPodcastEpisodes(c echo.Context) error {
 }
 
 func UpdatePodcast(c echo.Context) error {
+	var podcastModel model.Podcast
+
 	id := c.Param("id")
 
 	user := sessions.GetUserFromSession(c)
 
-	podcast, err := models.GetPodcastById(id, user.UUID, helpers.DB())
+	_, err := models.GetPodcastById(id, user.UUID, helpers.DB())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get podcast.")
+
 	}
 
-	err = models.UpdatePodcast(podcast, helpers.DB())
+	err = models.UpdatePodcast(&podcastModel, helpers.DB())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to update podcast.")

@@ -4,7 +4,7 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 config.autoAddCss = false;
 
-import { Poppins } from "next/font/google";
+import { Manrope } from "next/font/google";
 
 import "../styles/globals.css";
 import "@mantine/core/styles.css";
@@ -21,8 +21,8 @@ import { MantineProvider } from "@mantine/core";
 
 const queryClient = new QueryClient();
 
-const font = Poppins({
-  weight: ["300", "500", "700"],
+const font = Manrope({
+  weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
 });
 

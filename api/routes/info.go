@@ -2,6 +2,7 @@ package routes
 
 import (
 	"api/helpers"
+	"api/model"
 	"api/models"
 	sessions "api/session"
 	"net/http"
@@ -10,13 +11,15 @@ import (
 )
 
 func InfoRoute(c echo.Context) error {
-	type PodcastID struct {
-		PodcastID string `json:"podcastId"`
-	}
+	var latestEpisode *model.EpisodeDTO
 
 	type Response struct {
-		NextEpisodeNumber string `json:"next_episode_number"`
-		RssFeed           string `json:"rss_feed"`
+		NextEpisodeNumber string            `json:"next_episode_number"`
+		RssFeed           string            `json:"rss_feed"`
+		EpisodeCount      int               `json:"episode_count"`
+		DraftCount        int               `json:"draft_count"`
+		ScheduledCount    string            `json:"scheduled_count"`
+		LatestEpisode     *model.EpisodeDTO `json:"latest_episode"`
 	}
 
 	user := sessions.GetUserFromSession(c)
@@ -29,6 +32,12 @@ func InfoRoute(c echo.Context) error {
 
 	feed := helpers.CreateRssFeed(podcast)
 
+	if len(podcast.Episodes) > 0 {
+		latestEpisode = podcast.Episodes[len(podcast.Episodes)-1]
+	} else {
+		latestEpisode = nil
+	}
+
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get episode count.")
 	}
@@ -36,6 +45,9 @@ func InfoRoute(c echo.Context) error {
 	response := Response{
 		NextEpisodeNumber: count,
 		RssFeed:           feed,
+		LatestEpisode:     latestEpisode,
+		EpisodeCount:      len(podcast.GetPublishedEpisodes()),
+		DraftCount:        len(podcast.GetDrafts()),
 	}
 
 	return c.JSON(http.StatusOK, response)
