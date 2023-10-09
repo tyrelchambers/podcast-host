@@ -30,6 +30,7 @@ export const formSchema = z.object({
   podcast_id: z.string().optional(),
   explicit_content: z.boolean().optional(),
   draft: z.boolean(),
+  is_scheduled: z.boolean().optional(),
 });
 
 export type Episode = z.infer<typeof formSchema>;

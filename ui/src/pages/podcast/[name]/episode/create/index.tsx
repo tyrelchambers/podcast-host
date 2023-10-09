@@ -81,6 +81,7 @@ const Page = () => {
         publishDate: getDate().toString(),
         podcastId: podcast?.uuid ?? "",
         draft: data.draft,
+        isScheduled: whenToPublish === "schedule",
       },
       {
         withCredentials: true,

@@ -44,6 +44,7 @@ type EpisodeDTO struct {
 	Author        string      `json:"author"`
 	EpisodeNumber uint64      `json:"episode_number"`
 	Draft         bool        `json:"draft"`
+	IsScheduled   bool        `json:"is_scheduled"`
 }
 
 type CookieDTO struct {

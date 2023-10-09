@@ -34,6 +34,7 @@ func CreateEpisode(c echo.Context) error {
 	episode.EpisodeNumber = convertedEpNum
 	episode.PodcastId = pId
 	episode.Draft = c.FormValue("draft") == "true"
+	episode.IsScheduled = c.FormValue("isScheduled") == "true"
 
 	file, _ := c.FormFile("file")
 

@@ -36,10 +36,10 @@ const EpisodesTable = ({ episodes, podcastName }: Props) => {
       <TableBody>
         {episodes.length > 0 &&
           episodes
-            .sort((a, b) => b.episode_number - a.episode_number)
+            .sort((a, b) => Number(b.episode_number) - Number(a.episode_number))
             .map((episode) => (
               <TableRow key={episode.id}>
-                <TableCell className="text-muted-foreground font-light">
+                <TableCell className="text-muted-foreground font-extrabold">
                   {episode.episode_number}
                 </TableCell>
                 <TableCell></TableCell>
@@ -51,10 +51,12 @@ const EpisodesTable = ({ episodes, podcastName }: Props) => {
                   </Link>
                 </TableCell>
                 <TableCell>
-                  {!episode.draft ? (
-                    <Badge>Published</Badge>
+                  {episode.is_scheduled ? (
+                    <Badge variant="secondary">Scheduled</Badge>
+                  ) : !episode.draft ? (
+                    <Badge variant="success">Published</Badge>
                   ) : (
-                    <Badge variant="secondary">Draft</Badge>
+                    <Badge variant="outline">Draft</Badge>
                   )}
                 </TableCell>
                 <TableCell className="text-right text-muted-foreground font-light">

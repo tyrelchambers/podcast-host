@@ -1,7 +1,6 @@
 package models
 
 import (
-	"api/helpers"
 	"api/model"
 	"fmt"
 	"strings"
@@ -113,7 +112,7 @@ func GetPodcastEpisodesById(id string, db *gorm.DB) ([]model.EpisodeDTO, error) 
 	for _, v := range episodes {
 		var dto model.EpisodeDTO
 
-		helpers.ConvertToDto(v, &dto)
+		dto = *v.ToDTO()
 
 		eDtos = append(eDtos, dto)
 	}

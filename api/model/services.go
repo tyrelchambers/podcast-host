@@ -85,6 +85,7 @@ func (e *EpisodeDTO) ToEntity() *Episode {
 		Author:        e.Author,
 		EpisodeNumber: e.EpisodeNumber,
 		Draft:         e.Draft,
+		IsScheduled:   e.IsScheduled,
 	}
 
 	return &eDto
@@ -103,6 +104,7 @@ func (e *Episode) ToDTO() *EpisodeDTO {
 		Author:        e.Author,
 		EpisodeNumber: e.EpisodeNumber,
 		Draft:         e.Draft,
+		IsScheduled:   e.IsScheduled,
 	}
 
 	return &eDto

@@ -31,6 +31,7 @@ func CreateEpisode(episode *model.Episode, db *gorm.DB) (e error) {
 		Image:         episode.Image,
 		EpisodeNumber: episode.EpisodeNumber,
 		PodcastId:     episode.PodcastId,
+		IsScheduled:   episode.IsScheduled,
 	}
 
 	db.Create(ep)

@@ -22,7 +22,7 @@ const DatePicker = ({ date, setDate }: Props) => {
         <Button
           variant={"outline"}
           className={cn(
-            "w-[280px] justify-start text-left font-normal",
+            "w-[280px] justify-start text-left font-normal text-foreground",
             !date && "text-muted-foreground"
           )}
         >

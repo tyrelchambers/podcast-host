@@ -336,15 +336,18 @@ const EpisodeForm = ({
             </Button> */}
           </div>
         )}
-        <Button
-          type="submit"
-          onClick={() => submit(form.getValues())}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? <FontAwesomeIcon icon={faSpinner} spin /> : ctaText}
-        </Button>
-        {isEditing ? (
-          <div className="flex justify-end">
+        <footer className="flex items-center justify-between">
+          <Button
+            type="submit"
+            onClick={(e) => {
+              e.preventDefault();
+              submit(form.getValues());
+            }}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? <FontAwesomeIcon icon={faSpinner} spin /> : ctaText}
+          </Button>
+          {isEditing ? (
             <Button
               type="button"
               variant="outlineDestructive"
@@ -353,9 +356,7 @@ const EpisodeForm = ({
             >
               Delete episode
             </Button>
-          </div>
-        ) : (
-          <div className="flex justify-end">
+          ) : (
             <Button
               type="button"
               variant="secondary"
@@ -370,8 +371,8 @@ const EpisodeForm = ({
             >
               Save as draft
             </Button>
-          </div>
-        )}
+          )}
+        </footer>
       </form>
     </Form>
   );

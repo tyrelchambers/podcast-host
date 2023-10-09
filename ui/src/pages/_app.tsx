@@ -22,7 +22,7 @@ import { MantineProvider } from "@mantine/core";
 const queryClient = new QueryClient();
 
 const font = Manrope({
-  weight: ["300", "400", "500", "700"],
+  weight: ["300", "400", "500", "700", "800"],
   subsets: ["latin"],
 });
 

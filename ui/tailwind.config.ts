@@ -44,6 +44,10 @@ module.exports = {
         },
         ["background-alt"]: "hsl(var(--background-alt))",
         ["background-alt-foreground"]: "hsl(var(--background-alt-foreground))",
+        green: {
+          DEFAULT: "hsl(var(--green))",
+          foreground: "hsl(var(--green-foreground))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
