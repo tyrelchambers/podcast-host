@@ -61,7 +61,7 @@
   }
 }
 
-@layer base {
+@layer components {
   body,
   html {
     background-color: var(--background);
@@ -89,5 +89,9 @@
 
   .section-card {
     @apply border-border border-[1px] p-4 rounded-xl mt-6 bg-card;
+  }
+
+  .bg-overlay {
+    @apply border border-border rounded-3xl bg-background-alt;
   }
 }

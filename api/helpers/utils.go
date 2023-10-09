@@ -194,3 +194,21 @@ func ConvertToDto(model interface{}, dto interface{}) {
 		}
 	}
 }
+
+func ConvertToModel(dto interface{}, model interface{}) {
+	dtoValue := reflect.ValueOf(dto).Elem()
+	modelValue := reflect.ValueOf(model)
+
+	for i := 0; i < dtoValue.NumField(); i++ {
+		dtoField := dtoValue.Type().Field(i)
+		modelName := dtoField.Name
+
+		if modelName != "" {
+			modelField := modelValue.FieldByName(modelName)
+
+			if modelField.IsValid() {
+				dtoValue.Field(i).Set(modelField)
+			}
+		}
+	}
+}
