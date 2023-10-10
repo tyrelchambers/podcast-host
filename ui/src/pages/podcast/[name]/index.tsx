@@ -18,17 +18,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import Svgs from "../../../images/svgs.svg";
-import Image from "next/image";
-import { format, fromUnixTime, getUnixTime } from "date-fns";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { format, fromUnixTime } from "date-fns";
+import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import {
   faClock,
   faDownload,
@@ -46,7 +37,7 @@ const Podcast = () => {
 
   return (
     <DashLayout leftCol={<DashHeader rootPath={router.query.name as string} />}>
-      <h1 className="font-bold text-foreground flex-1 text-5xl mb-8">
+      <h1 className="font-bold text-foreground flex-1 text-3xl mb-8">
         {podcast?.title}
       </h1>
       <section className="bg-card p-4 rounded-xl w-full flex gap-3 mb-8">
@@ -94,61 +85,50 @@ const Podcast = () => {
           </DialogContent>
         </Dialog>
       </section>
-      <section className="flex gap-4 mb-10 h-[300px] flex-1">
-        <div className="flex flex-col w-full">
-          <div className="grid grid-cols-2 gap-3 h-full">
-            <Card className="flex-1 h-full">
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  <FontAwesomeIcon icon={faDownload} className="mr-2" />
-                  Total downloads
-                </CardTitle>
-                <CardDescription>Card Description</CardDescription>
-              </CardHeader>
-            </Card>
+      <section className="flex gap-4 mb-10 h-[350px] flex-1 w-full">
+        <div className="flex flex-col gap-3 w-96 h-full">
+          <Card className="flex-1 flex justify-between items-center p-4 h-full">
+            <CardTitle className="text-lg">
+              <FontAwesomeIcon icon={faDownload} className="mr-2" />
+              Total downloads
+            </CardTitle>
+            <CardDescription>Card Description</CardDescription>
+          </Card>
 
-            <Card className="flex-1 h-full">
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  <FontAwesomeIcon icon={faPenRuler} className="mr-2" /> Drafts
-                </CardTitle>
-                <CardDescription className="text-5xl">
-                  {miscInfo.data?.draft_count}
-                </CardDescription>
-              </CardHeader>
-            </Card>
+          <Card className="flex-1 flex justify-between items-center p-4 h-full">
+            <CardTitle className="text-lg">
+              <FontAwesomeIcon icon={faPenRuler} className="mr-2" /> Drafts
+            </CardTitle>
+            <CardDescription className="text-3xl">
+              {miscInfo.data?.draft_count}
+            </CardDescription>
+          </Card>
 
-            <Card className="flex-1 h-full">
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  <FontAwesomeIcon
-                    icon={faClock}
-                    style={{ ["--fa-secondary-opacity" as string]: "0.1" }}
-                    className="mr-2"
-                  />{" "}
-                  Scheduled
-                </CardTitle>
-                <CardDescription>Card Description</CardDescription>
-              </CardHeader>
-            </Card>
+          <Card className="flex-1 flex justify-between items-center p-4 h-full">
+            <CardTitle className="text-lg">
+              <FontAwesomeIcon
+                icon={faClock}
+                style={{ ["--fa-secondary-opacity" as string]: "0.1" }}
+                className="mr-2"
+              />{" "}
+              Scheduled
+            </CardTitle>
+            <CardDescription>Card Description</CardDescription>
+          </Card>
 
-            <Card className="flex-1 h-full">
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  <FontAwesomeIcon icon={faListMusic} className="mr-2" />{" "}
-                  Published episodes
-                </CardTitle>
-                <CardDescription className="text-5xl">
-                  {miscInfo.data?.episode_count}
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
+          <Card className="flex-1 flex justify-between items-center p-4 h-full">
+            <CardTitle className="text-lg">
+              <FontAwesomeIcon icon={faListMusic} className="mr-2" /> Published
+              episodes
+            </CardTitle>
+            <CardDescription className="text-3xl">
+              {miscInfo.data?.episode_count}
+            </CardDescription>
+          </Card>
         </div>
-        <section className="relative max-w-2xl h-full  w-full shadow-lg rounded-3xl overflow-hidden">
-          <Image src={Svgs} alt="" className="bg-overlay rounded-3xl  h-full" />
 
-          <div className="absolute inset-0 z-10 p-10 h-[245px] flex flex-col top-[50%] translate-y-[-50%]">
+        <section className="relative bg-overlay flex h-full flex-1 shadow-lg rounded-3xl overflow-hidden">
+          <div className="absolute inset-0 z-10 p-10 h-[245px] flex flex-col top-[50%] translate-y-[-50%] ">
             <div className="flex flex-col flex-1">
               <h3 className="text-4xl font-medium text-background-alt-foreground">
                 {miscInfo.data?.latest_episode.title}
