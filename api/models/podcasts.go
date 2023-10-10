@@ -7,6 +7,7 @@ import (
 
 	"github.com/lucsky/cuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func CreatePodcast(p *model.Podcast, db *gorm.DB) error {
@@ -53,10 +54,21 @@ func GetUsersPodcasts(userId string, db *gorm.DB) ([]model.PodcastDTO, error) {
 
 	for _, v := range podcasts {
 		var dto model.PodcastDTO
+		var episodesDto []*model.EpisodeDTO
 
 		dto = *v.ToDTO()
 
+		for _, v := range v.Episodes {
+			var dto model.EpisodeDTO
+
+			dto = *v.ToDTO()
+
+			episodesDto = append(episodesDto, &dto)
+		}
+
+		dto.Episodes = episodesDto
 		podcastsDto = append(podcastsDto, dto)
+
 	}
 
 	return podcastsDto, nil
@@ -121,11 +133,31 @@ func GetPodcastEpisodesById(id string, db *gorm.DB) ([]model.EpisodeDTO, error) 
 
 }
 
-func UpdatePodcast(podcast *model.Podcast, db *gorm.DB) error {
+func UpdatePodcast(podcast *model.Podcast, user_id string, db *gorm.DB) (*model.Podcast, error) {
+	db.Model(&podcast).Where("uuid = ? AND user_id = ?", podcast.UUID, user_id).Clauses(clause.Returning{}).Updates(model.Podcast{
+		Title:             podcast.Title,
+		Description:       podcast.Description,
+		Thumbnail:         podcast.Thumbnail,
+		ExplicitContent:   podcast.ExplicitContent,
+		PrimaryCategory:   podcast.PrimaryCategory,
+		SecondaryCategory: podcast.SecondaryCategory,
+		Author:            podcast.Author,
+		Copyright:         podcast.Copyright,
+		Keywords:          podcast.Keywords,
+		Website:           podcast.Website,
+		Language:          podcast.Language,
+		Timezone:          podcast.Timezone,
+		ShowOwner:         podcast.ShowOwner,
+		OwnerEmail:        podcast.OwnerEmail,
+		DisplayEmailInRSS: podcast.DisplayEmailInRSS,
+	})
 
-	db.Model(&podcast).Updates(podcast)
+	if db.Error != nil {
+		fmt.Println("ERROR: ", db.Error)
+		return nil, db.Error
+	}
 
 	fmt.Printf("SUCCESS: updated %d podcast\n", db.RowsAffected)
 
-	return nil
+	return podcast, nil
 }

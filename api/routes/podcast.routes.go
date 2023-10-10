@@ -99,25 +99,35 @@ func GetPodcastEpisodes(c echo.Context) error {
 }
 
 func UpdatePodcast(c echo.Context) error {
-	var podcastModel model.Podcast
-
-	id := c.Param("id")
-
+	var body model.PodcastDTO
 	user := sessions.GetUserFromSession(c)
 
-	_, err := models.GetPodcastById(id, user.UUID, helpers.DB())
+	body.UserID = user.UUID
+	body.Title = c.FormValue("title")
+	body.Description = c.FormValue("description")
+	body.Thumbnail = c.FormValue("thumbnail")
+	body.ExplicitContent = c.FormValue("explicit_content") == "true"
+	body.PrimaryCategory = c.FormValue("primary_category")
+	body.SecondaryCategory = c.FormValue("secondary_category")
+	body.Author = c.FormValue("author")
+	body.Copyright = c.FormValue("copyright")
+	body.Keywords = c.FormValue("keywords")
+	body.Website = c.FormValue("website")
+	body.Language = c.FormValue("language")
+	body.Timezone = c.FormValue("timezone")
+	body.ShowOwner = c.FormValue("show_owner")
+	body.OwnerEmail = c.FormValue("owner_email")
+	body.DisplayEmailInRSS = c.FormValue("display_email_in_rss") == "true"
+	body.UUID = c.Param("id")
 
-	if err != nil {
-		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to get podcast.")
+	podcastModel := *body.ToEntity()
 
-	}
-
-	err = models.UpdatePodcast(&podcastModel, helpers.DB())
+	podcast, err := models.UpdatePodcast(&podcastModel, user.UUID, helpers.DB())
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusServiceUnavailable, "Failed to update podcast.")
 	}
 
-	return c.JSON(http.StatusOK, "")
+	return c.JSON(http.StatusOK, podcast.ToDTO())
 
 }

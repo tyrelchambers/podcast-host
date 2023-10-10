@@ -11,20 +11,28 @@ import {
   spokenLanguages,
   timeZones,
 } from "@/constants";
+import { usePodcast } from "@/hooks/api/usePodcastQuery";
 import { usePodcastStore } from "@/hooks/stores/podcastStore";
 import { Podcast, podcastSchema } from "@/lib/types";
-import { formatBytes, formatCategoryOptions } from "@/lib/utils";
+import {
+  formatBytes,
+  formatCategoryOptions,
+  formatUrlFromTitle,
+} from "@/lib/utils";
 import { faCloudArrowUp, faImage } from "@fortawesome/pro-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+import { useRouter } from "next/router";
 import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const EditPodcast = () => {
+  const router = useRouter();
   const fileUploadRef = useRef<HTMLInputElement>(null);
-  const activePodcast = usePodcastStore((store) => store.activePodcast);
+  const { activePodcast, setActivePodcast } = usePodcastStore();
+  const { update } = usePodcast();
 
   const form = useForm({
     resolver: zodResolver(podcastSchema),
@@ -39,18 +47,31 @@ const EditPodcast = () => {
 
   const watchFileValue = form.watch("thumbnail");
 
-  console.log(activePodcast);
-
   const submit = async (data: Podcast) => {
     const file = fileUploadRef.current?.files?.[0];
 
-    await axios.postForm(
-      `http://localhost:8080/api/podcast/${activePodcast?.title}/edit`,
-      {
-        ...data,
-        file,
-      }
-    );
+    if (!activePodcast) {
+      return;
+    }
+
+    try {
+      update(
+        {
+          podcastId: activePodcast.uuid,
+          data,
+          file,
+        },
+        {
+          onSuccess: (data) => {
+            setActivePodcast(data.data);
+          },
+        }
+      );
+
+      router.replace(`/podcast/${formatUrlFromTitle(data.title)}/settings`);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
