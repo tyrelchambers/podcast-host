@@ -57,7 +57,7 @@ const DashNav = ({ rootPath }: Props) => {
         {routes(rootPath).map((route) => (
           <li
             key={route.path}
-            className="text-background-alt-foreground/70 hover:text-background-alt-foreground transition-all p-4 hover:bg-background-alt-foreground/10"
+            className="text-card-foreground/70 hover:text-primary transition-all p-4 hover:bg-primary/10"
           >
             <Link href={route.path} className="flex items-center gap-3">
               <FontAwesomeIcon icon={route.icon} />
