@@ -40,6 +40,7 @@ const Podcast = () => {
       <h1 className="font-bold text-foreground flex-1 text-3xl mb-8">
         {podcast?.title}
       </h1>
+
       <section className="bg-card p-4 rounded-xl w-full flex gap-3 mb-8">
         <Link href={`/podcast/${nameParam}/episode/create`}>
           <Button className="w-full">Create episode</Button>

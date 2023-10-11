@@ -18,6 +18,7 @@ import { useRouter } from "next/router";
 import { usePodcastStore } from "@/hooks/stores/podcastStore";
 import { usePodcastsQuery } from "@/hooks/api/usePodcastsQuery";
 import { MantineProvider } from "@mantine/core";
+import { Toaster } from "@/components/ui/toaster";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +64,7 @@ const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
           <main className={font.className}>
             <Component {...pageProps} />
           </main>
+          <Toaster />
         </MantineProvider>
       </InitialData>
     </QueryClientProvider>

@@ -9,7 +9,6 @@ export default class _Document extends Document {
         <body className="bg-background">
           <Main />
           <NextScript />
-          <Toaster />
         </body>
       </Html>
     );

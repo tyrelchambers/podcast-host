@@ -1,3 +1,5 @@
+"use client";
+
 import Select from "@/components/Select";
 import ThumbnailPlaceholder from "@/components/ThumbnailPlaceholder";
 import { Button } from "@/components/ui/button";
@@ -6,6 +8,7 @@ import { Form, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
 import {
   podcastCategoryOptions,
   spokenLanguages,
@@ -23,7 +26,7 @@ import { faCloudArrowUp, faImage } from "@fortawesome/pro-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 
 const EditPodcast = () => {
@@ -31,7 +34,7 @@ const EditPodcast = () => {
   const fileUploadRef = useRef<HTMLInputElement>(null);
   const { activePodcast, setActivePodcast } = usePodcastStore();
   const { update } = usePodcast();
-
+  const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(podcastSchema),
     values: activePodcast,
@@ -70,6 +73,10 @@ const EditPodcast = () => {
         },
       });
       setActivePodcast(updatedPodcast.data.title);
+      toast({
+        title: "Podcast updated",
+        description: "Your podcast has been freshly updated",
+      });
     } catch (error) {
       console.log(error);
     }
@@ -333,7 +340,11 @@ const EditPodcast = () => {
           )}
         />
 
-        <Button type="submit" disabled={form.formState.isSubmitting}>
+        <Button
+          type="submit"
+          disabled={form.formState.isSubmitting}
+          className="w-fit"
+        >
           Save changes
         </Button>
       </form>
