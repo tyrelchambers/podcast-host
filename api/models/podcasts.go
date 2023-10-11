@@ -157,7 +157,7 @@ func UpdatePodcast(podcast *model.Podcast, user_id string, db *gorm.DB) (*model.
 		return nil, db.Error
 	}
 
-	fmt.Printf("SUCCESS: updated %d podcast\n", db.RowsAffected)
+	fmt.Println("SUCCESS: updated podcast")
 
 	return podcast, nil
 }
