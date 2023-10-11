@@ -12,7 +12,7 @@ const Index = () => {
   return (
     <DashLayout leftCol={<DashHeader rootPath={router.query.name as string} />}>
       <h1 className="h1">Settings</h1>
-      <Tabs defaultValue="account" className="my-10">
+      <Tabs defaultValue="show_settings" className="my-10">
         <TabsList>
           <TabsTrigger value="show_settings">Show settings</TabsTrigger>
           <TabsTrigger value="rss_feed">RSS feed</TabsTrigger>
