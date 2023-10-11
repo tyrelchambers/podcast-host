@@ -29,10 +29,11 @@ export const usePodcast = (name?: string) => {
       data: Podcast;
       file: File | undefined;
     }) =>
-      await axios.postForm(
+      await axios.postForm<Podcast>(
         `http://localhost:8080/api/podcast/${podcastId}/edit`,
         {
           ...data,
+          title: data.title.trim(),
           file,
         },
         {
@@ -46,5 +47,5 @@ export const usePodcast = (name?: string) => {
     }
   );
 
-  return { query, update: update.mutate };
+  return { query, update };
 };

@@ -22,11 +22,9 @@ import {
 import { faCloudArrowUp, faImage } from "@fortawesome/pro-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import { useRouter } from "next/router";
 import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 const EditPodcast = () => {
   const router = useRouter();
@@ -55,20 +53,23 @@ const EditPodcast = () => {
     }
 
     try {
-      update(
-        {
-          podcastId: activePodcast.uuid,
-          data,
-          file,
-        },
-        {
-          onSuccess: (data) => {
-            setActivePodcast(data.data);
-          },
-        }
-      );
+      const updatedPodcast = await update.mutateAsync({
+        podcastId: activePodcast.uuid,
+        data,
+        file,
+      });
+      console.log(updatedPodcast.data);
 
-      router.replace(`/podcast/${formatUrlFromTitle(data.title)}/settings`);
+      if (!updatedPodcast) {
+        return;
+      }
+
+      router.replace({
+        query: {
+          name: formatUrlFromTitle(updatedPodcast.data.title),
+        },
+      });
+      setActivePodcast(updatedPodcast.data.title);
     } catch (error) {
       console.log(error);
     }
@@ -107,7 +108,7 @@ const EditPodcast = () => {
           )}
         />
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-end">
           <ThumbnailPlaceholder />
           <FormField
             name="file"
@@ -332,7 +333,9 @@ const EditPodcast = () => {
           )}
         />
 
-        <Button type="submit">Save changes</Button>
+        <Button type="submit" disabled={form.formState.isSubmitting}>
+          Save changes
+        </Button>
       </form>
     </Form>
   );
